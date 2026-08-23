@@ -1,3 +1,16 @@
+# C engine build output
 build/
 *.o
+*.d
 *.exe
+
+# Node (phases 4+)
+node_modules/
+npm-debug.log*
+.env
+.env.local
+
+# Local storage / scratch
+minio-data/
+*.zy
+!engine/tests/fixtures/**

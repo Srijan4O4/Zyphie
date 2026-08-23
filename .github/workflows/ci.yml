@@ -1,0 +1,38 @@
+name: engine
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    name: linux / gcc
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: engine
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Toolchain
+        run: gcc --version && gcc -dumpmachine
+
+      # Local development builds 32-bit via MinGW; CI is x86-64. Keeping both
+      # green is what catches word-size assumptions in the codec early.
+      - name: Build (dev, warnings are errors)
+        run: make CFLAGS_EXTRA=-Werror
+
+      - name: Build (release)
+        run: make release CFLAGS_EXTRA=-Werror
+
+      # MinGW has no sanitizer runtime, so this configuration only ever runs
+      # here. It is the project's real memory-safety gate.
+      - name: Build (debug, ASan + UBSan)
+        run: make debug CFLAGS_EXTRA=-Werror
+
+      - name: Smoke test
+        run: ./build/debug/zyphie --version
+
+      - name: Test suite
+        run: make test
