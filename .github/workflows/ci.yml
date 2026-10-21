@@ -1,0 +1,63 @@
+name: Foundation
+on:
+  push:
+    branches: [main, develop, 'feature/**', 'fix/**', 'codex/**']
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-2022
+            preset: debug
+          - os: windows-2022
+            preset: release
+          - os: ubuntu-24.04
+            preset: sanitize
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: microsoft/vcpkg
+          ref: 9eec002df1cd109f8f104cd966a763daf9751489
+          path: .tools/vcpkg
+      - name: Bootstrap dependencies (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          & ./.tools/vcpkg/bootstrap-vcpkg.bat -disableMetrics
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          "VCPKG_ROOT=$((Resolve-Path ./.tools/vcpkg).Path)" >> $env:GITHUB_ENV
+          "VCPKG_DISABLE_METRICS=1" >> $env:GITHUB_ENV
+      - name: Bootstrap dependencies (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          ./.tools/vcpkg/bootstrap-vcpkg.sh -disableMetrics
+          echo "VCPKG_ROOT=$GITHUB_WORKSPACE/.tools/vcpkg" >> "$GITHUB_ENV"
+          echo "VCPKG_DISABLE_METRICS=1" >> "$GITHUB_ENV"
+      - name: Configure, build and test (Windows x64)
+        if: runner.os == 'Windows'
+        shell: cmd
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+          if errorlevel 1 exit /b %errorlevel%
+          cmake --preset ${{ matrix.preset }}
+          if errorlevel 1 exit /b %errorlevel%
+          cmake --build --preset ${{ matrix.preset }}
+          if errorlevel 1 exit /b %errorlevel%
+          ctest --preset ${{ matrix.preset }}
+          if errorlevel 1 exit /b %errorlevel%
+      - name: Configure, build and test (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          cmake --preset ${{ matrix.preset }}
+          cmake --build --preset ${{ matrix.preset }}
+          ctest --preset ${{ matrix.preset }}
