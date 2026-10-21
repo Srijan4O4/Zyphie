@@ -1,6 +1,6 @@
 # Benchmarks
 
-**Not measured.** There is no archive engine to benchmark yet. No speed,
+**Not measured.** The milestone 2 engine has not been benchmarked. No speed,
 compression-ratio or memory-efficiency claim is supported at this checkpoint.
 
 At milestone 4, build a runner recording revision, compiler/options, codec

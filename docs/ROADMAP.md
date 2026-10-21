@@ -13,8 +13,7 @@ lives in PROJECT_STATUS.md. No later feature bypasses an earlier failed gate.
 | 5 Desktop | Qt Widgets creation/browser/extraction/verification and cancellation | Actual user flows tested; responsive GUI and CLI compatibility |
 | 6 Release | Clean builds, installation, licensing, packaging, compatibility evidence | All V1 acceptance criteria pass; only then tag v1.0.0 |
 
-Next implementation increment: finish local tooling and run foundation CI;
-then specify every header, record, index and footer field before serialization.
+Milestones 0 and 1 are complete. Milestone 2 engine validation is in progress; then follow milestone 3 hardening before later work.
 
 Future only after V1: V2 adaptive codecs/dictionaries/solid groups; V3
 content-defined chunks and snapshots; V4 authenticated encryption and wider

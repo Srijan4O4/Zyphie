@@ -1,8 +1,8 @@
 {
   "name": "zyphie",
-  "version-semver": "0.1.0",
+  "version-semver": "0.2.0",
   "builtin-baseline": "9eec002df1cd109f8f104cd966a763daf9751489",
-  "description": "Native C++20 archiver engineering foundation",
+  "description": "Native C++20 ZYPH archive engine",
   "dependencies": [
     "zstd",
     "gtest",

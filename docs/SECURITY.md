@@ -1,40 +1,48 @@
-# Security design status
+# Security — milestone 2 boundary
 
-No archive parser or extractor exists yet. No claim of hardened archive handling
-is made. The future engine treats every archive, path and declared length as
-untrusted; it must meet milestone 3 before GUI work or distribution.
+The engine treats archive metadata as untrusted, but **milestone 3 hardening has
+not been completed**. Do not claim comprehensive safe extraction against an active
+local filesystem attacker. Use source/destination parents controlled by the caller.
 
-## Threats and required controls
+## Implemented and regression-tested
 
-- Bounds/overflow: validate section ranges and checked offset arithmetic before
-  reading, allocating or decoding; reject overlaps, missing bytes and trailing data.
-- Resource exhaustion: cap entry count, path bytes, manifest/index bytes, block
-  size, file output and aggregate output before allocation or writes. A ratio
-  threshold alone is insufficient. Explicit output limits must permit legitimate
-  large files when deliberately configured.
-- Paths: strict UTF-8, relative slash-separated components; reject dot segments,
-  absolute/drive/UNC/device forms, NUL, ADS syntax, Windows reserved names and
-  trailing-dot/space aliases. Detect case-insensitive collisions and file/directory
-  ancestor conflicts before writing.
-- Filesystem races: lexical checks and canonical-prefix comparisons alone do not
-  prevent junction/symlink substitution. Design platform handle-based confinement
-  and exclusive creation; test reparse points and concurrent path changes on Windows.
-- Data integrity: verify authenticated structure only if an authenticated mechanism
-  is actually implemented. V1 uses unkeyed corruption detection, not authenticity.
-  Full verification must reconstruct and digest file contents, not just parse a header.
-- Output safety: exclusive temporary creation, no unauthorized overwrite, validate
-  before publication, accurate partial-result/cancellation reporting, and cleanup
-  limited to temporary objects owned by this operation.
+- Explicit little-endian parsing, checked arithmetic and strict reserved/version
+  validation; no native-struct deserialization.
+- SHA-256 coverage for footer, header/manifest/index, decoded blocks and whole files.
+  These hashes detect corruption, not authenticity.
+- Bounded metadata/count/output limits before allocation or output; bounded block
+  buffers and Zstandard decoder windows. Exact frame/content-size checks.
+- Strict UTF-8 paths, no traversal/absolute/drive/UNC/ADS forms, reserved names and
+  path-component validation. Sorted unique entries and explicit directory parents.
+- Exact block/file ownership, contiguous bounds, no overlapping/unreferenced bytes.
+- Native no-follow file opens, exclusive output creation, symlink/reparse checks,
+  no existing destination overwrite, temporary staging and no-replace publication.
+- Source size/timestamp checks and rejection of output inside an input directory.
 
-## Validation required before security gate
+Tests cover every truncation of a fixed archive, trailing data, corrupted payloads,
+forged metadata with valid recomputed hashes, unsafe paths, codecs and ranges,
+wrong whole-file digests, resource limits, existing-output refusal, symlink paths,
+pre-cancelled operations and cleanup after a late packing failure. See project
+status for actual local and hosted run results; test names are not security claims.
 
-Malformed/truncated headers, records, manifest, index and footer; unsupported
-versions/features/codecs; reserved bits; digest mismatches; overlapping block
-ranges; count/offset overflows; impossible lengths; invalid UTF-8; duplicate and
-alias paths; traversal; device names; symlink/reparse traversal; disk-full/permission
-failures; cancellation; changing source files; and finalization failures.
+## Required milestone 3 work
 
-Add independent parser/path fuzz targets and preserve minimized regressions.
-Run ASan/UBSan on Linux, Windows functional tests and appropriate Windows-native
-diagnostics. Fuzzing elapsed time, corpus and sanitizer results must be recorded.
-No tests above have run at this foundation checkpoint.
+- Handle-relative, race-resistant traversal of directory components and Windows
+  reparse points; staging ACL review. Current path checks have TOCTOU gaps if a
+  hostile process can mutate source/destination parents between checks and use.
+- Dedicated fuzz harnesses for parser and paths, bounded fuzz campaigns and retained
+  minimized regressions. No fuzz campaign has run yet.
+- Broader Windows device/Unicode alias/case-collision and junction-race tests.
+- Disk-full, permissions, flush/rename failures and in-flight cancellation/source
+  mutation fault injection. Current pre-cancel tests do not prove all interruption paths.
+- Windows-native diagnostics and sanitizer-instrumented dependency builds, beyond
+  project-level Linux ASan/UBSan. Assess parser allocation amplification within caps.
+- Crash/power-loss durability, recovery and fsync of parent directories. A successful
+  rename is not a promise of crash-atomic durable restoration on every filesystem.
+
+No archive repair, encryption or authentication is implemented. A malicious archive
+producer can replace unkeyed digests. Directory creation/file identity changes are
+not captured through a snapshot service. Metadata not specified by V1 (ACLs,
+permissions, streams, ownership, subsecond times) is not preserved. Unsupported
+filesystem entry types fail explicitly. Cleanup may leave an isolated `.zyph-part-*`
+object if the OS refuses removal; it must never delete original inputs.

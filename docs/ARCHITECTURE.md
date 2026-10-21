@@ -1,65 +1,77 @@
-# Architecture
+# Architecture — milestone 2
 
-## Boundaries
+`zyph_core` is a Qt-free C++20 static library. `zyph` is a thin CLI using that same
+engine. The future desktop application must use the public archive API without
+duplicating compression logic. The desktop target remains disabled until its gate.
 
-`zyph_core` is a Qt-free C++20 library. `zyph` is the CLI. A separate
-`zyph_desktop` target will be added at milestone 5, after engine/security gates.
-Today only version reporting exists in the core; the remaining design below
-describes planned modules, not delivered functionality.
+## Implemented boundaries
 
-| Module | Responsibility | Planned location |
-| --- | --- | --- |
-| Format | Explicit little-endian encoding, bounded decoding, version rules | src/format |
-| Compression | STORE/Zstandard block adapters, bounded output | src/compression |
-| Filesystem | Deterministic scan, file identity and metadata, unsupported-entry reporting | src/filesystem |
-| Archive | Writer, reader, manifest/index, inspection and full verification | src/archive |
-| Security | Resource limits, path policy and platform-safe output handles | src/security |
-| Concurrency | Bounded workers, backpressure, cooperative cancellation | src/concurrency |
-| CLI | Argument parsing, exit codes, text/progress presentation | apps/cli |
-| Desktop | Qt Widgets presentation and asynchronous job control | apps/desktop |
+| Location | Responsibility |
+| --- | --- |
+| include/zyphie/archive.hpp | ArchiveReader, ArchiveWriter, ArchiveEntry, Limits, PackOptions |
+| include/zyphie/binary.hpp | Explicit little-endian fields, bounded reads, checked arithmetic |
+| src/format/format.cpp | Header/footer serialization, version checks, UTF-8/path policy |
+| src/core/digest.cpp | Incremental SHA-256 using BCrypt or OpenSSL EVP |
+| src/compression/codec.cpp | Bounded independent Zstandard compression/decompression |
+| src/filesystem/io.cpp | Native exclusive output creation, read handles, no-replace publication |
+| src/archive/archive.cpp | Deterministic scanner, manifest/index parser, writer, verification/extraction |
+| apps/cli/main.cpp | Unicode argument conversion, command/options, text output, exit codes |
 
-Public types will live under `include/zyphie`. Introduce interfaces as their
-implementations become testable; do not create empty polymorphic wrappers.
+The scanner and manifest/index routines remain internal helpers in the archive
+module at this increment. Their responsibilities are separate functions; no empty
+interface hierarchy is introduced. Inspection is exposed through reader metadata,
+and verification/extraction through methods sharing the same validated index.
+The reader owns one open native file handle; its operations are synchronous and
+not concurrently callable on the same instance. Reader copying is disabled.
 
-## Planned API and data flow
+## Write pipeline
 
-FilesystemScanner produces deterministic ArchiveEntry records for regular files
-and directories. ArchiveWriter accepts PackOptions, progress reporting and a
-`std::stop_token`. It reads bounded blocks, selects STORE or Zstandard through
-CompressionCodec/CompressionPlanner, and streams to an exclusively created
-temporary archive. After manifest/index/footer finalization and structural
-validation, publish the archive through platform-aware no-clobber operations.
+Scan regular files/directories without following links; reject unsupported entries
+and duplicate internal names. Bound entries, metadata and total sizes. Sort by
+UTF-8 byte order. Reject the destination inside any source directory. Stream one
+block at a time through STORE or Zstandard and compute block/whole-file SHA-256.
+Write payloads to an exclusively created temporary file in the destination parent.
+Record manifest/index, protect header+metadata and footer, flush/close, reopen
+and fully verify, then publish with a no-replace rename on Windows/Linux.
 
-ArchiveReader validates structure and exposes an ArchiveManifest without
-decompressing payloads. ArchiveInspector provides summaries from validated
-metadata. ArchiveVerifier decodes every selected block and checks block and
-whole-file digests. ArchiveExtractor resolves selected entries, preflights
-conflicts and limits, and writes through platform-specific confinement helpers.
+Check file sizes and timestamps before/after reads and tree timestamps before
+finalization. These detect many changes but do not implement a filesystem snapshot.
+Input files are read-only. Temporary cleanup owns only objects created by this job.
+No final archive name appears until validation succeeds.
 
-PackOptions: sources, destination, preset, block size, resource limits, explicit
-overwrite, optional explicit skip policy. ExtractOptions: destination, exact
-path/subtree selection, limits and overwrite policy. Skipped or partially
-restored entries must appear in structured operation results.
+## Read/extract pipeline
 
-Use a small `ErrorCode` enum and `Error` exception carrying operation/path context
-at I/O boundaries; errors cross into CLI/GUI once, never as success values.
-Proposed codes: invalid_argument, io, unsupported_feature, corrupt_archive,
-resource_limit, unsafe_path, destination_exists, source_changed, cancelled.
-Cancellation has its own outcome. Public signatures are finalized in milestone 1.
+Read EOF footer, validate its hash and section arithmetic before allocations.
+Enforce metadata/count limits, verify metadata digest, parse index and typed
+manifest, require sorted unique valid paths and explicit directory parents.
+All blocks must map exactly once to files with matching decoded lengths.
+Listing exposes this metadata without payload decompression.
 
-## Resource and correctness model
+Verification reads each referenced block with bounded buffers, constrains the
+Zstandard frame/window, validates block SHA-256, then validates whole-file SHA-256.
+Extraction builds a new staging tree under the destination parent, creates each
+output exclusively, verifies file contents, restores second-precision timestamps
+and publishes the complete tree with no replacement. Any error/cancellation leaves
+the final destination absent; owned temporary outputs are cleaned where possible.
 
-Start with one worker and a 4 MiB block target. Memory for file contents is
-bounded by block size and concurrency; manifest/index memory has explicit caps
-and is proportional to capped entry/block counts. Do not claim constant memory
-for arbitrarily many tiny files. All offsets and sizes use checked 64-bit
-arithmetic. Serialized fields never depend on struct layout or native endian.
+## Errors and resource model
 
-Preserve empty entries, UTF-8 relative paths and supported modification times.
-Treat links, reparse points and special files as unsupported until explicitly
-designed. Reject output archives inside input trees initially. Detect file
-size/timestamp changes before and after reads; this is not a filesystem snapshot.
+Public operations throw Error with ErrorCode. Filesystem errors translate to I/O
+errors; corruption, unsupported features, limits, paths, conflicts, changing inputs
+and cancellation are distinct categories. CLI maps them to documented exit codes.
+No failed/skipped entry is reported as a successful pack or complete extraction.
 
-GUI work runs off the event thread and uses the same engine as CLI. Progress
-callbacks must not access widgets directly. Threading begins only after the
-single-threaded engine passes losslessness and security gates.
+Content buffers are bounded by configured block size (hard maximum 16 MiB). Metadata
+is bounded by policy and scales with capped entry/block counts; encoded metadata,
+parsed vectors and scanner paths coexist, so the metadata byte cap is not a total
+process-memory cap. Default payload block size is 4 MiB. Compression is single
+threaded. Basic stop-token checks occur at file/block boundaries and before publish;
+worker pools, progress and comprehensive interruption tests belong to milestone 4.
+
+## Remaining security boundary
+
+Native no-follow/exclusive file opens and repeated path checks reject ordinary
+symlinks/reparse points and overwrite conflicts. They do not yet provide full
+handle-relative directory traversal or Windows staging ACL isolation. Destination
+parents must be trusted against concurrent hostile mutation. See SECURITY.md;
+passing milestone 2 does not imply milestone 3 or release readiness.
