@@ -41,3 +41,24 @@ document remains explicitly a design checklist until all binary layouts and
 test vectors are agreed and tested. No pack/extract placeholder may report
 success. The license for Zyphie itself remains undecided until the owner chooses;
 do not add an arbitrary license or publish a release package.
+
+## ADR-006 — V1 wire format and integrity (2026-10-22)
+
+V1 uses 32-byte headers, independent blocks, a typed manifest, a 56-byte-per-block
+index and a 128-byte footer. SHA-256 protects decoded blocks, complete files,
+metadata and footer fields. Windows uses BCrypt/CNG; non-Windows uses OpenSSL EVP
+from the pinned vcpkg manifest. The wire algorithm is identical and independent
+of the platform provider. Neither provider is a custom cryptographic primitive.
+References: https://learn.microsoft.com/en-us/windows/win32/api/bcrypt/nf-bcrypt-bcryptcreatehash
+and https://docs.openssl.org/3.0/man3/EVP_DigestInit/ .
+OpenSSL is Apache-2.0 licensed; dependency notices must be included when distributing
+its libraries. Windows BCrypt is an OS facility. No authenticity is claimed.
+
+## ADR-007 — Local portable validation toolchain
+
+Retain MSVC CI as the reference Windows build. Add project-local LLVM-MinGW
+23.1.4 (release 20261020), CMake 4.4.4 and Ninja 1.13.2 for fast local iteration.
+Downloads were taken from upstream release assets and SHA-256 verified before use.
+Tools live under ignored .tools; no installed compiler or system PATH was changed.
+The vcpkg x64-mingw-static triplet is a community triplet, so hosted MSVC/Linux
+checks remain required in addition to local validation.

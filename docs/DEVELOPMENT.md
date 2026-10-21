@@ -82,3 +82,20 @@ force-push or rewrite shared history.
 - [vcpkg source and bootstrap](https://github.com/microsoft/vcpkg/tree/9eec002df1cd109f8f104cd966a763daf9751489)
 - [GoogleTest CMake guide](https://github.com/google/googletest/blob/main/docs/quickstart-cmake.md)
 - [Zstandard source](https://github.com/facebook/zstd)
+
+## Portable local build used in this workspace
+
+The ignored .tools folder now contains checksum-verified upstream releases:
+
+| Asset | SHA-256 |
+| --- | --- |
+| mstorsjo/llvm-mingw 20261020 ucrt-x86_64.zip | fd5462b7f5d93b2ff981fcd3f9c7e427e47f3203c64ea91c27bcc444eebd74cd |
+| Kitware/CMake v4.4.4 windows-x86_64.zip | bace36e94b31c68ab6fa295f26dfa11219e0701cf7c94b0284a7d1cb13dac536 |
+| ninja-build/ninja v1.13.2 ninja-win.zip | 07fc8261b42b20e71d1720b39068c2e14ffcee6396b76fb7a795fb460b78dc65 |
+
+After extracting these official assets under .tools and bootstrapping the pinned
+vcpkg checkout, run `./scripts/local-build.ps1 -Preset debug` or `-Preset release`.
+The helper sets PATH only for its process and selects x64-mingw-static. Do not mix
+MSVC and MinGW in one build directory. Use a fresh build directory when changing
+compiler families. Python 3 is used only to regenerate independent fixed fixtures
+via `python tests/fixtures/generate.py`; the product has no Python dependency.
