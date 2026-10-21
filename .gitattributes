@@ -7,3 +7,4 @@
 *.cmake text eol=lf
 CMakeLists.txt text eol=lf
 *.zyph binary
+docs/PRODUCT_REQUIREMENTS.md whitespace=-blank-at-eol

@@ -2,73 +2,75 @@
 
 ## Current milestone
 
-**Milestone 0 — Repository Audit and Engineering Blueprint: partially complete.**
-The fresh tree and build plan exist. Local build validation is blocked by the
-missing C++20 toolchain, CMake, Ninja and vcpkg. No later milestone is complete.
+**Milestone 0 — Repository Audit and Engineering Blueprint: complete.**
+The fresh tree, build plan and architecture are established. Hosted Windows
+Debug/Release and Linux sanitizer builds passed. Local builds remain unavailable
+until C++20 tooling is installed. Milestone 1 is next; no later gate is complete.
 
 ## Completed checkpoints
 
 - Inspected repository root, branches, commits, working tree and remote.
 - Confirmed GitHub default branch main and authenticated repository access.
 - Replaced the previous implementation with a fresh C++20 project scaffold.
-- Preserved the entire supplied product contract in PRODUCT_REQUIREMENTS.md.
+- Preserved the supplied contract in PRODUCT_REQUIREMENTS.md.
 - Documented architecture, roadmap, decisions, security and benchmark methodology.
-- Added Debug/Release/sanitizer presets, pinned dependencies and CI definition.
-- Added toolchain/dependency smoke tests and an honest help/version-only CLI.
+- Added Debug/Release/sanitizer presets, pinned dependencies and CI.
+- Added toolchain/dependency tests and an honest help/version-only CLI.
 
 ## Validation evidence
 
-Audit commands executed: `git status --short`, `git branch --show-current`,
-`git log -5 --oneline`, `git remote -v`, `git fetch origin --prune`,
-`g++ --version`, `Get-Command cmake,ninja,clang++,g++,cl,vcpkg` and installation
-directory checks. GCC reports 6.3.0; other required build tools were not found.
-`git ls-remote --tags https://github.com/microsoft/vcpkg.git 'refs/tags/2026*'`
-resolved the selected official release to the manifest baseline.
+Source checkpoint: `659ab1d66cf7173c2668af62e5ee80d16c0323ce`.
+CI run: https://github.com/Srijan4O4/Zyphie/actions/runs/39667567735
 
-Static checks executed: PowerShell `ConvertFrom-Json` parsed both JSON files;
-`git diff --check` passed. A direct capability probe,
-`g++ -std=c++20 -fsyntax-only apps/cli/main.cpp -Iinclude`, failed because GCC 6.3
-does not recognize `-std=c++20`. This is a confirmed toolchain blocker, not a
-source compilation failure under a supported compiler.
+| Environment | Commands executed in hosted CI | Result |
+| --- | --- | --- |
+| Windows Server 2022, MSVC 19.44.35229.0 | `cmake --preset debug`; `cmake --build --preset debug`; `ctest --preset debug` | 5/5 passed |
+| Windows Server 2022, MSVC 19.44.35229.0 | `cmake --preset release`; `cmake --build --preset release`; `ctest --preset release` | 5/5 passed |
+| Ubuntu 24.04, GCC 13.3.0, ASan/UBSan | `cmake --preset sanitize`; `cmake --build --preset sanitize`; `ctest --preset sanitize` | 5/5 passed |
 
-Build/test commands required but **not executed** locally:
-
-```powershell
-cmake --preset debug
-cmake --build --preset debug
-ctest --preset debug
-cmake --preset release
-cmake --build --preset release
-ctest --preset release
-```
-
-Linux CI additionally must run `cmake --preset sanitize`,
-`cmake --build --preset sanitize`, and `ctest --preset sanitize`.
-No compiler test result, sanitizer result or hosted CI pass is claimed here.
+Tests cover C++20 library facilities, Zstandard binary round trip, CLI help,
+version, and rejection of unimplemented pack. They do not test .zyph archives.
+Dependencies resolved to GoogleTest 1.18.0 and Zstandard 1.5.7. No project compiler
+warnings were found in reviewed logs. The original workflow warned about checkout
+v4's deprecated Node runtime; it now pins official checkout v6. C++ source is unchanged.
+Third-party dependencies themselves are not sanitizer-instrumented by this preset.
 Benchmarks: **not measured**. UI tests: not applicable; no UI exists.
+
+Local checks executed: repository/Git/toolchain audit; JSON parsing with PowerShell
+`ConvertFrom-Json`; `git diff --check`; source attachment hash comparison before
+Git line-ending normalization. Intentional Markdown hard-break spaces in the
+supplied requirements have a path-specific Git whitespace allowance.
+
+Local build/test commands were **not executed**: CMake, Ninja, vcpkg and a modern
+compiler are absent. `g++ -std=c++20 -fsyntax-only apps/cli/main.cpp -Iinclude`
+failed because installed GCC 6.3 does not recognize `-std=c++20`. This confirms a
+toolchain blocker, not a source failure under a supported compiler. No system
+compiler installation was performed.
 
 ## Remaining work and blockers
 
-1. Provision the documented local C++20/CMake/Ninja toolchain and pinned vcpkg.
-2. Run all foundation builds/tests and inspect CI logs; fix warnings and failures.
-3. Finish milestone 0 validation and record its exact commit hash/evidence.
-4. Specify the complete binary format and limits at milestone 1. The current
-   format document is deliberately only a checklist, not an implementable spec.
-5. Then implement STORE round trips before Zstandard archive integration, harden
+1. Install the documented local C++20/CMake/Ninja toolchain and pinned vcpkg,
+   then reproduce the passing hosted builds before iterative engine work.
+2. Specify the complete binary format and limits at milestone 1. The current
+   format document is a checklist, not an implementable specification.
+3. Implement foundational serialization and test fixed vectors before the engine.
+4. Implement STORE round trips before Zstandard archive integration, harden
    extraction before concurrency/GUI, and follow ROADMAP.md through release gates.
 
 ## Decisions and limitations
 
-See DECISIONS.md. Core remains Qt-free; dependency versions are baseline-pinned.
+See DECISIONS.md. Core remains Qt-free and dependencies are baseline-pinned.
 Regular files/directories are the planned scope. Archive APIs, format, digest,
-filesystem confinement, presets, streaming, cancellation, benchmarks and desktop
-are not implemented. Product licensing remains an owner decision before release.
+filesystem confinement, compression presets, streaming, cancellation, benchmarks
+and desktop are not implemented. Product licensing remains an owner decision
+before release. No performance or archive security claim is made.
 
 ## Git checkpoint
 
-Branch: `main`. Most recent validated new implementation commit: **none**.
-Historical starting HEAD: `bbe02dd`; pre-restart main: `5fb0f15`.
-The restart checkpoint is identifiable with
-`git log -1 --format="%H %s" --grep="chore: initialize Zyphie engineering foundation"`.
-Record its hash in a follow-up status entry after creation and actual validation;
-do not imply that the foundation has passed runtime tests merely because it is committed.
+Target branch: `main`, fast-forwarded from `feature/fresh-foundation` after CI.
+Most recent validated C++ source checkpoint:
+`659ab1d66cf7173c2668af62e5ee80d16c0323ce`.
+Follow-up documentation/CI commits record evidence and update the checkout action;
+they do not alter the validated C++ source. Use `git log -3 --oneline` for the
+latest maintenance hash. Historical starting HEAD: `bbe02dd`; old main: `5fb0f15`.
+Existing history is retained; no force-push, repository recreation or release tag.
