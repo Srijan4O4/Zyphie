@@ -131,3 +131,17 @@ For MSVC, use win64_msvc2022_64, the debug/release presets and
 `-DZYPH_BUILD_DESKTOP=ON -DCMAKE_PREFIX_PATH=<Qt SDK directory>`. Keep that SDK's
 bin directory on PATH while testing. Qt Test is needed only with BUILD_TESTING=ON.
 Headless CI uses the offscreen platform; native Windows rendering is checked locally.
+
+## Portable Windows package
+
+Build without hooks using `./scripts/desktop-build.ps1 -NoTests -BuildDir build/desktop-production`.
+Obtain corresponding Qt source with
+`python -m aqt install-src windows desktop 6.8.3 -O .tools/Qt --archives qtbase`.
+Run `./scripts/package-windows.ps1`; it refuses an existing output, includes
+runtime DLLs, Qt source, license notices and a SHA-256 manifest. Then run
+`python scripts/package-smoke.py <package.zip>` to validate all manifest hashes,
+relocate the package, strip SDK paths, run CLI golden/round-trip checks and launch
+and close the actual GUI. Use a new -Output path for each candidate.
+Qt 6.8.3's deploy tool misclassifies LLVM-MinGW plugins as debug; the script uses
+an explicit audited Core/Gui/Widgets, qwindows and Windows style dependency set.
+No unrelated Qt modules, test executables or build tools are shipped.

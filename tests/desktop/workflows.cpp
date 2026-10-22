@@ -14,6 +14,7 @@
 #include <QUrl>
 #include <QProcess>
 #include <QMessageBox>
+#include <QRandomGenerator>
 class Workflows : public QObject {
     Q_OBJECT
 private slots:
@@ -49,7 +50,9 @@ private slots:
     }
     void cancellationAndResponsiveness() {
         QTemporaryDir dir;QFile file(dir.path()+"/large.bin");QVERIFY(file.open(QIODevice::WriteOnly));
-        QByteArray block(1024*1024,'x');for(int i=0;i<64;++i)QCOMPARE(file.write(block),qint64(block.size()));file.close();
+        QByteArray block(1024*1024,Qt::Uninitialized);QRandomGenerator random(20261022);
+        for(auto& byte:block)byte=static_cast<char>(random.generate()&255U);
+        for(int i=0;i<64;++i)QCOMPARE(file.write(block),qint64(block.size()));file.close();
         Window w;w.show();w.addSources({file.fileName()});w.findChild<QLineEdit*>("archive")->setText(dir.path()+"/cancel.zyph");
         w.findChild<QComboBox*>("preset")->setCurrentIndex(2);
         QTest::mouseClick(w.findChild<QPushButton*>("pack"),Qt::LeftButton);
