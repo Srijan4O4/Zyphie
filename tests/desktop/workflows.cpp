@@ -57,8 +57,10 @@ private slots:
         w.findChild<QComboBox*>("preset")->setCurrentIndex(2);
         QTest::mouseClick(w.findChild<QPushButton*>("pack"),Qt::LeftButton);
         QVERIFY(w.busy());QVERIFY(!w.findChild<QPushButton*>("pack")->isEnabled());
-        int ticks=0;QTimer heartbeat;connect(&heartbeat,&QTimer::timeout,[&]{++ticks;});heartbeat.start(1);
-        QTest::qWait(20);QVERIFY(ticks>0);QTest::mouseClick(w.findChild<QPushButton*>("cancel"),Qt::LeftButton);
+        int ticks=0;QTimer heartbeat;connect(&heartbeat,&QTimer::timeout,[&]{++ticks;});heartbeat.start(0);
+        // Observe event-loop dispatch, rather than assuming Windows timer precision.
+        QTRY_VERIFY_WITH_TIMEOUT(ticks>0,2000);heartbeat.stop();QVERIFY(w.busy());
+        QTest::mouseClick(w.findChild<QPushButton*>("cancel"),Qt::LeftButton);
         QTRY_VERIFY_WITH_TIMEOUT(!w.busy(),20000);QVERIFY(w.findChild<QLabel*>("status")->text().startsWith("Cancelled"));
         QVERIFY(!QFile::exists(dir.path()+"/cancel.zyph"));QVERIFY(QFile::exists(file.fileName()));
         QCOMPARE(QDir(dir.path()).entryList({".zyph-part-*"},QDir::AllEntries|QDir::Hidden).size(),0);
