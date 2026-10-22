@@ -2,6 +2,7 @@
 #include "zyphie/digest.hpp"
 #include "zyphie/format.hpp"
 #include <filesystem>
+#include <functional>
 #include <optional>
 #include <stop_token>
 #include <vector>
@@ -19,12 +20,31 @@ struct ArchiveEntry {
     std::optional<std::int64_t> modified;
     Digest digest{};
 };
+enum class Phase { scan, pack, verify, extract };
+struct Progress {
+    Phase phase = Phase::scan;
+    std::uint64_t bytes_done = 0, bytes_total = 0, entries_done = 0, entries_total = 0;
+    std::string path;
+};
+// Called only on the operation's caller thread. Throwing aborts before publication.
+// scan totals are unknown; byte completion does not mean final publication succeeded.
+using ProgressCallback = std::function<void(const Progress&)>;
 struct PackOptions {
     bool store = false;
     int compression_level = 3;
     std::uint32_t block_size = format::default_block;
+    unsigned threads = 1; // 1..16; at most 2*threads blocks in flight.
+    std::uint64_t working_memory_bytes = 512ULL * 1024 * 1024;
     Limits limits;
     std::stop_token cancellation;
+    ProgressCallback progress;
+};
+struct ExtractOptions {
+    // Exact case-sensitive archive paths. Directories include their descendants.
+    // Empty selects all; selected files retain their archive paths and parents.
+    std::vector<std::string> paths;
+    std::stop_token cancellation;
+    ProgressCallback progress;
 };
 class ArchiveReader {
 public:
@@ -36,9 +56,10 @@ public:
     [[nodiscard]] std::uint64_t archive_size() const noexcept;
     [[nodiscard]] std::uint64_t block_count() const noexcept;
     [[nodiscard]] std::uint64_t zstandard_blocks() const noexcept;
-    void verify(std::stop_token cancellation = {}) const;
-    // Milestone 2 publishes a new destination tree only. Existing destinations are never replaced.
+    void verify(std::stop_token cancellation = {}, ProgressCallback progress = {}) const;
+    // Publishes a new destination tree only. Existing destinations are never replaced.
     void extract(const std::filesystem::path& destination, std::stop_token cancellation = {}) const;
+    void extract(const std::filesystem::path& destination, const ExtractOptions& options) const;
 private:
     struct Impl;
     std::unique_ptr<Impl> impl_;

@@ -4,6 +4,8 @@
 #include <limits>
 #include <random>
 #include <system_error>
+#include <thread>
+#include <chrono>
 #ifdef _WIN32
 #define NOMINMAX
 #include <windows.h>
@@ -343,9 +345,10 @@ Temporary::~Temporary() {
     } catch (...) { /* Isolate failed cleanup; never turn it into deletion elsewhere. */ }
 }
 
-void publish(const fs::path& temporary, const fs::path& destination) {
+void publish(const fs::path& temporary, const fs::path& destination, std::stop_token cancellation) {
     Parent source(temporary), target(destination);
     checkpoint(Event::publish);
+    require(!cancellation.stop_requested(),ErrorCode::cancelled,"Operation cancelled");
 #ifdef _WIN32
     const auto name=target.absolute.filename().native();
     const auto length=offsetof(FILE_RENAME_INFO,FileName)+name.size()*sizeof(wchar_t);
@@ -356,13 +359,20 @@ void publish(const fs::path& temporary, const fs::path& destination) {
     std::copy(name.begin(),name.end(),rename->FileName);
     auto h=relative_open(source.handles.back(),source.absolute.filename(),DELETE,0,1,0);
     require(h!=INVALID_HANDLE_VALUE,ErrorCode::io,"Cannot open publication source");
-    IO_STATUS_BLOCK status{};
-    const auto result=NtSetInformationFile(h,&status,rename,static_cast<ULONG>(length),static_cast<FILE_INFORMATION_CLASS>(10));
-    CloseHandle(h);
-    if (result<0) {
-        const auto error = RtlNtStatusToDosError(result);
-        throw Error(error == ERROR_ALREADY_EXISTS || error == ERROR_FILE_EXISTS ? ErrorCode::destination_exists : ErrorCode::io,
-            "Cannot publish output (Windows error " + std::to_string(error) + ")");
+    struct Close { HANDLE handle; ~Close(){CloseHandle(handle);} } close{h};
+    for(unsigned attempt=0;;++attempt) {
+        require(!cancellation.stop_requested(),ErrorCode::cancelled,"Operation cancelled");
+        IO_STATUS_BLOCK status{};
+        const auto result=NtSetInformationFile(h,&status,rename,static_cast<ULONG>(length),static_cast<FILE_INFORMATION_CLASS>(10));
+        if(result>=0)break;
+        const auto error=RtlNtStatusToDosError(result);
+        // Child handles held briefly by indexers/antivirus can deny a directory rename.
+        // Every attempt retains the same pinned parents and ReplaceIfExists=FALSE.
+        if(attempt<8 && (error==ERROR_ACCESS_DENIED || error==ERROR_SHARING_VIOLATION)) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(25));continue;
+        }
+        throw Error(error==ERROR_ALREADY_EXISTS || error==ERROR_FILE_EXISTS ? ErrorCode::destination_exists : ErrorCode::io,
+            "Cannot publish output (Windows error "+std::to_string(error)+")");
     }
 #elif defined(__linux__)
     if (::syscall(SYS_renameat2, source.fd, source.absolute.filename().c_str(), target.fd, target.absolute.filename().c_str(), 1) != 0) {

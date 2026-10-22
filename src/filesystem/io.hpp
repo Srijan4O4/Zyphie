@@ -3,6 +3,7 @@
 #include <filesystem>
 #include <memory>
 #include <functional>
+#include <stop_token>
 namespace zyphie::io {
 // Internal deterministic fault seam. No environment variables or archive-controlled hooks.
 enum class Event { read, write, flush, publish, mkdir };
@@ -15,7 +16,7 @@ void set_time(const std::filesystem::path& path, std::int64_t seconds);
 std::string utf8(const std::filesystem::path& path);
 std::filesystem::path native(std::string_view path);
 void reject_links(const std::filesystem::path& path);
-void publish(const std::filesystem::path& temporary, const std::filesystem::path& destination);
+void publish(const std::filesystem::path& temporary, const std::filesystem::path& destination, std::stop_token cancellation = {});
 std::filesystem::path temporary_name(const std::filesystem::path& parent);
 class File {
 public:

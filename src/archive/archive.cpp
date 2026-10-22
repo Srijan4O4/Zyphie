@@ -2,6 +2,8 @@
 #include "zyphie/time.hpp"
 #include "filesystem/io.hpp"
 #include "compression/codec.hpp"
+#include "concurrency/pool.hpp"
+#include <deque>
 #include <algorithm>
 #include <bit>
 #include <chrono>
@@ -20,6 +22,10 @@ struct Block {
 };
 void cancelled(std::stop_token token) {
     require(!token.stop_requested(), ErrorCode::cancelled, "Operation cancelled");
+}
+void report(const ProgressCallback& callback,const Progress& progress,std::stop_token token) {
+    if(callback) callback(progress);
+    cancelled(token);
 }
 std::size_t memory_size(std::uint64_t size) {
     require(size <= std::numeric_limits<std::size_t>::max(), ErrorCode::resource_limit, "Size exceeds address space");
@@ -85,6 +91,8 @@ std::vector<Source> scan(const std::vector<fs::path>& paths, const fs::path& des
             require(total <= options.limits.total_bytes, ErrorCode::resource_limit, "Total input size limit exceeded");
         }
         result.push_back(std::move(source));
+        Progress progress; progress.entries_done=result.size(); progress.path=archive_path;
+        report(options.progress,progress,options.cancellation);
     };
     for (const auto& input : paths) {
         const auto root = absolute_clean(input); io::reject_links(root);
@@ -202,7 +210,7 @@ struct ArchiveReader::Impl {
         }
         m.end(); require(next_block == count, ErrorCode::corrupt_archive, "Unreferenced blocks");
     }
-    void decode_file(const ArchiveEntry& entry, io::File* output, std::stop_token token) const {
+    void decode_file(const ArchiveEntry& entry, io::File* output, std::stop_token token, Progress* progress=nullptr, const ProgressCallback& callback={}) const {
         Sha256 hash;
         for (std::uint64_t j=0;j<entry.block_count;++j) {
             cancelled(token); const auto& block = blocks[memory_size(entry.first_block+j)];
@@ -210,6 +218,7 @@ struct ArchiveReader::Impl {
             if (block.codec == 1) data = codec::decompress(data,block.original);
             require(sha256(data) == block.digest, ErrorCode::corrupt_archive, "Block checksum mismatch: " + entry.path);
             hash.update(data); if (output) output->write(data);
+            if(progress) { progress->bytes_done=add(progress->bytes_done,data.size()); report(callback,*progress,token); }
         }
         require(hash.finish() == entry.digest, ErrorCode::corrupt_archive, "File checksum mismatch: " + entry.path);
     }
@@ -225,41 +234,91 @@ std::uint64_t ArchiveReader::block_count() const noexcept { return impl_->blocks
 std::uint64_t ArchiveReader::zstandard_blocks() const noexcept {
     return static_cast<std::uint64_t>(std::count_if(impl_->blocks.begin(),impl_->blocks.end(),[](const Block& b){return b.codec == 1;}));
 }
-void ArchiveReader::verify(std::stop_token cancellation) const {
-    cancelled(cancellation);
+void ArchiveReader::verify(std::stop_token cancellation, ProgressCallback callback) const {
+    Progress progress; progress.phase=Phase::verify; progress.entries_total=impl_->entries.size();
+    for(const auto& entry:impl_->entries) progress.bytes_total=add(progress.bytes_total,entry.size);
+    report(callback,progress,cancellation);
     for (const auto& entry : impl_->entries) {
-        cancelled(cancellation); if (entry.type == EntryType::file) impl_->decode_file(entry,nullptr,cancellation);
+        progress.path=entry.path;
+        cancelled(cancellation);
+        if(entry.type==EntryType::file) impl_->decode_file(entry,nullptr,cancellation,&progress,callback);
+        ++progress.entries_done; report(callback,progress,cancellation);
     }
 }
 void ArchiveReader::extract(const fs::path& destination, std::stop_token cancellation) const {
+    ExtractOptions options; options.cancellation=cancellation; extract(destination,options);
+}
+void ArchiveReader::extract(const fs::path& destination, const ExtractOptions& options) const {
+    const auto cancellation=options.cancellation;
     try {
-        cancelled(cancellation); const auto final = destination_path(destination);
-        io::Temporary staging; staging.directory = true;
-        for (int attempt=0;attempt<8 && !staging.active;++attempt) {
-            staging.path = io::temporary_name(final.parent_path()); staging.active = io::create_directory(staging.path);
-        }
-        require(staging.active, ErrorCode::io, "Cannot create private extraction directory");
-
-        for (const auto& entry : impl_->entries) {
-            cancelled(cancellation); const auto path = staging.path / io::native(entry.path); io::reject_links(path);
-            if (entry.type == EntryType::directory) {
-                require(io::create_directory(path), ErrorCode::destination_exists, "Destination name collision: " + entry.path);
-            } else {
-                io::File output(path,true); impl_->decode_file(entry,&output,cancellation); output.finish(); restore_time(path,entry);
+        cancelled(cancellation);
+        const auto& entries=impl_->entries;
+        std::vector<bool> selected(entries.size(),options.paths.empty());
+        auto find=[&](std::string_view path) {
+            return std::lower_bound(entries.begin(),entries.end(),path,
+                [](const ArchiveEntry& entry,std::string_view key){return entry.path<key;});
+        };
+        for(const auto& path:options.paths) {
+            format::validate_path(path); auto it=find(path);
+            require(it!=entries.end() && it->path==path,ErrorCode::invalid_argument,"Selected path is absent: "+path);
+            selected[static_cast<std::size_t>(it-entries.begin())]=true;
+            if(it->type==EntryType::directory) {
+                const auto prefix=path+"/";
+                for(auto child=find(prefix);child!=entries.end() && child->path.starts_with(prefix);++child)
+                    selected[static_cast<std::size_t>(child-entries.begin())]=true;
             }
         }
-        for (auto it=impl_->entries.rbegin();it!=impl_->entries.rend();++it) {
-            if (it->type == EntryType::directory) restore_time(staging.path / io::native(it->path),*it);
+        // Ancestors are metadata-only selections; no unrelated sibling payload is read.
+        for(std::size_t i=entries.size();i>0;--i) if(selected[i-1]) {
+            const auto slash=entries[i-1].path.rfind('/');
+            if(slash!=std::string::npos) {
+                const auto parent=find(std::string_view(entries[i-1].path).substr(0,slash));
+                selected[static_cast<std::size_t>(parent-entries.begin())]=true;
+            }
         }
-        cancelled(cancellation); io::publish(staging.path,final); staging.active = false;
-    } catch (const fs::filesystem_error& e) { throw Error(ErrorCode::io,e.what()); }
+        Progress progress; progress.phase=Phase::extract;
+        for(std::size_t i=0;i<entries.size();++i) if(selected[i]) {
+            ++progress.entries_total; progress.bytes_total=add(progress.bytes_total,entries[i].size);
+        }
+        report(options.progress,progress,cancellation);
+        const auto final=destination_path(destination);
+        io::Temporary staging; staging.directory=true;
+        for(int attempt=0;attempt<8 && !staging.active;++attempt) {
+            staging.path=io::temporary_name(final.parent_path()); staging.active=io::create_directory(staging.path);
+        }
+        require(staging.active,ErrorCode::io,"Cannot create private extraction directory");
+        for(std::size_t i=0;i<entries.size();++i) if(selected[i]) {
+            const auto& entry=entries[i]; progress.path=entry.path;
+            cancelled(cancellation); const auto path=staging.path/io::native(entry.path);
+            if(entry.type==EntryType::directory) {
+                require(io::create_directory(path),ErrorCode::destination_exists,"Destination name collision: "+entry.path);
+            } else {
+                io::File output(path,true); impl_->decode_file(entry,&output,cancellation,&progress,options.progress);
+                output.finish(); restore_time(path,entry);
+            }
+            ++progress.entries_done; report(options.progress,progress,cancellation);
+        }
+        for(std::size_t i=entries.size();i>0;--i) if(selected[i-1] && entries[i-1].type==EntryType::directory)
+            restore_time(staging.path/io::native(entries[i-1].path),entries[i-1]);
+        cancelled(cancellation); io::publish(staging.path,final,cancellation); staging.active=false;
+    } catch(const fs::filesystem_error& e) { throw Error(ErrorCode::io,e.what()); }
 }
+
 void ArchiveWriter::pack(const std::vector<fs::path>& sources, const fs::path& destination, const PackOptions& options) {
     try {
         cancelled(options.cancellation);
         require(options.block_size > 0 && options.block_size <= format::max_block, ErrorCode::invalid_argument, "Invalid block size");
         require(options.compression_level >= 1 && options.compression_level <= 19, ErrorCode::invalid_argument, "Compression level must be 1..19");
+        require(options.threads>=1 && options.threads<=16,ErrorCode::invalid_argument,"Thread count must be 1..16");
+        const auto buffers=multiply(4ULL*options.threads+2,options.block_size);
+        const auto workspace=options.store ? 0 : multiply(options.threads,codec::workspace_bound(options.block_size,options.compression_level));
+        require(add(buffers,workspace)<=options.working_memory_bytes,ErrorCode::resource_limit,"Worker/block configuration exceeds working-memory budget");
         const auto final = destination_path(destination); auto scanned = scan(sources,final,options);
+        Progress progress;progress.phase=Phase::pack;progress.entries_total=scanned.size();
+        for(const auto& source:scanned)progress.bytes_total=add(progress.bytes_total,source.entry.size);
+        report(options.progress,progress,options.cancellation);
+        std::unique_ptr<Pool> pool;
+        if(options.threads>1)pool=std::make_unique<Pool>(options.threads);
         io::Temporary staging; std::unique_ptr<io::File> output;
         for (int attempt=0;attempt<8 && !output;++attempt) {
             staging.path = io::temporary_name(final.parent_path());
@@ -273,30 +332,51 @@ void ArchiveWriter::pack(const std::vector<fs::path>& sources, const fs::path& d
         std::vector<Block> blocks;
         for (auto& source : scanned) {
             cancelled(options.cancellation); auto& entry = source.entry;
-            if (entry.type == EntryType::directory) continue;
+            progress.path=entry.path;
+            if (entry.type == EntryType::directory) { ++progress.entries_done; report(options.progress,progress,options.cancellation); continue; }
             io::reject_links(source.native); io::File input(source.native);
             require(input.size() == entry.size && fs::last_write_time(source.native) == source.stamp,
                 ErrorCode::source_changed, "Source changed before reading: " + entry.path);
-            entry.first_block = blocks.size(); Sha256 file_hash;
-            for (std::uint64_t offset=0;offset<entry.size;) {
+            entry.first_block=blocks.size(); Sha256 file_hash;
+            struct Encoded { Block block; Bytes bytes; };
+            std::deque<std::future<Encoded>> pending;
+            const auto capacity=options.threads==1 ? 1U : 2*options.threads;
+            auto consume=[&] {
                 cancelled(options.cancellation);
-                require(blocks.size() < options.limits.blocks, ErrorCode::resource_limit, "Block count limit exceeded");
-                metadata_size = add(metadata_size,56);
-                require(metadata_size <= options.limits.metadata_bytes, ErrorCode::resource_limit, "Metadata limit exceeded");
-                const auto size = static_cast<std::uint32_t>((std::min)(entry.size-offset,std::uint64_t{options.block_size}));
-                auto raw = input.read(offset,size); file_hash.update(raw);
-                Block block; block.offset = output->position(); block.original = size; block.digest = sha256(raw);
-                auto encoded = options.store ? Bytes{} : codec::compress(raw,options.compression_level);
-                if (!options.store && encoded.size() < raw.size()) { block.codec = 1; }
-                else encoded = std::move(raw);
-                block.stored = static_cast<std::uint32_t>(encoded.size());
-                require(add(add(output->position(),encoded.size()),add(metadata_size,128)) <= options.limits.archive_bytes,
-                    ErrorCode::resource_limit, "Archive size limit exceeded");
-                output->write(encoded); blocks.push_back(block); offset += size;
+                auto result=pending.front().get(); pending.pop_front();
+                cancelled(options.cancellation);
+                result.block.offset=output->position();
+                result.block.stored=static_cast<std::uint32_t>(result.bytes.size());
+                require(add(add(output->position(),result.bytes.size()),add(metadata_size,128))<=options.limits.archive_bytes,
+                    ErrorCode::resource_limit,"Archive size limit exceeded");
+                output->write(result.bytes); blocks.push_back(result.block);
+                progress.bytes_done=add(progress.bytes_done,result.block.original);
+                report(options.progress,progress,options.cancellation);
+            };
+            for(std::uint64_t offset=0;offset<entry.size;) {
+                cancelled(options.cancellation);
+                require(add(blocks.size(),pending.size())<options.limits.blocks,ErrorCode::resource_limit,"Block count limit exceeded");
+                metadata_size=add(metadata_size,56);
+                require(metadata_size<=options.limits.metadata_bytes,ErrorCode::resource_limit,"Metadata limit exceeded");
+                const auto size=static_cast<std::uint32_t>((std::min)(entry.size-offset,std::uint64_t{options.block_size}));
+                auto raw=input.read(offset,size);file_hash.update(raw);
+                auto encode=[raw=std::move(raw),size,store=options.store,level=options.compression_level,token=options.cancellation]() mutable {
+                    cancelled(token);Encoded result;result.block.original=size;result.block.digest=sha256(raw);
+                    if(!store)result.bytes=codec::compress(raw,level);
+                    if(!store && result.bytes.size()<raw.size())result.block.codec=1;
+                    else result.bytes=std::move(raw);
+                    cancelled(token);return result;
+                };
+                if(pool)pending.push_back(pool->submit(std::move(encode)));
+                else {std::promise<Encoded> result;result.set_value(encode());pending.push_back(result.get_future());}
+                offset+=size;
+                if(pending.size()>=capacity)consume();
             }
+            while(!pending.empty())consume();
             require(input.size() == entry.size && fs::last_write_time(source.native) == source.stamp,
                 ErrorCode::source_changed, "Source changed while reading: " + entry.path);
             entry.block_count = blocks.size()-entry.first_block; entry.digest = file_hash.finish();
+            ++progress.entries_done; report(options.progress,progress,options.cancellation);
         }
         for (const auto& source : scanned) require(fs::last_write_time(source.native) == source.stamp,
             ErrorCode::source_changed, "Source tree changed during archiving: " + source.entry.path);
@@ -307,8 +387,8 @@ void ArchiveWriter::pack(const std::vector<fs::path>& sources, const fs::path& d
         require(footer.archive_size <= options.limits.archive_bytes, ErrorCode::resource_limit, "Archive size limit exceeded");
         Sha256 hash; hash.update(header); hash.update(manifest); hash.update(index); footer.metadata_digest = hash.finish();
         output->write(manifest); output->write(index); output->write(format::footer(footer)); output->finish(); output.reset();
-        { ArchiveReader check(staging.path,options.limits); check.verify(options.cancellation); }
-        cancelled(options.cancellation); io::publish(staging.path,final); staging.active = false;
+        { ArchiveReader check(staging.path,options.limits); check.verify(options.cancellation,options.progress); }
+        cancelled(options.cancellation); io::publish(staging.path,final,options.cancellation); staging.active = false;
     } catch (const fs::filesystem_error& e) { throw Error(ErrorCode::io,e.what()); }
 }
 }

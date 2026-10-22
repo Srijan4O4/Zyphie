@@ -64,3 +64,16 @@ additional release checks. No performance or release-security claim is made.
 
 Validated milestones are promoted to main without rewriting history. No release
 tag until milestone 6 acceptance is genuinely satisfied.
+
+## Milestone 4 checkpoint — in progress
+
+Bounded parallel compression, selected extraction, phase-local progress callbacks,
+CLI threads/memory/select/progress options and Ctrl+C cancellation are implemented.
+Local Debug/Release passed 45/45 tests; an actual hidden Windows CLI Ctrl+C test
+returned exit 7 with original data intact and no published/staging output.
+Hosted validation and reproducible memory/performance measurements are pending.
+The benchmark harness compares the retained M3 executable, serial/parallel presets,
+STORE, ZIP/Deflate, 7-Zip/LZMA2 and native Zstandard on generated inputs. No measured
+performance claim until results and byte-equality checks are recorded.
+
+A transient Windows publication failure recurred during M4 validation. A bounded, cancellation-aware native rename retry and a real sharing-conflict regression were added; the Release suite now passes 46/46. No overwrite fallback was introduced.

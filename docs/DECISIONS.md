@@ -102,3 +102,25 @@ to reach structural checks beneath checksums. Fixed seeds and finite run budgets
 make the initial campaign reproducible; absence of findings is not a proof.
 
 Windows cleanup also uses handle-relative enumeration/deletion, including reparse objects. The NT API declaration is provided for MSVC SDKs that omit it; the ntdll import library supplies the existing OS export.
+
+## ADR-011 — Bounded ordered compression and selection
+
+Milestone 4 retains V1 block ordering. One coordinator scans/reads/hashes files,
+admits at most 2*threads blocks (one in serial mode), and consumes futures in input
+order. Fixed jthread workers own buffers and codec calls only. They never touch
+archive handles or callbacks. Worker exceptions travel via packaged_task futures;
+shutdown joins active work and discards queued work. Counts are limited to 1..16.
+Working-memory admission uses a conservative block-buffer allowance plus pinned
+Zstandard's context-size estimator; this excludes metadata and is not an RSS cap.
+
+Selective extraction validates all metadata, binary-searches exact requested
+archive paths, includes directory descendants and required ancestors, and decodes
+only selected payloads. Missing names fail before staging; duplicate selections
+are deduplicated. Unselected payload integrity is explicitly not claimed.
+Progress is phase-local and delivered on the caller thread; scan totals are
+unknown. Completion of bytes is not publication success. Callback exceptions or
+cancellation abort before publication. CLI signal handlers only set a lock-free
+atomic flag; a small monitor requests cooperative cancellation outside the handler.
+One codec call is not preempted; cancellation is bounded by a block operation.
+
+Windows publication now retries only access-denied/sharing errors up to eight times at 25 ms intervals, retaining pinned parents and no-replace semantics. A real child-handle sharing test reproduces the condition. Each retry checks cancellation; permanent errors still fail explicitly.

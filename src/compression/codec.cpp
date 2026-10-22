@@ -1,7 +1,15 @@
 #include "compression/codec.hpp"
+#define ZSTD_STATIC_LINKING_ONLY
 #include <zstd.h>
 #include <memory>
 namespace zyphie::codec {
+std::uint64_t workspace_bound(std::uint32_t block_size, int level) {
+    auto parameters=ZSTD_getCParams(level,block_size,0);
+    parameters.windowLog=24; // Same explicit maximum used by compress().
+    const auto estimate=ZSTD_estimateCCtxSize_usingCParams(parameters);
+    require(!ZSTD_isError(estimate),ErrorCode::invalid_argument,"Cannot estimate codec workspace");
+    return estimate;
+}
 binary::Bytes compress(std::span<const std::uint8_t> bytes, int level) {
     std::unique_ptr<ZSTD_CCtx, decltype(&ZSTD_freeCCtx)> context(ZSTD_createCCtx(), ZSTD_freeCCtx);
     require(context != nullptr, ErrorCode::resource_limit, "Cannot allocate compression context");

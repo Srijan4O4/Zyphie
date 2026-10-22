@@ -54,6 +54,8 @@ jobs:
           if errorlevel 1 exit /b %errorlevel%
           ctest --preset ${{ matrix.preset }}
           if errorlevel 1 exit /b %errorlevel%
+          python tests/integration/cancel.py build/${{ matrix.preset }}/zyph.exe build/cancel
+          if errorlevel 1 exit /b %errorlevel%
       - name: Configure, build and test (Linux)
         if: runner.os == 'Linux'
         shell: bash
@@ -61,6 +63,7 @@ jobs:
           cmake --preset ${{ matrix.preset }}
           cmake --build --preset ${{ matrix.preset }}
           ctest --preset ${{ matrix.preset }}
+          python3 tests/integration/cancel.py build/${{ matrix.preset }}/zyph build/cancel
   fuzz:
     runs-on: ubuntu-24.04
     timeout-minutes: 30

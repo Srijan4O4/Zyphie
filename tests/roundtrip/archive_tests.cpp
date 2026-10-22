@@ -6,6 +6,7 @@
 #include <fstream>
 #include <random>
 #include <set>
+#include <map>
 
 using namespace zyphie;
 namespace fs=std::filesystem;
@@ -353,3 +354,83 @@ TEST(Security, ForgedPortableNamesNeverEscapeOrPublish) {
         EXPECT_FALSE(fs::exists(w.root/"out"));no_staging(w.root);
     }
 }
+
+#include "concurrency/pool.hpp"
+TEST(Streaming, ParallelOutputIsDeterministicAndProgressIsOrdered) {
+    Workspace w;fs::create_directories(w.root/"source"/"empty");
+    binary::Bytes data(512*1024);std::mt19937 random(2026);for(auto& byte:data)byte=static_cast<std::uint8_t>(random());
+    write(w.root/"source"/"random",data);write(w.root/"source"/"repeat",binary::Bytes(400000,'x'));
+    PackOptions single;single.block_size=16384;ArchiveWriter::pack({w.root/"source"},w.root/"one",single);
+    PackOptions parallel=single;parallel.threads=4;const auto caller=std::this_thread::get_id();
+    std::map<Phase,Progress> latest;
+    parallel.progress=[&](const Progress& p){
+        EXPECT_EQ(std::this_thread::get_id(),caller);auto& previous=latest[p.phase];
+        EXPECT_GE(p.bytes_done,previous.bytes_done);EXPECT_GE(p.entries_done,previous.entries_done);
+        if(p.phase!=Phase::scan){EXPECT_LE(p.bytes_done,p.bytes_total);EXPECT_LE(p.entries_done,p.entries_total);}previous=p;
+    };
+    ArchiveWriter::pack({w.root/"source"},w.root/"four",parallel);
+    EXPECT_EQ(read(w.root/"one"),read(w.root/"four"));
+    for(auto phase:{Phase::pack,Phase::verify}){EXPECT_EQ(latest[phase].bytes_done,latest[phase].bytes_total);EXPECT_EQ(latest[phase].entries_done,latest[phase].entries_total);}
+    ArchiveReader reader(w.root/"four");reader.extract(w.root/"out");compare_tree(w.root/"source",w.root/"out"/"source");
+}
+TEST(Streaming, WorkerExceptionsPropagateAndPoolRemainsUsable) {
+    Pool pool(2);auto bad=pool.submit([]()->int{throw Error(ErrorCode::io,"worker failed");});
+    EXPECT_THROW((void)bad.get(),Error);auto good=pool.submit([]{return 42;});EXPECT_EQ(good.get(),42);
+}
+TEST(Streaming, RejectsExcessWorkersAndWorkingMemoryBeforeWriting) {
+    Workspace w;write(w.root/"source",{1});PackOptions options;options.threads=17;
+    EXPECT_THROW(ArchiveWriter::pack({w.root/"source"},w.root/"out",options),Error);
+    options.threads=0;
+    EXPECT_THROW(ArchiveWriter::pack({w.root/"source"},w.root/"out",options),Error);
+    options.threads=4;options.working_memory_bytes=1;
+    error_code([&]{ArchiveWriter::pack({w.root/"source"},w.root/"out",options);},ErrorCode::resource_limit);
+    EXPECT_FALSE(fs::exists(w.root/"out"));no_staging(w.root);
+}
+TEST(Streaming, ParallelCancellationAndCallbackFailureCleanStaging) {
+    Workspace w;write(w.root/"source",binary::Bytes(2*1024*1024,'x'));
+    PackOptions options;options.threads=4;options.block_size=16384;std::stop_source stop;options.cancellation=stop.get_token();
+    options.progress=[&](const Progress& p){if(p.phase==Phase::pack && p.bytes_done>0)stop.request_stop();};
+    error_code([&]{ArchiveWriter::pack({w.root/"source"},w.root/"cancel",options);},ErrorCode::cancelled);
+    no_staging(w.root);EXPECT_FALSE(fs::exists(w.root/"cancel"));
+    options.cancellation={};options.progress=[](const Progress& p){if(p.phase==Phase::pack && p.bytes_done>0)throw std::runtime_error("callback failure");};
+    EXPECT_THROW(ArchiveWriter::pack({w.root/"source"},w.root/"throw",options),std::runtime_error);
+    no_staging(w.root);EXPECT_FALSE(fs::exists(w.root/"throw"));
+}
+TEST(Streaming, SelectionSkipsUnrelatedCorruptPayloadAndKeepsParents) {
+    Workspace w;HookReset reset;fs::create_directories(w.root/"source"/"empty");
+    write(w.root/"source"/"a",binary::Bytes(4096,'a'));write(w.root/"source"/"b",{4,5,6});
+    PackOptions pack;pack.store=true;pack.block_size=256;ArchiveWriter::pack({w.root/"source"},w.root/"archive",pack);
+    auto bytes=read(w.root/"archive");bytes[32]^=1;write(w.root/"corrupt",bytes);ArchiveReader reader(w.root/"corrupt");
+    ExtractOptions options;options.paths={"source/b","source/empty","source/b"};Progress last;
+    options.progress=[&](const Progress& p){last=p;};int reads=0;
+    io::test_hook=[&](io::Event e){if(e==io::Event::read)++reads;};reader.extract(w.root/"out",options);io::test_hook={};
+    EXPECT_EQ(reads,1);EXPECT_EQ(read(w.root/"out"/"source"/"b"),(binary::Bytes{4,5,6}));
+    EXPECT_TRUE(fs::is_directory(w.root/"out"/"source"/"empty"));EXPECT_FALSE(fs::exists(w.root/"out"/"source"/"a"));
+    EXPECT_EQ(last.bytes_done,3);EXPECT_EQ(last.bytes_total,3);EXPECT_EQ(last.entries_done,last.entries_total);
+    EXPECT_THROW(reader.verify(),Error);options.paths={"missing"};
+    EXPECT_THROW(reader.extract(w.root/"missing",options),Error);
+    options.paths={"../outside"};
+    EXPECT_THROW(reader.extract(w.root/"unsafe",options),Error);
+    EXPECT_FALSE(fs::exists(w.root/"missing"));EXPECT_FALSE(fs::exists(w.root/"unsafe"));no_staging(w.root);
+}
+TEST(Streaming, DirectorySelectionIncludesOnlyItsSubtree) {
+    Workspace w;fs::create_directories(w.root/"source"/"nested"/"empty");write(w.root/"source"/"other",{9});write(w.root/"source"/"nested"/"file",{1});
+    ArchiveWriter::pack({w.root/"source"},w.root/"archive");ArchiveReader reader(w.root/"archive");ExtractOptions options;options.paths={"source/nested"};
+    reader.extract(w.root/"out",options);EXPECT_TRUE(fs::is_directory(w.root/"out"/"source"/"nested"/"empty"));
+    EXPECT_EQ(read(w.root/"out"/"source"/"nested"/"file"),binary::Bytes{1});EXPECT_FALSE(fs::exists(w.root/"out"/"source"/"other"));
+}
+
+#ifdef _WIN32
+TEST(Streaming, PublicationToleratesTransientChildSharingWithoutOverwriting) {
+    Workspace w;HookReset reset;ArchiveReader reader(fs::path(ZYPH_FIXTURES)/"store-abc.zyph");std::jthread holder;
+    io::test_hook=[&](io::Event event){
+        if(event!=io::Event::publish)return;
+        for(const auto& item:fs::directory_iterator(w.root)) if(item.path().filename().string().starts_with(".zyph-part-")) {
+            HANDLE h=CreateFileW((item.path()/"abc.txt").c_str(),GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,0,nullptr);
+            ASSERT_NE(h,INVALID_HANDLE_VALUE);
+            holder=std::jthread([h]{std::this_thread::sleep_for(std::chrono::milliseconds(80));CloseHandle(h);});
+        }
+    };
+    reader.extract(w.root/"out");io::test_hook={};EXPECT_EQ(read(w.root/"out"/"abc.txt"),(binary::Bytes{'a','b','c'}));
+}
+#endif

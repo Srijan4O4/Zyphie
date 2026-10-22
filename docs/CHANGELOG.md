@@ -31,3 +31,9 @@
 - Add bounded Linux Clang archive/path fuzz campaigns with ASan/UBSan.
 
 - Validated local/hosted Windows 39/39 and Linux sanitizer 37/37; bounded fuzz campaigns passed 20,000 archive and 100,000 path iterations (run 39723324891).
+
+## Milestone 4 — in progress
+
+- Add a bounded ordered worker pipeline, caller-thread progress and cooperative CLI cancellation.
+- Add indexed selective file/subtree extraction and worker/memory CLI options.
+- Add deterministic parallel/selection/cancellation tests and a reproducible benchmark runner.
