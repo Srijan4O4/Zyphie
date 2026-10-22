@@ -20,3 +20,4 @@
 - Added round-trip, corruption, bounds, output-safety and real CLI integration tests.
 - Installed verified project-local portable tools; no system compiler replacement.
 - Security hardening, selective extraction, parallelism, GUI and release remain pending.
+- Fixed MSVC filesystem clock conversion and clarified conditional test assertions for warning-free GCC builds.

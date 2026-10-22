@@ -45,7 +45,7 @@ void compare_tree(const fs::path& input,const fs::path& output) {
         const auto relative=item.path().lexically_relative(input); expected.insert(relative);
         ASSERT_TRUE(fs::exists(output/relative));
         EXPECT_EQ(item.is_directory(),fs::is_directory(output/relative));
-        if (item.is_regular_file()) EXPECT_EQ(read(item.path()),read(output/relative)) << relative;
+        if (item.is_regular_file()) { EXPECT_EQ(read(item.path()),read(output/relative)) << relative; }
         const auto before=std::chrono::floor<std::chrono::seconds>(to_system_time(fs::last_write_time(item.path())));
         const auto after=std::chrono::floor<std::chrono::seconds>(to_system_time(fs::last_write_time(output/relative)));
         EXPECT_EQ(before,after) << relative;
@@ -68,7 +68,7 @@ TEST_P(RoundTrip, MixedNestedUnicodeEmptyAndMultiBlockData) {
     const auto archive=w.root/"roundtrip.zyph";
     ArchiveWriter::pack({source},archive,options);
     ArchiveReader reader(archive); EXPECT_EQ(reader.entries().size(),7);
-    EXPECT_GT(reader.block_count(),10); if (GetParam()) EXPECT_EQ(reader.zstandard_blocks(),0); else EXPECT_GT(reader.zstandard_blocks(),0);
+    EXPECT_GT(reader.block_count(),10); if (GetParam()) { EXPECT_EQ(reader.zstandard_blocks(),0); } else { EXPECT_GT(reader.zstandard_blocks(),0); }
     reader.verify(); reader.extract(w.root/"output"); compare_tree(source,w.root/"output"/source.filename());
     EXPECT_EQ(read(source/"repeat.bin"),repeated); EXPECT_EQ(read(source/"random.bin"),random_bytes);
 }
@@ -79,11 +79,11 @@ TEST(Archive, ReadsIndependentGoldenArchives) {
     for (const auto* name:{"empty.zyph","empty-file.zyph","empty-directory.zyph","store-abc.zyph","zstd-rle.zyph"}) {
         ArchiveReader reader(fs::path(ZYPH_FIXTURES)/name); reader.verify();
         const auto destination=w.root/name; reader.extract(destination);
-        if (std::string_view(name)=="empty.zyph") EXPECT_TRUE(fs::is_empty(destination));
-        if (std::string_view(name)=="empty-file.zyph") EXPECT_EQ(fs::file_size(destination/"empty.txt"),0);
-        if (std::string_view(name)=="empty-directory.zyph") EXPECT_TRUE(fs::is_directory(destination/"empty-dir"));
-        if (std::string_view(name)=="store-abc.zyph") EXPECT_EQ(read(destination/"abc.txt"),(binary::Bytes{'a','b','c'}));
-        if (std::string_view(name)=="zstd-rle.zyph") EXPECT_EQ(read(destination/"repeat.txt"),binary::Bytes(64,'a'));
+        if (std::string_view(name)=="empty.zyph") { EXPECT_TRUE(fs::is_empty(destination)); }
+        if (std::string_view(name)=="empty-file.zyph") { EXPECT_EQ(fs::file_size(destination/"empty.txt"),0); }
+        if (std::string_view(name)=="empty-directory.zyph") { EXPECT_TRUE(fs::is_directory(destination/"empty-dir")); }
+        if (std::string_view(name)=="store-abc.zyph") { EXPECT_EQ(read(destination/"abc.txt"),(binary::Bytes{'a','b','c'})); }
+        if (std::string_view(name)=="zstd-rle.zyph") { EXPECT_EQ(read(destination/"repeat.txt"),binary::Bytes(64,'a')); }
     }
 }
 TEST(Archive, MultipleFilesAndStoreFallback) {

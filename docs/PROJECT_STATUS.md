@@ -51,3 +51,5 @@ hash and CI evidence will be recorded after validation. Retain Git history; no
 release tag until all release gates genuinely pass.
 
 The first milestone 2 hosted run (39672445555) passed Linux sanitizers but exposed an MSVC filesystem-clock conversion API mismatch. A shared conversion helper fixes it; hosted rerun is required before completion.
+
+Checkpoint 63c9af3 passed all 27 tests in hosted Windows Debug/Release and Linux ASan/UBSan (run 39721176288). GCC test-macro brace warnings are being cleaned up before the final checkpoint.
