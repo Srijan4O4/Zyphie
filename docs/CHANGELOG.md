@@ -21,3 +21,4 @@
 - Installed verified project-local portable tools; no system compiler replacement.
 - Security hardening, selective extraction, parallelism, GUI and release remain pending.
 - Fixed MSVC filesystem clock conversion and clarified conditional test assertions for warning-free GCC builds.
+- Milestones 1 and 2 validated: final engine suite passed 27/27 locally in Debug/Release and in hosted MSVC Debug/Release plus Linux ASan/UBSan (run 39721579235).
