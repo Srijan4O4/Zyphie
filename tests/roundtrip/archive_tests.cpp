@@ -428,7 +428,9 @@ TEST(Streaming, PublicationToleratesTransientChildSharingWithoutOverwriting) {
         for(const auto& item:fs::directory_iterator(w.root)) if(item.path().filename().string().starts_with(".zyph-part-")) {
             HANDLE h=CreateFileW((item.path()/"abc.txt").c_str(),GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,0,nullptr);
             ASSERT_NE(h,INVALID_HANDLE_VALUE);
-            holder=std::jthread([h]{std::this_thread::sleep_for(std::chrono::milliseconds(80));CloseHandle(h);});
+            HANDLE directory=CreateFileW(item.path().c_str(),GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_EXISTING,FILE_FLAG_BACKUP_SEMANTICS,nullptr);
+            ASSERT_NE(directory,INVALID_HANDLE_VALUE);
+            holder=std::jthread([h,directory]{std::this_thread::sleep_for(std::chrono::milliseconds(80));CloseHandle(h);CloseHandle(directory);});
         }
     };
     reader.extract(w.root/"out");io::test_hook={};EXPECT_EQ(read(w.root/"out"/"abc.txt"),(binary::Bytes{'a','b','c'}));

@@ -77,3 +77,5 @@ STORE, ZIP/Deflate, 7-Zip/LZMA2 and native Zstandard on generated inputs. No mea
 performance claim until results and byte-equality checks are recorded.
 
 A transient Windows publication failure recurred during M4 validation. A bounded, cancellation-aware native rename retry and a real sharing-conflict regression were added; the Release suite now passes 46/46. No overwrite fallback was introduced.
+
+The first M4 benchmark run stopped during a Windows publication-source open failure. Its incomplete data is not accepted as a completed benchmark. The native publication open now permits compatible readers/writers while excluding deletion and retries only bounded sharing/access errors. The directory-handle regression and both local build configurations are being rerun before fresh measurements.

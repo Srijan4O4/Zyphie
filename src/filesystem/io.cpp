@@ -357,8 +357,17 @@ void publish(const fs::path& temporary, const fs::path& destination, std::stop_t
     rename->ReplaceIfExists=FALSE;rename->RootDirectory=target.handles.back();
     rename->FileNameLength=static_cast<DWORD>(name.size()*sizeof(wchar_t));
     std::copy(name.begin(),name.end(),rename->FileName);
-    auto h=relative_open(source.handles.back(),source.absolute.filename(),DELETE,0,1,0);
-    require(h!=INVALID_HANDLE_VALUE,ErrorCode::io,"Cannot open publication source");
+    HANDLE h=INVALID_HANDLE_VALUE;
+    for(unsigned attempt=0;;++attempt) {
+        require(!cancellation.stop_requested(),ErrorCode::cancelled,"Operation cancelled");
+        h=relative_open(source.handles.back(),source.absolute.filename(),DELETE,FILE_SHARE_READ|FILE_SHARE_WRITE,1,0);
+        if(h!=INVALID_HANDLE_VALUE)break;
+        const auto error=GetLastError();
+        if(attempt<8 && (error==ERROR_ACCESS_DENIED || error==ERROR_SHARING_VIOLATION)) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(25));continue;
+        }
+        throw Error(ErrorCode::io,"Cannot open publication source (Windows error "+std::to_string(error)+")");
+    }
     struct Close { HANDLE handle; ~Close(){CloseHandle(handle);} } close{h};
     for(unsigned attempt=0;;++attempt) {
         require(!cancellation.stop_requested(),ErrorCode::cancelled,"Operation cancelled");

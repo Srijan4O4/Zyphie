@@ -96,6 +96,36 @@ with (corpus / "repeated.txt").open("xb") as out:
 (corpus / "compressed.zlib").write_bytes(zlib.compress(block))
 for index in range(256):
     (corpus / f"tiny-{index:04}.cpp").write_text(f"// generated {index}\nint value_{index}() {{ return {index}; }}\n")
+# Include real tracked C++ sources and generated structured documents/media.
+repo = Path(__file__).resolve().parents[2]
+tracked = subprocess.check_output(["git", "ls-files", "*.cpp", "*.hpp", "CMakeLists.txt"], cwd=repo, text=True).splitlines()
+for relative in tracked:
+    target = corpus / "cpp-source" / relative
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_bytes((repo / relative).read_bytes())
+(corpus / "table.csv").write_text("id,value,description\n" + "".join(f"{i},{i*17},generated row {i}\n" for i in range(10000)))
+(corpus / "data.json").write_text(json.dumps([{"id": i, "name": f"entry-{i}", "enabled": i % 2 == 0} for i in range(5000)]))
+(corpus / "notes.md").write_text(("# Generated benchmark notes\n\nLossless archives preserve exact bytes.\n" * 1000))
+(corpus / "app.ts").write_text("".join(f"export const item{i}: number = {i};\n" for i in range(2000)))
+import struct
+raw_pixels = b"".join(b"\0" + rng.randbytes(512 * 3) for _ in range(512))
+def png_chunk(kind, data):
+    return struct.pack(">I", len(data)) + kind + data + struct.pack(">I", zlib.crc32(kind + data))
+(corpus / "image.png").write_bytes(b"\x89PNG\r\n\x1a\n" + png_chunk(b"IHDR", struct.pack(">IIBBBBB", 512, 512, 8, 2, 0, 0, 0)) +
+                                  png_chunk(b"IDAT", zlib.compress(raw_pixels)) + png_chunk(b"IEND", b""))
+content = b"BT /F1 12 Tf 72 720 Td (Generated Zyphie benchmark document) Tj ET"
+objects = [b"<< /Type /Catalog /Pages 2 0 R >>", b"<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+           b"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>",
+           b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>", b"<< /Length " + str(len(content)).encode() + b" >>\nstream\n" + content + b"\nendstream"]
+pdf = bytearray(b"%PDF-1.4\n"); offsets = [0]
+for index, value in enumerate(objects, 1):
+    offsets.append(len(pdf)); pdf += f"{index} 0 obj\n".encode() + value + b"\nendobj\n"
+xref = len(pdf); pdf += f"xref\n0 {len(offsets)}\n0000000000 65535 f \n".encode()
+for offset in offsets[1:]: pdf += f"{offset:010d} 00000 n \n".encode()
+pdf += f"trailer\n<< /Size {len(offsets)} /Root 1 0 R >>\nstartxref\n{xref}\n%%EOF\n".encode()
+(corpus / "document.pdf").write_bytes(pdf)
+metadata["source_revision"] = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=repo, text=True).strip()
+
 for path in corpus.rglob("*"): os.utime(path, (1700000000, 1700000000))
 os.utime(corpus, (1700000000, 1700000000))
 expected = manifest(corpus); input_bytes = sum(item["size"] for item in expected.values())
