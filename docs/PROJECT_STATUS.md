@@ -2,90 +2,72 @@
 
 ## Current milestone
 
-Milestones 0–4 complete. Next: milestone 5, Qt 6 Widgets desktop flows using the
-existing Qt-free core. This remains a pre-release CLI/engine, not a V1 release.
+Milestones 0–6 validated for Zyphie V1. The product includes a native C++20 engine,
+CLI, Qt 6 Widgets desktop and portable Windows x64 package. V2–V4 are future
+roadmap work, not part of the completed V1 scope. Source license: MIT, selected
+by the owner. Dependencies retain their own notices and licenses.
 
 ## Validated checkpoints
 
-- M1: a0feaf7; 11/11 local Debug/Release plus hosted Windows/Linux.
-  https://github.com/Srijan4O4/Zyphie/actions/runs/39670303400
-- M2: d5b4204; 27/27 local Debug/Release and hosted Windows/Linux.
-  https://github.com/Srijan4O4/Zyphie/actions/runs/39721579235
-- M3: 3ff03b639303b607446227016bf13d6aa535d83e, documented in 65c8b3b.
-  Local/hosted Windows Debug/Release 39/39; Linux ASan/UBSan 37/37.
-  Archive/path fuzz campaigns: 20,000/100,000 iterations, seed 20261022.
-  https://github.com/Srijan4O4/Zyphie/actions/runs/39723324891
-- M4 source: c51687144b9ac5ac8086f15cf472f1e3b203a201.
-  Local LLVM-MinGW Debug/Release and hosted MSVC Debug/Release: 46/46 each.
-  Hosted Linux ASan/UBSan: 43/43. Three tests are Windows-specific.
-  Actual CLI Ctrl+C/SIGINT tests passed in all three hosted build jobs; exit 7,
-  unchanged source, no final or staging output. Archive/path fuzz campaigns
-  completed 20,000/100,000 iterations. Final logs contained no compiler warnings,
-  sanitizer findings or fuzz crashes.
-  https://github.com/Srijan4O4/Zyphie/actions/runs/39787815489
+- M1 a0feaf7: 11/11 local and hosted tests (run 39670303400).
+- M2 d5b4204: 27/27 local and hosted tests (run 39721579235).
+- M3 3ff03b6 / documentation 65c8b3b: 39/39 Windows, 37/37 Linux,
+  20,000 archive / 100,000 path fuzz iterations (run 39723324891).
+- M4 c516871 / documentation 0eb1566: 46/46 Windows, 43/43 Linux,
+  fuzz/signal tests, 156 benchmark operations including >4 GiB (run 39787815489).
+- M5 desktop c16134d; V1 product/version 44ecb00; final test correction cdb86d7.
+  Final hosted run: https://github.com/Srijan4O4/Zyphie/actions/runs/39828853138
+  MSVC Debug/Release 47/47 each plus ten extra GUI repetitions each; Linux
+  ASan/UBSan 43/43; actual Ctrl+C/SIGINT checks; archive/path fuzz 20,000/100,000.
+  No compiler warnings, sanitizer findings or fuzz crashes in final logs.
+- M6: clean committed-source build 47/47, production BUILD_TESTING=OFF build,
+  relocated source-inclusive package with clean PATH, all golden archives and
+  byte-equal round trip, responsive production GUI and normal close. Final
+  production benchmark: 144 process operations, three repetitions, all verified.
 
-## Implemented
+Full evidence map, failure diagnosis and scope: RELEASE_VALIDATION.md. Package
+manifest and SHA256SUMS identify distributed binaries. Binaries and large source
+bundles are release assets, not Git-tracked files. Main receives validated state
+by fast-forward only; no shared history has been rewritten.
 
-Exact V1 layout, checked serialization, SHA-256, golden archives, STORE/Zstandard,
-indexed listing, complete verification and safe staged extraction. M3 adds native
-handle-relative operations, private staging permissions, no-replace publication
-and adversarial race/fault/corruption/path/resource tests.
+## Delivered behavior
 
-M4 adds bounded ordered compression with 1–16 workers, conservative working-memory
-admission, caller-thread phase progress, cooperative cancellation and indexed
-file/subtree selection. CLI exposes threads, memory, progress and selection.
-Selected extraction validates all metadata but does not verify unselected payloads.
-Serial and parallel output equality, worker failure propagation, cancellation,
-callback failure and selective payload reads have regression coverage.
+V1 layout/specification, checked serialization, SHA-256, golden archives,
+STORE/Zstandard independent blocks, bounded ordered compression, indexed listing,
+full verification, selected file/subtree extraction and safe staged publication.
+Native handle-relative operations, private staging permissions, no-replace writes,
+resource limits and adversarial race/fault/path/corruption coverage remain enforced.
 
-Windows transient publication contention found during validation is handled with
-bounded cancellation-aware retries of sharing/access errors, compatible source
-handle sharing and retained no-replace semantics. Child/directory handle contention
-has a regression test. An incomplete first benchmark was rejected and rerun fresh.
-
-## Benchmarks and memory gate
-
-Three repetitions, 156 measured process operations; every accepted round trip
-verified. Mixed corpus: 289 files, 27,858,143 bytes. Comparisons include retained
-M3, STORE, all presets with serial/parallel workers, ZIP, 7z and native Zstandard.
-A 4 GiB + 1 MiB source packed at 31.88 MiB peak working set versus 26.89 MiB for
-64 MiB with identical block/worker settings. Metadata still grows with block count.
-See BENCHMARKS.md and tracked raw/summary results for commands and limitations.
+Desktop: create/open/browse/verify/extract, file/folder pickers, drag/drop, light/dark
+themes, keyboard access, measured progress, phase estimates and cancellation.
+A worker owns each archive job; only the GUI thread touches widgets. Signals and
+progress snapshots are bounded. Existing destinations require a new name.
 
 ## Reproduction
 
-Local: `./scripts/local-build.ps1 -Preset debug` and `-Preset release`.
-Hosted: `cmake --preset <preset>`, `cmake --build --preset <preset>`,
-`ctest --preset <preset>` for Windows debug/release and Linux sanitize.
-Signal test: `python tests/integration/cancel.py <path-to-zyph>`.
-Fuzz commands/budgets: tests/fuzz/README.md and .github/workflows/ci.yml.
-Benchmark commands and tool versions: BENCHMARKS.md. Python is test tooling only.
-The retained M3 BUILD_TESTING=OFF Release binary built and verified the golden
-Zstandard fixture; the measured M4 Release binary includes inactive test hooks.
+Core: `./scripts/local-build.ps1 -Preset debug` and `-Preset release`.
+Desktop: `./scripts/desktop-build.ps1`; Debug adds `-Configuration Debug -BuildDir build/desktop-debug`.
+Hosted: `.github/workflows/ci.yml`; fuzz commands in tests/fuzz/README.md.
+Signals: `python tests/integration/cancel.py <path-to-zyph> build/cancel`.
+Package: `./scripts/desktop-build.ps1 -NoTests -BuildDir build/desktop-production`,
+then `./scripts/package-windows.ps1` and `python scripts/package-smoke.py <zip>`.
+Pinned tools, SDK/source setup and clean-build instructions: DEVELOPMENT.md.
+User workflows: USER_GUIDE.md. Performance commands/raw data: BENCHMARKS.md.
 
-## Limits and unexecuted validation
+## Limits and additional assurance
 
-See SECURITY.md for confinement. Sources are not snapshots; same-identity or
-privileged processes are outside isolation. Existing destinations are refused.
-Memory admission is not an RSS cap. No encryption/authentication, ACL/stream/owner
-preservation or crash-durability guarantee. Cancellation waits for a codec block.
+Portable unsigned Windows x64 ZIP; no MSI, shell integration or signing claim.
+Local Windows 11 and hosted Windows Server 2022 tested. A separate Windows 10
+machine, macOS and Linux desktop binary distribution are not validated here.
+Sources are not snapshots. Same-identity/privileged modification is outside
+isolation. No existing-output merge/overwrite, encryption, authentication,
+ACL/alternate-stream/owner preservation, crash durability or automatic recovery.
+Selected extraction does not verify unrelated payloads. Memory admission is not
+an RSS cap; metadata scales with bounded entry/block counts. Codec cancellation
+waits for its current block.
 
-GUI/release packaging belong to M5/M6 and have not run. Longer fuzz campaigns,
-fully instrumented dependencies, AppVerifier/PageHeap and real disk-full/power-loss
-experiments remain release assurance work. Benchmarks cover one Windows machine
-with uncontrolled warm/mixed cache and generated inputs; cold-cache, real creator
-corpora and wider hardware/filesystems remain unmeasured. No universal speed claim.
-
-Validated checkpoints are promoted to main without rewriting history. No release
-tag until milestone 6 acceptance passes.
-
-## Desktop checkpoint — Milestone 5
-
-Qt 6.8.3 Widgets target implemented separately from the core. Creation, hierarchical
-inspection, full/selected extraction, verification, drag/drop, themes, status,
-phase estimates and cancellation run through the same engine. Local Release:
-47/47 CTest cases passed; desktop test includes creation, selected extraction,
-GUI-to-CLI and CLI-to-GUI verification, conflicts, corruption, signals and a
-heartbeat during active work. Native Windows platform also passed and screenshots
-were inspected. Qt's offscreen backend lacks fonts here; use the native screenshots
-for visual evidence. Hosted MSVC validation is pending; do not mark release complete.
+Long-duration fuzzing, fully instrumented dependencies, AppVerifier/PageHeap and
+real disk-full/power-loss experiments remain additional assurance work. Benchmarks
+cover one machine with generated inputs and uncontrolled warm/mixed cache, not
+universal speed claims. The 4 GiB + 1 MiB workload peaked at 31.88 MiB while packing;
+see the report for corpus/method limits. No unexecuted check is claimed as passed.

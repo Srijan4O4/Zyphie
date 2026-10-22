@@ -184,3 +184,6 @@ Milestone 4 adds ordered worker scheduling and selective extraction without a wi
 change. A selector is an exact case-sensitive manifest path, with directories
 expanding to descendants and ancestors retained. Metadata is validated globally;
 payload verification applies only to selected files unless full verify is requested.
+
+Milestones 5 and 6 retain the same V1 layout and golden vectors. Both desktop and
+CLI use this reader/writer. Product version 1.0.0 does not change the wire version.

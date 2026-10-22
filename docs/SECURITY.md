@@ -1,4 +1,4 @@
-# Security model — milestone 3
+# Security model — V1
 
 Treat all archive bytes and names as hostile. Supported native operations target
 Windows local filesystems and Linux filesystems with no-replace rename support.

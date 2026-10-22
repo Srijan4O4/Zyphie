@@ -90,3 +90,25 @@ trip and records results.json. Recorded paths use $REPO/$BENCH_ROOT placeholders
 Allow sufficient disk for source, archive and extraction; originals are never
 removed. For an exact corpus, use the recorded source revision. Broader real-world,
 cold-cache, network-filesystem and cross-hardware measurements remain future work.
+
+## V1 production rerun
+
+The final production binary (BUILD_TESTING=OFF), source cdb86d7, completed a fresh
+three-repetition mixed-corpus run: 144 process measurements and every round trip
+verified. The updated tracked-source corpus contains 293 files and 27,880,555
+bytes, so do not treat it as byte-identical to the earlier M4 corpus.
+[Raw release results](../benchmarks/results/2026-10-22-release-windows.json) and
+[summary](../benchmarks/results/2026-10-22-release-summary.json) preserve all settings,
+hashes and variation. Same hardware/method and comparison caveats apply.
+
+BALANCED/1: pack median 0.556 s [0.503, 0.570], extract 1.296 s,
+archive 10,378,283 bytes, peak pack 15.19 MiB; verify 0.0616 s, list 0.0150 s,
+selected extract 0.0318 s. MAXIMUM/1 versus /4: pack 1.983 versus 1.588 s,
+peak 62.91 versus 186.80 MiB. Memory variation reinforces that worker admission
+is not an RSS cap. The >4 GiB experiment above remains the large-file evidence;
+this release rerun did not repeat large files because engine code is unchanged.
+
+Reproduce with the same command above, replacing --zyph with
+build/desktop-production/zyph.exe and omitting --large. All baseline commands
+remain identical. These measurements support workflow functionality and bounded
+streaming, not a general speed superiority claim.

@@ -149,3 +149,17 @@ promises. Archive opening validates metadata; full verification is explicit.
 The owner selected MIT for Zyphie on 2026-10-22. Qt remains under its own LGPLv3
 terms; binary packaging must include notices, matching source and replacement
 instructions. Zstandard uses its BSD alternative. No GPL-only Qt modules are used.
+
+## ADR-013 — Portable release and measured validation scope
+
+V1 ships as an unsigned portable Windows x64 ZIP, requiring no elevation or
+registry/file-association changes. Packaging includes only the audited Qt Widgets
+DLL/plugin set, LLVM-MinGW runtimes, notices, matching QtBase source and per-file
+SHA-256 manifest. Qt's deployment helper misclassifies these LLVM plugins; explicit
+deployment is validated after relocation with SDK paths removed. Test tools and
+fault hooks are absent from the production package. Independent clean-source
+builds supplement incremental builds; dependency caches do not contain project
+objects. Windows 10 and broader hardware remain untested, not inferred from
+Windows 11/Server results. No MSI, signing identity or performance advantage is
+claimed. The initial silent hosted GUI failure prompted explicit logs and ten
+repetitions of the widget suite, with a less timing-sensitive cancellation corpus.

@@ -53,8 +53,7 @@ ctest --preset sanitize
 
 The sanitizer option currently instruments project targets, not vcpkg-built
 third-party dependencies. A separate fully instrumented dependency configuration
-is a milestone 3 task. Desktop builds deliberately fail with an explanatory
-message until milestone 5 introduces the real Qt target.
+remains additional release assurance work. The optional Qt Widgets target is built with ZYPH_BUILD_DESKTOP=ON as documented below.
 
 ## Tests and evidence
 
@@ -112,7 +111,7 @@ import libraries; no new third-party runtime dependency was introduced.
 
 ## Streaming and benchmark validation
 
-Run `python tests/integration/cancel.py <path-to-zyph>` for a real CLI Ctrl+C/SIGINT
+Run `python tests/integration/cancel.py <path-to-zyph> build/cancel` for a real CLI Ctrl+C/SIGINT
 check (the helper uses an isolated hidden Windows console). It asserts exit 7,
 unchanged source and absence of both published and staged outputs. Hosted CI runs
 this after CTest on Windows and Linux. Python is also used by the benchmark runner;

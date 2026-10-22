@@ -13,7 +13,7 @@ lives in PROJECT_STATUS.md. No later feature bypasses an earlier failed gate.
 | 5 Desktop | Qt Widgets creation/browser/extraction/verification and cancellation | Actual user flows tested; responsive GUI and CLI compatibility |
 | 6 Release | Clean builds, installation, licensing, packaging, compatibility evidence | All V1 acceptance criteria pass; only then tag v1.0.0 |
 
-Milestones 0–4 are complete; validation evidence is in PROJECT_STATUS.md. Next is milestone 5, the Qt 6 Widgets desktop application.
+Milestones 0–6 are validated for V1. Evidence and supported release scope are in PROJECT_STATUS.md and RELEASE_VALIDATION.md. V2–V4 remain future work.
 
 Future only after V1: V2 adaptive codecs/dictionaries/solid groups; V3
 content-defined chunks and snapshots; V4 authenticated encryption and wider

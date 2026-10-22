@@ -1,12 +1,18 @@
 # Zyphie
 
-A native C++20 archive engine and CLI with its own documented `.zyph` container.
+A native C++20 archive engine, CLI and Qt Widgets desktop with its own documented `.zyph` container.
 Windows 10/11 x64 is the first product platform; the core also builds on Linux.
 
-**Status: Milestones 0–4 complete.** Packing, indexed listing, full SHA-256
-verification and full extraction work for supported regular files/directories.
-The Qt desktop application and release packaging
-are not complete. See [project status](docs/PROJECT_STATUS.md) for exact evidence.
+**Status: Zyphie V1 — milestones 0–6 validated.** Desktop, CLI and
+portable package validation is recorded in [release evidence](docs/RELEASE_VALIDATION.md).
+
+## Use the desktop
+
+Extract the complete Windows x64 portable ZIP and open `zyphie.exe`. Add files or
+folders, choose a new archive path and Create archive. Open an archive to browse,
+verify or restore selected entries. Existing destinations are protected.
+See the [user guide](docs/USER_GUIDE.md) and [release notes](docs/RELEASE_NOTES.md).
+Local builds: `./scripts/desktop-build.ps1`; executable: `build/desktop/apps/desktop/zyphie.exe`.
 
 ## Use the CLI
 
@@ -50,7 +56,7 @@ fail before output. Only selected file payloads are decoded and verified; use
 Ctrl+C requests cooperative cancellation and returns exit 7 before publication.
 An active codec call finishes its current bounded block before stopping. Byte
 completion is not publication success; the final success message confirms that.
-Existing outputs and GUI remain unsupported. The C++ API exposes matching progress,
+Existing outputs remain unsupported. The C++ API exposes matching progress,
 selection and stop-token options without Qt dependencies.
 
 CLI exit codes: 0 success; 2 usage; 3 I/O; 4 corruption; 5 unsupported feature;

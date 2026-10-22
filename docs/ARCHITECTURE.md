@@ -1,8 +1,8 @@
-# Architecture — milestone 4
+# Architecture — V1
 
 `zyph_core` is a Qt-free C++20 static library. `zyph` is a thin CLI using that same
-engine. The future desktop application must use the public archive API without
-duplicating compression logic. The desktop target remains disabled until its gate.
+engine. The Qt Widgets desktop uses the public archive API without
+duplicating compression logic. ZYPH_BUILD_DESKTOP is optional and defaults off for core-only builds.
 
 ## Implemented boundaries
 
@@ -95,3 +95,15 @@ Selected extraction validates the full manifest/index, binary-searches exact pat
 selections, adds directory descendants and necessary ancestors, then decodes only
 selected file blocks. Unselected payload integrity is deliberately not asserted.
 The format, metadata order and golden archive compatibility are unchanged.
+
+## Desktop boundary
+
+apps/desktop links Core/Gui/Widgets dynamically; no Qt header enters zyph_core.
+Each job has one jthread that owns its reader/writer and copied input parameters.
+A timer on the GUI thread polls a mutex-protected latest progress/result snapshot;
+workers never access widgets and cannot flood the event queue. Stop requests flow
+through existing core tokens. Closing during work requests cancellation and keeps
+the window alive; destruction joins the worker before destroying its shared state.
+Errors are displayed as plain text. Archive-path changes clear stale selections.
+Presets and exact selections map directly onto the existing API. A successful
+browse is explicitly distinguished from full payload verification.

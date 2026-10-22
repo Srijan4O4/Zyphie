@@ -41,9 +41,21 @@
 - Validate 46/46 Windows and 43/43 Linux sanitizer tests, real CLI signals and 20,000/100,000 archive/path fuzz iterations (run 39787815489).
 - Record 156 benchmark operations with verified round trips, baseline comparisons and 4 GiB + 1 MiB memory profiling (31.88 MiB peak pack working set).
 
-## Milestone 5 — desktop checkpoint
+## Milestone 5 — validated — 2026-10-22
 
 - Add Qt Widgets archive creation/browser/verify/extract workflows, drop support,
   light/dark themes, bounded progress updates and cooperative cancellation.
 - Add automated widget flows, native screenshots and bidirectional CLI compatibility.
 - Adopt MIT for project source as explicitly selected by the owner.
+
+## Milestone 6 — validated — 2026-10-22
+
+- Add version 1.0.0 metadata, portable packaging, dependency/source notices,
+  user guide, release notes and a requirement-to-evidence validation map.
+- Add relocated-package manifest, golden archive, round-trip and native GUI
+  startup/normal-exit checks with SDK paths removed.
+- Clean source build passed 47/47; final hosted repeated-GUI gate passed and is recorded
+  in RELEASE_VALIDATION.md. No wire-format change.
+- Final V1 run 39828853138 passed all four jobs, including ten extra GUI passes
+  per Windows build. A timer precision assumption in the test was corrected.
+- Production benchmark rerun recorded 144 measurements with every round trip verified.

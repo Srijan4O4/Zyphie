@@ -1,12 +1,31 @@
 # V1 release validation
 
-## Candidate status
+## Validated V1 gates — 2026-10-22
 
-Version 1.0.0 is being validated; no release tag is authorized by test evidence yet.
-M0–M4 passed their documented gates. M5 local Release/Debug CTest 47/47 and native
-Qt workflows passed; first hosted Release and Linux sanitizer jobs passed, but
-hosted Debug GUI validation failed without diagnostics. A log-capturing runner
-has been added to diagnose the failure before release.
+Milestones 0–6 have passed the documented V1 acceptance gates. Final code/test
+checkpoint: cdb86d7af02a60772bb7401d9d79562768503681.
+Hosted run: https://github.com/Srijan4O4/Zyphie/actions/runs/39828853138
+
+- MSVC Debug and Release: 47/47 CTest each, then ten additional successful GUI
+  workflow repetitions each (11 GUI passes per build including the main suite).
+- Linux ASan/UBSan: 43/43. Real CLI Ctrl+C/SIGINT checks passed in all build jobs.
+- Fuzz: 20,000 archive and 100,000 path iterations, seed 20261022; no crashes.
+- Final job logs contain no compiler warnings or sanitizer findings.
+- Local LLVM-MinGW Debug/Release: 47/47, native Windows widget flows and inspected
+  light/dark screenshots. Ten local repetitions of the final GUI test passed.
+- Clean export of 44ecb00 built and passed 47/47; subsequent changes affect tests,
+  packaging and documentation, not product code. Production build omits test hooks.
+- Source-inclusive candidate package: 62 manifest hashes verified, relocated with
+  SDK paths removed; golden archives, exact round trip, actual GUI responsiveness
+  and normal close passed. Final distribution includes additional release docs;
+  its per-file manifest and external SHA256SUMS accompany the release asset.
+- Final production benchmark: 144 measurements, three repetitions, all round trips
+  verified; raw data tracked. The unchanged engine retains M4 >4 GiB memory evidence.
+
+The initial hosted Debug GUI failure was reproduced by repetition and identified
+as a test requiring a timer within 20 ms. It now observes real event-loop dispatch
+with a bounded timeout. The final hosted repetitions above validate that correction.
+No failing test was removed or relabeled as passed.
 
 ## Acceptance evidence map
 
@@ -20,7 +39,7 @@ has been added to diagnose the failure before release.
 | No silent unsupported-object loss/overwrite | Scanner rejection, no-replace and conflict tests |
 | Cancellation and original preservation | API fault/cancel tests, actual Ctrl+C/SIGINT, widget cancel test |
 | Shared GUI engine and responsiveness | Qt widget workflows, heartbeat and bidirectional CLI verification |
-| Clean build and packaging | Pending final candidate clean-build and relocated-package checks |
+| Clean build and packaging | Clean export of 44ecb00: 47/47 CTest; source-inclusive candidate ZIP relocated, 62 file hashes checked, CLI golden/round-trip and production GUI startup/normal close passed with SDK paths removed |
 | Licensing | MIT selected by owner; dynamic Qt with corresponding source/notices; Zstd BSD |
 | Benchmarks/specification/checkpoints | Tracked report/raw JSON, specs/ZYPH_FORMAT_V1.md, Git history |
 
