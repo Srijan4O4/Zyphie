@@ -75,3 +75,12 @@ symlinks/reparse points and overwrite conflicts. They do not yet provide full
 handle-relative directory traversal or Windows staging ACL isolation. Destination
 parents must be trusted against concurrent hostile mutation. See SECURITY.md;
 passing milestone 2 does not imply milestone 3 or release readiness.
+
+## Milestone 3 native filesystem boundary
+
+The filesystem module now resolves mutation paths relative to checked native
+directory handles, applies private staging permissions at creation and publishes
+with no-replace native renames. Windows uses ntdll directory-relative APIs and
+handle-relative cleanup; Linux uses the *at family and descriptor-relative cleanup.
+The wire format and public archive API remain unchanged. See SECURITY.md for the
+object-confinement boundary, failure semantics and remaining release assurance.

@@ -1,48 +1,88 @@
-# Security — milestone 2 boundary
+# Security model — milestone 3
 
-The engine treats archive metadata as untrusted, but **milestone 3 hardening has
-not been completed**. Do not claim comprehensive safe extraction against an active
-local filesystem attacker. Use source/destination parents controlled by the caller.
+Treat all archive bytes and names as hostile. Supported native operations target
+Windows local filesystems and Linux filesystems with no-replace rename support.
+The archive format has not changed. Final milestone evidence is in PROJECT_STATUS.md.
 
-## Implemented and regression-tested
+## Confinement and writes
 
-- Explicit little-endian parsing, checked arithmetic and strict reserved/version
-  validation; no native-struct deserialization.
-- SHA-256 coverage for footer, header/manifest/index, decoded blocks and whole files.
-  These hashes detect corruption, not authenticity.
-- Bounded metadata/count/output limits before allocation or output; bounded block
-  buffers and Zstandard decoder windows. Exact frame/content-size checks.
-- Strict UTF-8 paths, no traversal/absolute/drive/UNC/ADS forms, reserved names and
-  path-component validation. Sorted unique entries and explicit directory parents.
-- Exact block/file ownership, contiguous bounds, no overlapping/unreferenced bytes.
-- Native no-follow file opens, exclusive output creation, symlink/reparse checks,
-  no existing destination overwrite, temporary staging and no-replace publication.
-- Source size/timestamp checks and rejection of output inside an input directory.
+- Validate UTF-8 and all path components before output: reject absolute, drive,
+  UNC, ADS, traversal, reserved-device and trailing-dot/space forms. Require sorted
+  unique archive paths and explicit directory parents. Native name collisions
+  fail without publishing a partial tree, including Windows case aliases.
+- Open Windows ancestors one component at a time using NtCreateFile RootDirectory
+  handles and FILE_OPEN_REPARSE_POINT; reject reparse handles. Keep directory
+  handles open without delete sharing. Resolve file creation, directory creation,
+  timestamp changes, cleanup and no-replace rename relative to those handles.
+  The ancestor-swap and junction-mutation regressions test this behavior directly.
+- On Linux, walk ancestors through openat with O_DIRECTORY/O_NOFOLLOW. Use
+  openat(O_EXCL/O_NOFOLLOW), mkdirat, futimens, renameat2(RENAME_NOREPLACE) and
+  descriptor-relative cleanup. A concurrently renamed ancestor remains the opened
+  directory object; replacement symlinks cannot redirect that native operation.
+- Create Windows outputs with a protected owner/SYSTEM DACL and Linux directories
+  with mode 0700/files 0600 at creation. Do not expose staging under inherited
+  broad permissions and tighten it later. These private permissions remain on the
+  published output; original permissions/ACLs are not archive metadata.
+- Stage output under a random exclusive name, flush files, verify payload/file
+  hashes and publish only on success. Existing destinations are never replaced.
+  Cleanup unlinks reparse/symlink objects themselves without traversing targets.
 
-Tests cover every truncation of a fixed archive, trailing data, corrupted payloads,
-forged metadata with valid recomputed hashes, unsafe paths, codecs and ranges,
-wrong whole-file digests, resource limits, existing-output refusal, symlink paths,
-pre-cancelled operations and cleanup after a late packing failure. See project
-status for actual local and hosted run results; test names are not security claims.
+The threat boundary excludes privileged or same-identity processes that can alter
+our private objects or process memory. Callers should control their output parent;
+opening a directory pins an object, not an immutable pathname on Linux. Concurrent
+changes may cause a controlled failure and leave isolated staging if cleanup is
+denied. This is not a filesystem snapshot, sandbox, or protection against hostile
+kernel/filesystem implementations. Source size/timestamps are checked before and
+after reads; an attacker able to restore metadata can evade snapshot-like guarantees.
 
-## Required milestone 3 work
+## Parsing and resource bounds
 
-- Handle-relative, race-resistant traversal of directory components and Windows
-  reparse points; staging ACL review. Current path checks have TOCTOU gaps if a
-  hostile process can mutate source/destination parents between checks and use.
-- Dedicated fuzz harnesses for parser and paths, bounded fuzz campaigns and retained
-  minimized regressions. No fuzz campaign has run yet.
-- Broader Windows device/Unicode alias/case-collision and junction-race tests.
-- Disk-full, permissions, flush/rename failures and in-flight cancellation/source
-  mutation fault injection. Current pre-cancel tests do not prove all interruption paths.
-- Windows-native diagnostics and sanitizer-instrumented dependency builds, beyond
-  project-level Linux ASan/UBSan. Assess parser allocation amplification within caps.
-- Crash/power-loss durability, recovery and fsync of parent directories. A successful
-  rename is not a promise of crash-atomic durable restoration on every filesystem.
+Explicit little-endian fields, checked additions/multiplications, version/reserved
+validation, contiguous block ownership and exact section sizes are checked before
+use. SHA-256 covers footer, metadata, decoded blocks and complete files. Digests
+provide corruption detection, not authenticity; an attacker can recompute them.
+Zstandard frames must have the expected content size, one complete frame, no
+external dictionary and a bounded decoder window.
 
-No archive repair, encryption or authentication is implemented. A malicious archive
-producer can replace unkeyed digests. Directory creation/file identity changes are
-not captured through a snapshot service. Metadata not specified by V1 (ACLs,
-permissions, streams, ownership, subsecond times) is not preserved. Unsupported
-filesystem entry types fail explicitly. Cleanup may leave an isolated `.zyph-part-*`
-object if the OS refuses removal; it must never delete original inputs.
+Defaults: 64 MiB encoded metadata, 100,000 entries, 1,000,000 blocks, 16 MiB maximum
+block/window, 1 TiB per file, 4 TiB total decoded output and 8 TiB archive. Metadata
+buffers, decoded objects, path-map copies and allocator overhead coexist, so the
+metadata cap is not an RSS cap. Object counts and path lengths independently bound
+allocation amplification; no allocation is based on an unchecked archive count.
+These output quotas are configurable by the trusted caller. Large-file performance
+and measured memory consumption remain milestone 4 work.
+
+## Validation
+
+The regression suite includes every truncation of a golden archive, trailing data,
+forged offsets/codecs/paths with recomputed checksums, invalid UTF-8, resource limits,
+corrupt blocks and whole-file digests. It tests late failures, existing outputs,
+publication races, ancestor swaps, symlink cleanup, private ACLs/modes, case
+collisions, in-flight cancellation and changing source data. Windows-only tests
+exercise junction mutation and handle counts after repeated parser failures.
+
+Internal thread-local hooks inject write, flush, publication and directory-create
+failures. They model failed disk/permission/publication operations without filling
+or damaging the host filesystem. Hooks are absent when BUILD_TESTING=OFF and are
+never controlled by archive contents or environment variables. Native I/O errors
+remain explicit; failures do not masquerade as successful restoration.
+
+Two Linux Clang libFuzzer targets run with ASan/UBSan: production archive
+parsing/verification (including a checksum-repaired pass) and path validation.
+See tests/fuzz/README.md and the workflow for limits, seeds and exact commands.
+The bounded campaigns are evidence, not proof of absence of bugs.
+
+## Additional release assurance and limitations
+
+Long-running fuzzing, fully instrumented codec/crypto dependencies, Windows
+Application Verifier/PageHeap, real disk-full/power-loss experiments and broader
+filesystem/network-share matrices have not been executed. Linux sanitizers
+instrument project targets; dependency internals are not instrumented. Fault
+injection does not validate every OS failure mode. These are explicitly retained
+release-assurance tasks, not completed test claims.
+
+Publication is no-replace but not a crash-durability guarantee: directory fsync,
+power-loss recovery and automatic recovery of abandoned staging are not provided.
+No encryption, authentication, repair, ACL/stream/ownership preservation or release
+security certification is claimed. Do not remove abandoned output automatically
+without establishing ownership; never delete original inputs to recover space.

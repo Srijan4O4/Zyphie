@@ -1,95 +1,66 @@
 # Project status — 2026-10-22
 
-## Milestones
+## Current milestone
 
-Milestones 0, 1 and 2 complete. Next: milestone 3 security and reliability.
-This is a pre-release engine, not a V1 release or completed desktop application.
+Milestones 0–3 complete. Next: milestone 4 streaming/concurrency, selective
+extraction, progress/cancellation, large-file memory measurements and benchmarks.
+This is a pre-release CLI/engine; Qt and release packaging remain later gates.
 
-Milestone 1 source checkpoint `a0feaf7` passed local Debug/Release (11/11 each)
-and hosted Windows Debug/Release + Linux ASan/UBSan:
-https://github.com/Srijan4O4/Zyphie/actions/runs/39670303400
+## Validated checkpoints
 
-Milestone 2 validated source checkpoint: `d5b4204285ab25115f4cd593ccfeb34d44fdb74d`.
-Hosted Windows MSVC Debug, Windows MSVC Release and Linux ASan/UBSan each passed
-27/27 tests, with no compiler warnings found in the final job logs:
-https://github.com/Srijan4O4/Zyphie/actions/runs/39721579235
+- M1: a0feaf7; 11/11 local Debug/Release plus hosted Windows/Linux.
+  https://github.com/Srijan4O4/Zyphie/actions/runs/39670303400
+- M2: d5b4204; 27/27 in both local builds and all three hosted jobs.
+  https://github.com/Srijan4O4/Zyphie/actions/runs/39721579235
+- M3 source: 3ff03b639303b607446227016bf13d6aa535d83e; local Debug/Release
+  39/39 each, hosted MSVC Debug/Release 39/39 each, Linux ASan/UBSan 37/37.
+  Two tests are Windows-specific. No compiler warnings or sanitizer findings
+  appeared in the final job logs. Both fuzz targets completed without crashes:
+  20,000 archive iterations and 100,000 path iterations, seed 20261022.
+  https://github.com/Srijan4O4/Zyphie/actions/runs/39723324891
 
 ## Implemented
 
-Exact V1 binary format, checked serialization, maintained SHA-256 providers,
-independent golden vectors; scanner, bounded block writing/reading, STORE/Zstandard,
-manifest/index, full file verification, transactional new-directory extraction,
-second-precision modification times and pack/extract/list/verify/info CLI.
-No Qt, account, server, telemetry or custom cryptographic/compression primitive.
+Exact V1 format, checked serialization, maintained SHA-256 providers, independent
+golden archives; regular-file/directory scanner, bounded STORE/Zstandard blocks,
+indexed reader, verification, temporary staging and full-tree extraction. CLI:
+pack/extract/list/verify/info, Unicode Windows arguments, explicit error codes.
 
-The milestone 2 gate is supported by byte-for-byte mixed-tree round trips with
-both codecs, independent golden archives, exact STORE writer bytes and a test
-showing indexed listing succeeds without decoding a deliberately corrupt payload
-while verification and extraction reject it.
+M3 adds native handle-relative no-follow operations on Windows/Linux, private
+staging DACLs/modes at creation, no-replace publication and handle-relative cleanup.
+Tests cover malformed metadata, truncation/corruption, hostile paths, resource
+limits, overwrite refusal, source mutation, injected failures, in-flight cancel,
+ancestor/junction races, cleanup, case collisions, permissions and handle leaks.
+The race regression caught an insufficient Windows metadata-only locking approach;
+it was replaced. MSVC's omitted NT API declaration was corrected before the final run.
 
-## Validation
+One earlier local CLI run encountered Windows access-denied during publication
+and reported failure; subsequent complete runs passed. Native I/O errors remain
+explicit failures. No silent retries, skipped entries or output overwrites.
 
-Local commands: `./scripts/local-build.ps1 -Preset debug` and
-`./scripts/local-build.ps1 -Preset release`; both passed 27/27 tests on the final
-source checkpoint. Tools: checksum-verified LLVM-MinGW Clang 23.1.4, CMake 4.4.4,
-Ninja 1.13.2 and pinned vcpkg under ignored `.tools`.
+## Reproduction
 
-Hosted commands: `cmake --preset <preset>`, `cmake --build --preset <preset>` and
-`ctest --preset <preset>`, using `debug`/`release` on Windows and `sanitize` on Linux.
+Local: `./scripts/local-build.ps1 -Preset debug` and `-Preset release`, using
+verified portable LLVM-MinGW 23.1.4/CMake 4.4.4/Ninja 1.13.2 and pinned vcpkg.
+Hosted: `cmake --preset <preset>`, `cmake --build --preset <preset>`,
+`ctest --preset <preset>` for Windows debug/release and Linux sanitize.
+Fuzz commands and budgets: tests/fuzz/README.md and .github/workflows/ci.yml.
+A separate local Release build with BUILD_TESTING=OFF built successfully and
+`build/production/zyph.exe verify tests/fixtures/zstd-rle.zyph` passed, confirming
+the production configuration without fault hooks.
 
-The 27 CTest cases cover format/overflow/path/hash vectors, independent reader
-fixtures and exact writer bytes, mixed-tree STORE/Zstandard round trips,
-empty/Unicode/spaced paths, 17 MiB multi-block input, corruption/truncation/forged
-metadata, resource limits, symlinks, overwrite refusal, cleanup, pre-cancellation,
-filesystem-clock boundaries and actual CLI workflows. A standalone local CLI
-without the compiler PATH reported 0.2.0-dev and verified the fixed Zstandard archive.
+## Limits and unexecuted validation
 
-The initial milestone 2 run (39672445555) passed Linux sanitizers but exposed an
-MSVC filesystem-clock API mismatch. The shared conversion helper fixed it;
-63c9af3 passed all three hosted jobs (39721176288). The final checkpoint also
-removed GCC warnings around conditional GoogleTest assertions.
+See SECURITY.md for the precise confinement model. Same-identity/privileged
+processes are outside the isolation boundary; sources are not snapshots. Existing
+destinations remain unsupported. Metadata limits are not RSS limits. No encryption,
+authentication, ACL/stream/ownership preservation or crash-durability guarantee.
 
-No benchmarks, fuzz campaign, hostile filesystem-race proof, >4 GiB end-to-end test,
-GUI test or release packaging has been performed; these belong to later gates.
-Linux sanitizers instrument project targets, not all dependency builds.
+No benchmark, >4 GiB end-to-end/memory measurement, GUI test, release package,
+long-running fuzz campaign, fully sanitizer-instrumented dependency build,
+Application Verifier/PageHeap or real disk-full/power-loss experiment has run.
+Fault injection and bounded project-level sanitizer campaigns do not replace those
+additional release checks. No performance or release-security claim is made.
 
-## Remaining after milestone 2
-
-Milestone 3: filesystem race confinement, fuzzing, fault injection and adversarial
-Windows diagnostics. Milestone 4: bounded parallelism, selective extraction,
-progress/CLI cancellation, measured large-file memory and benchmarks. Milestone 5:
-Qt Widgets. Milestone 6: packaging, licensing and release acceptance.
-
-## Known limitations
-
-Existing extraction destinations and overwrite are deliberately unsupported.
-Destination/source parents must be trusted against hostile concurrent changes;
-see SECURITY.md. Metadata limits are not total process-memory limits. Timestamps
-are whole seconds within the documented V1 range. No snapshot, encryption,
-authentication, ACL/stream/permission preservation or performance claim.
-Local tooling is available under ignored .tools; the missing-toolchain blocker
-is resolved. Native CLI uses wide Windows arguments and UTF-8 archive paths.
-
-Validated source is promoted to main with this documentation checkpoint. Git
-history is retained. Do not create a release tag until all release gates pass.
-
-## Milestone 3 checkpoint — validation in progress
-
-Native directory-relative no-follow I/O, private staging ACLs/modes, relative
-no-replace publication and Linux descriptor-relative cleanup are implemented.
-Nine additional tests cover deterministic failure injection, in-flight
-cancellation, source mutation, publication races, ancestor swaps, symlink cleanup,
-private permissions and native case collisions. Debug passed 36/36 locally.
-Release and hosted MSVC/Linux sanitizer validation, plus the newly configured
-20,000 archive and 100,000 path libFuzzer iterations, remain pending. Do not mark
-milestone 3 complete before the evidence is recorded.
-
-Follow-up review replaced Windows cleanup with handle-relative enumeration and
-deletion; reparse objects are unlinked without traversing their targets. Windows
-junction mutation and handle-count regressions plus forged portable-name tests
-bring the local suite to 39 cases (37 portable + 2 Windows-only). Both local
-Debug and Release passed. Hosted run 39722971489 exposed an MSVC SDK declaration
-omission for NtSetInformationFile; the follow-up supplies the matching declaration.
-One earlier local CLI run received Windows access-denied during publication and
-failed without claiming success; subsequent full runs passed. Native I/O errors
-remain explicit failures, not silent retries or overwrites.
+Validated milestones are promoted to main without rewriting history. No release
+tag until milestone 6 acceptance is genuinely satisfied.

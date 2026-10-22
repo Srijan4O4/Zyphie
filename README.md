@@ -3,9 +3,9 @@
 A native C++20 archive engine and CLI with its own documented `.zyph` container.
 Windows 10/11 x64 is the first product platform; the core also builds on Linux.
 
-**Status: Milestone 2 pre-release engine.** Packing, indexed listing, full SHA-256
+**Status: Milestone 3 pre-release engine.** Packing, indexed listing, full SHA-256
 verification and full extraction work for supported regular files/directories.
-The Qt desktop application, security-hardening milestone and release packaging
+The Qt desktop application and release packaging
 are not complete. See [project status](docs/PROJECT_STATUS.md) for exact evidence.
 
 ## Use the CLI
@@ -23,8 +23,7 @@ Outputs must not already exist; their parent directory must exist. Packing keeps
 source basenames, directory structure, empty entries and exact file bytes. Original
 inputs are never modified or deleted. Extraction publishes a new directory tree
 only after verification succeeds. Archives inside an input directory are rejected.
-Use destinations whose parent directories are controlled by you; protection
-against hostile concurrent filesystem changes is still milestone 3 work.
+Use destinations whose parent directories are controlled by you; native handle-relative operations reject links and prevent path-swap redirection.
 
 `--preset fast|balanced|maximum` selects Zstandard levels 1/3/19 with one worker.
 `--store` disables compression. Independent blocks fall back to STORE if Zstandard

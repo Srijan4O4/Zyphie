@@ -175,3 +175,7 @@ include empty archive/file/directory, STORE abc, and a fixed Zstandard RLE frame
 Tests must reject truncation at each boundary, bad reserved values/versions,
 invalid UTF-8, corrupted payload/metadata, unsafe paths and inconsistent lengths.
 Reference encoder source and hashes must accompany the archives.
+
+Milestone 3 changes only filesystem enforcement and validation; all V1 byte layouts
+and golden archive compatibility remain unchanged. Extraction creates private
+native permissions rather than restoring permissions not represented by V1.

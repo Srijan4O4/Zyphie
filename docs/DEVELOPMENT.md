@@ -99,3 +99,13 @@ The helper sets PATH only for its process and selects x64-mingw-static. Do not m
 MSVC and MinGW in one build directory. Use a fresh build directory when changing
 compiler families. Python 3 is used only to regenerate independent fixed fixtures
 via `python tests/fixtures/generate.py`; the product has no Python dependency.
+
+## Security validation
+
+The ordinary Debug/Release suites include deterministic native filesystem race,
+failure, cancellation and permission tests. Windows additionally checks junctions
+and handle counts. Linux `sanitize` runs the portable suite under ASan/UBSan.
+See `tests/fuzz/README.md` for the two Linux Clang fuzz targets and exact CI budgets.
+Use `-DBUILD_TESTING=OFF` for a production build without the internal fault callback.
+No Qt installation is required. Windows links the OS BCrypt, Advapi32 and ntdll
+import libraries; no new third-party runtime dependency was introduced.
