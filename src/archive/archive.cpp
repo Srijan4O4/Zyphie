@@ -1,4 +1,5 @@
 #include "zyphie/archive.hpp"
+#include "zyphie/time.hpp"
 #include "filesystem/io.hpp"
 #include "compression/codec.hpp"
 #include <algorithm>
@@ -28,7 +29,7 @@ void read_digest(Decoder& d, Digest& result) {
     auto bytes = d.bytes(32); std::copy(bytes.begin(), bytes.end(), result.begin());
 }
 std::int64_t modified(const fs::path& path) {
-    const auto time = fs::file_time_type::clock::to_sys(fs::last_write_time(path));
+    const auto time = to_system_time(fs::last_write_time(path));
     const auto seconds = std::chrono::floor<std::chrono::seconds>(time).time_since_epoch().count();
     require(seconds >= -2147483648LL && seconds <= 4102444800LL,
         ErrorCode::unsupported_feature, "Modification time outside V1 range: " + io::utf8(path));
@@ -37,7 +38,7 @@ std::int64_t modified(const fs::path& path) {
 void restore_time(const fs::path& path, const ArchiveEntry& entry) {
     if (entry.modified) {
         const auto time = std::chrono::sys_seconds{std::chrono::seconds{*entry.modified}};
-        fs::last_write_time(path, std::chrono::time_point_cast<fs::file_time_type::duration>(fs::file_time_type::clock::from_sys(time)));
+        fs::last_write_time(path, to_file_time(time));
     }
 }
 fs::path absolute_clean(const fs::path& value) {

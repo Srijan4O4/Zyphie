@@ -1,4 +1,5 @@
 #include "zyphie/archive.hpp"
+#include "zyphie/time.hpp"
 #include <gtest/gtest.h>
 #include <algorithm>
 #include <chrono>
@@ -45,8 +46,8 @@ void compare_tree(const fs::path& input,const fs::path& output) {
         ASSERT_TRUE(fs::exists(output/relative));
         EXPECT_EQ(item.is_directory(),fs::is_directory(output/relative));
         if (item.is_regular_file()) EXPECT_EQ(read(item.path()),read(output/relative)) << relative;
-        const auto before=std::chrono::floor<std::chrono::seconds>(fs::file_time_type::clock::to_sys(fs::last_write_time(item.path())));
-        const auto after=std::chrono::floor<std::chrono::seconds>(fs::file_time_type::clock::to_sys(fs::last_write_time(output/relative)));
+        const auto before=std::chrono::floor<std::chrono::seconds>(to_system_time(fs::last_write_time(item.path())));
+        const auto after=std::chrono::floor<std::chrono::seconds>(to_system_time(fs::last_write_time(output/relative)));
         EXPECT_EQ(before,after) << relative;
     }
     for (const auto& item:fs::recursive_directory_iterator(output)) actual.insert(item.path().lexically_relative(output));
@@ -62,7 +63,7 @@ TEST_P(RoundTrip, MixedNestedUnicodeEmptyAndMultiBlockData) {
     std::mt19937 random(42); binary::Bytes random_bytes(90000);
     for (auto& b:random_bytes) b=static_cast<std::uint8_t>(random() & 255);
     write(source/"random.bin",random_bytes);
-    fs::last_write_time(source/"random.bin",fs::file_time_type::clock::from_sys(std::chrono::sys_seconds{std::chrono::seconds{1700000000}}));
+    fs::last_write_time(source/"random.bin",to_file_time(std::chrono::sys_seconds{std::chrono::seconds{1700000000}}));
     PackOptions options; options.store=GetParam(); options.block_size=16384;
     const auto archive=w.root/"roundtrip.zyph";
     ArchiveWriter::pack({source},archive,options);
@@ -173,7 +174,7 @@ TEST(Archive, RejectsSymlinkSourcesAndDestinations) {
 
 TEST(Archive, StoreWriterExactlyMatchesIndependentReferenceBytes) {
     Workspace w; write(w.root/"abc.txt",{'a','b','c'});
-    fs::last_write_time(w.root/"abc.txt",fs::file_time_type::clock::from_sys(std::chrono::sys_seconds{std::chrono::seconds{1700000000}}));
+    fs::last_write_time(w.root/"abc.txt",to_file_time(std::chrono::sys_seconds{std::chrono::seconds{1700000000}}));
     PackOptions options; options.store=true;
     ArchiveWriter::pack({w.root/"abc.txt"},w.root/"actual.zyph",options);
     EXPECT_EQ(read(w.root/"actual.zyph"),read(fs::path(ZYPH_FIXTURES)/"store-timestamp.zyph"));
@@ -185,4 +186,12 @@ TEST(Archive, LatePackingFailureCleansOwnedTemporaryOutput) {
     EXPECT_FALSE(fs::exists(w.root/"out.zyph"));
     EXPECT_EQ(read(w.root/"source"),binary::Bytes(100,'x'));
     for (const auto& item:fs::directory_iterator(w.root)) EXPECT_EQ(item.path().filename(),"source");
+}
+
+
+TEST(Timestamp, PreservesUnixSecondsAtSupportedBoundaries) {
+    for (const auto seconds : {-2147483648LL, -1LL, 0LL, 1700000000LL, 4102444800LL}) {
+        const auto system=std::chrono::sys_seconds{std::chrono::seconds{seconds}};
+        EXPECT_EQ(std::chrono::floor<std::chrono::seconds>(to_system_time(to_file_time(system))),system);
+    }
 }

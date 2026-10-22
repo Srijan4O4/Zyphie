@@ -62,3 +62,12 @@ Downloads were taken from upstream release assets and SHA-256 verified before us
 Tools live under ignored .tools; no installed compiler or system PATH was changed.
 The vcpkg x64-mingw-static triplet is a community triplet, so hosted MSVC/Linux
 checks remain required in addition to local validation.
+
+## ADR-008 — Filesystem clock portability
+
+The initial engine CI build exposed that MSVC implements file_clock through UTC,
+while libc++/libstdc++ expose to_sys/from_sys. Use a shared time helper with MSVC
+clock_cast and the respective system-clock conversion elsewhere. This follows
+https://learn.microsoft.com/en-us/cpp/standard-library/file-clock-class and keeps
+wire timestamps as Unix seconds. Boundary tests include 1901, the Unix epoch,
+2023 and 2100. No format change is involved.
