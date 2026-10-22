@@ -300,3 +300,56 @@ TEST(Security, NativeCaseCollisionFailsWithoutPartialPublication) {
     r.extract(w.root/"out");EXPECT_TRUE(fs::exists(w.root/"out"/"source"/"A"));EXPECT_TRUE(fs::exists(w.root/"out"/"source"/"a"));
 #endif
 }
+
+#ifdef _WIN32
+#include <winioctl.h>
+namespace {
+bool make_junction(const fs::path& directory,const fs::path& target) {
+    const auto substitute=L"\\??\\"+fs::absolute(target).native();
+    const auto printable=fs::absolute(target).native();
+    const auto data_size=8+(substitute.size()+printable.size()+2)*sizeof(wchar_t);
+    std::vector<std::uint64_t> buffer((data_size+8+7)/8,0);
+    auto* raw=reinterpret_cast<std::uint8_t*>(buffer.data());
+    auto* words=reinterpret_cast<WORD*>(raw+4);
+    *reinterpret_cast<DWORD*>(raw)=IO_REPARSE_TAG_MOUNT_POINT;
+    words[0]=static_cast<WORD>(data_size);words[2]=0;words[3]=static_cast<WORD>(substitute.size()*2);
+    words[4]=static_cast<WORD>((substitute.size()+1)*2);words[5]=static_cast<WORD>(printable.size()*2);
+    auto* names=reinterpret_cast<wchar_t*>(raw+16);
+    std::copy(substitute.begin(),substitute.end(),names);std::copy(printable.begin(),printable.end(),names+substitute.size()+1);
+    HANDLE h=CreateFileW(directory.c_str(),GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,nullptr,
+        OPEN_EXISTING,FILE_FLAG_BACKUP_SEMANTICS|FILE_FLAG_OPEN_REPARSE_POINT,nullptr);
+    if(h==INVALID_HANDLE_VALUE)return false;
+    DWORD returned=0;const bool ok=DeviceIoControl(h,FSCTL_SET_REPARSE_POINT,raw,static_cast<DWORD>(data_size+8),nullptr,0,&returned,nullptr)!=0;
+    CloseHandle(h);return ok;
+}
+}
+TEST(Security, WindowsJunctionsAreRejectedAndReparseMutationCannotRedirectWrite) {
+    Workspace w;HookReset reset;fs::create_directory(w.root/"outside");fs::create_directory(w.root/"junction");
+    ASSERT_TRUE(make_junction(w.root/"junction",w.root/"outside"));
+    EXPECT_THROW(io::File(w.root/"junction"/"bad",true),Error);
+    EXPECT_THROW(io::create_directory(w.root/"junction"/"bad"),Error);
+    fs::create_directory(w.root/"parent");bool changed=false;
+    io::test_hook=[&](io::Event e){if(e==io::Event::mkdir)changed=make_junction(w.root/"parent",w.root/"outside");};
+    try { (void)io::create_directory(w.root/"parent"/"child"); } catch(const Error&) {}
+    io::test_hook={};EXPECT_TRUE(changed);EXPECT_FALSE(fs::exists(w.root/"outside"/"child"));
+}
+TEST(Security, WindowsHandlesAreReleasedAfterRepeatedFailures) {
+    Workspace w;write(w.root/"bad",{1,2,3});
+    EXPECT_THROW(ArchiveReader{w.root/"bad"},Error);
+    DWORD before=0,after=0;ASSERT_TRUE(GetProcessHandleCount(GetCurrentProcess(),&before));
+    for(int i=0;i<100;++i){EXPECT_THROW(ArchiveReader{w.root/"bad"},Error);}
+    ASSERT_TRUE(GetProcessHandleCount(GetCurrentProcess(),&after));EXPECT_LE(after,before+1);
+}
+#endif
+
+TEST(Security, ForgedPortableNamesNeverEscapeOrPublish) {
+    Workspace w;const auto original=read(fs::path(ZYPH_FIXTURES)/"store-abc.zyph");
+    const auto footer=format::read_footer(std::span(original).last(128),original.size());
+    const auto start=static_cast<std::size_t>(footer.manifest_offset)+16+72;
+    for(const auto& path:std::vector<std::string>{"../evil","/abs123","C:evil1","CON.txt","a/../xx",std::string("bad\0txt",7)}) {
+        auto bytes=original;ASSERT_EQ(path.size(),7);std::copy(path.begin(),path.end(),bytes.begin()+static_cast<std::ptrdiff_t>(start));
+        refresh_metadata(bytes);write(w.root/"bad",bytes);
+        EXPECT_THROW((ArchiveReader{w.root/"bad"}.extract(w.root/"out")),Error);
+        EXPECT_FALSE(fs::exists(w.root/"out"));no_staging(w.root);
+    }
+}

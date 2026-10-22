@@ -83,3 +83,13 @@ private permissions and native case collisions. Debug passed 36/36 locally.
 Release and hosted MSVC/Linux sanitizer validation, plus the newly configured
 20,000 archive and 100,000 path libFuzzer iterations, remain pending. Do not mark
 milestone 3 complete before the evidence is recorded.
+
+Follow-up review replaced Windows cleanup with handle-relative enumeration and
+deletion; reparse objects are unlinked without traversing their targets. Windows
+junction mutation and handle-count regressions plus forged portable-name tests
+bring the local suite to 39 cases (37 portable + 2 Windows-only). Both local
+Debug and Release passed. Hosted run 39722971489 exposed an MSVC SDK declaration
+omission for NtSetInformationFile; the follow-up supplies the matching declaration.
+One earlier local CLI run received Windows access-denied during publication and
+failed without claiming success; subsequent full runs passed. Native I/O errors
+remain explicit failures, not silent retries or overwrites.

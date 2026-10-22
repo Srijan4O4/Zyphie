@@ -9,6 +9,10 @@
 #include <windows.h>
 #include <sddl.h>
 #include <winternl.h>
+#ifdef _MSC_VER
+// Exported by ntdll; some Windows SDK winternl headers omit this declaration.
+extern "C" NTSYSAPI NTSTATUS NTAPI NtSetInformationFile(HANDLE,PIO_STATUS_BLOCK,PVOID,ULONG,FILE_INFORMATION_CLASS);
+#endif
 #else
 #include <fcntl.h>
 #include <unistd.h>
@@ -45,7 +49,7 @@ void reject_links(const fs::path& path) {
 // Open a single component relative to an already validated directory handle.
 // Native flags: FILE_OPEN_REPARSE_POINT, FILE_SYNCHRONOUS_IO_NONALERT.
 HANDLE relative_open(HANDLE parent,const fs::path& name,ACCESS_MASK access,ULONG share,
-    ULONG disposition,ULONG kind,PSECURITY_DESCRIPTOR security=nullptr) {
+    ULONG disposition,ULONG kind,PSECURITY_DESCRIPTOR security=nullptr,bool allow_reparse=false) {
     const auto text=name.native();
     require(!text.empty() && text.size() <= 32767 && name == name.filename(),ErrorCode::unsafe_path,"Invalid native component");
     UNICODE_STRING unicode{};unicode.Buffer=const_cast<PWSTR>(text.c_str());
@@ -57,14 +61,14 @@ HANDLE relative_open(HANDLE parent,const fs::path& name,ACCESS_MASK access,ULONG
         FILE_ATTRIBUTE_NORMAL,share,disposition,0x00200000|0x20|kind,nullptr,0);
     if(result<0){SetLastError(RtlNtStatusToDosError(result));return INVALID_HANDLE_VALUE;}
     BY_HANDLE_FILE_INFORMATION info{};
-    if(!GetFileInformationByHandle(handle,&info) || (info.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT)) {
+    if(!GetFileInformationByHandle(handle,&info) || (!allow_reparse && (info.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT))) {
         CloseHandle(handle);SetLastError(ERROR_CANT_ACCESS_FILE);return INVALID_HANDLE_VALUE;
     }
     return handle;
 }
 #endif
 
-// Pins every Windows ancestor against rename/reparse mutation. On POSIX each
+// Pins Windows ancestors against rename; relative opens prevent reparse redirection. On POSIX each
 // component is opened relative to the preceding descriptor without following links.
 struct Parent {
     fs::path absolute;
@@ -76,6 +80,8 @@ struct Parent {
     explicit Parent(const fs::path& path) : absolute(fs::absolute(path).lexically_normal()) {
         try {
 #ifdef _WIN32
+            const auto ancestors=absolute.parent_path().relative_path();
+            handles.reserve(static_cast<std::size_t>(std::distance(ancestors.begin(),ancestors.end()))+1);
             fs::path current = absolute.root_path();
             auto lock = [&](const fs::path& component) {
                 auto h = handles.empty() ? CreateFileW(component.c_str(), FILE_LIST_DIRECTORY | FILE_READ_ATTRIBUTES,
@@ -288,14 +294,49 @@ void remove_at(int parent, const char* name) noexcept {
 }
 }
 #endif
+#ifdef _WIN32
+namespace {
+bool remove_relative(HANDLE parent,const fs::path& name) {
+    // Reparse objects are opened themselves, then unlinked without enumeration.
+    HANDLE h=relative_open(parent,name,DELETE|FILE_LIST_DIRECTORY,
+        FILE_SHARE_READ|FILE_SHARE_WRITE|FILE_SHARE_DELETE,1,0,nullptr,true);
+    if(h==INVALID_HANDLE_VALUE)return false;
+    struct Close { HANDLE h; ~Close(){CloseHandle(h);} } close{h};
+    BY_HANDLE_FILE_INFORMATION info{};
+    if(!GetFileInformationByHandle(h,&info))return false;
+    if((info.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) && !(info.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT)) {
+        std::vector<std::uint64_t> storage(8192);
+        for(;;) {
+            if(!GetFileInformationByHandleEx(h,FileIdBothDirectoryRestartInfo,storage.data(),static_cast<DWORD>(storage.size()*8))) {
+                if(GetLastError()==ERROR_NO_MORE_FILES)break;
+                return false;
+            }
+            auto* item=reinterpret_cast<FILE_ID_BOTH_DIR_INFO*>(storage.data());
+            bool removed=false;
+            for(;;) {
+                const std::wstring child(item->FileName,item->FileNameLength/sizeof(wchar_t));
+                if(child!=L"." && child!=L"..") {
+                    if(!remove_relative(h,fs::path(child)))return false;
+                    removed=true;break;
+                }
+                if(!item->NextEntryOffset)break;
+                item=reinterpret_cast<FILE_ID_BOTH_DIR_INFO*>(reinterpret_cast<std::uint8_t*>(item)+item->NextEntryOffset);
+            }
+            if(!removed)break;
+        }
+    }
+    FILE_DISPOSITION_INFO disposition{TRUE};
+    return SetFileInformationByHandle(h,FileDispositionInfo,&disposition,sizeof(disposition))!=0;
+}
+}
+#endif
+
 Temporary::~Temporary() {
     if (!active) return;
     try {
         Parent parent(path);
 #ifdef _WIN32
-        // Ancestors stay pinned. remove_all does not recurse through reparse links.
-        std::error_code ignored;
-        if (directory) fs::remove_all(parent.absolute,ignored); else fs::remove(parent.absolute,ignored);
+        (void)remove_relative(parent.handles.back(),parent.absolute.filename());
 #else
         remove_at(parent.fd,parent.absolute.filename().c_str());
 #endif
@@ -306,8 +347,6 @@ void publish(const fs::path& temporary, const fs::path& destination) {
     Parent source(temporary), target(destination);
     checkpoint(Event::publish);
 #ifdef _WIN32
-    auto h=relative_open(source.handles.back(),source.absolute.filename(),DELETE,0,1,0);
-    require(h!=INVALID_HANDLE_VALUE,ErrorCode::io,"Cannot open publication source");
     const auto name=target.absolute.filename().native();
     const auto length=offsetof(FILE_RENAME_INFO,FileName)+name.size()*sizeof(wchar_t);
     std::vector<std::uint64_t> storage((length+7)/8,0);
@@ -315,6 +354,8 @@ void publish(const fs::path& temporary, const fs::path& destination) {
     rename->ReplaceIfExists=FALSE;rename->RootDirectory=target.handles.back();
     rename->FileNameLength=static_cast<DWORD>(name.size()*sizeof(wchar_t));
     std::copy(name.begin(),name.end(),rename->FileName);
+    auto h=relative_open(source.handles.back(),source.absolute.filename(),DELETE,0,1,0);
+    require(h!=INVALID_HANDLE_VALUE,ErrorCode::io,"Cannot open publication source");
     IO_STATUS_BLOCK status{};
     const auto result=NtSetInformationFile(h,&status,rename,static_cast<ULONG>(length),static_cast<FILE_INFORMATION_CLASS>(10));
     CloseHandle(h);

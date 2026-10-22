@@ -100,3 +100,5 @@ full archive parsing/verification and UTF-8/path validation independently, under
 ASan/UBSan. The archive harness repairs bounded metadata hashes as a second pass
 to reach structural checks beneath checksums. Fixed seeds and finite run budgets
 make the initial campaign reproducible; absence of findings is not a proof.
+
+Windows cleanup also uses handle-relative enumeration/deletion, including reparse objects. The NT API declaration is provided for MSVC SDKs that omit it; the ntdll import library supplies the existing OS export.
