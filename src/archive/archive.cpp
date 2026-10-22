@@ -38,7 +38,7 @@ std::int64_t modified(const fs::path& path) {
 void restore_time(const fs::path& path, const ArchiveEntry& entry) {
     if (entry.modified) {
         const auto time = std::chrono::sys_seconds{std::chrono::seconds{*entry.modified}};
-        fs::last_write_time(path, to_file_time(time));
+        io::set_time(path, time.time_since_epoch().count());
     }
 }
 fs::path absolute_clean(const fs::path& value) {
@@ -236,16 +236,14 @@ void ArchiveReader::extract(const fs::path& destination, std::stop_token cancell
         cancelled(cancellation); const auto final = destination_path(destination);
         io::Temporary staging; staging.directory = true;
         for (int attempt=0;attempt<8 && !staging.active;++attempt) {
-            staging.path = io::temporary_name(final.parent_path()); staging.active = fs::create_directory(staging.path);
+            staging.path = io::temporary_name(final.parent_path()); staging.active = io::create_directory(staging.path);
         }
         require(staging.active, ErrorCode::io, "Cannot create private extraction directory");
-#ifndef _WIN32
-        fs::permissions(staging.path,fs::perms::owner_all,fs::perm_options::replace);
-#endif
+
         for (const auto& entry : impl_->entries) {
             cancelled(cancellation); const auto path = staging.path / io::native(entry.path); io::reject_links(path);
             if (entry.type == EntryType::directory) {
-                require(fs::create_directory(path), ErrorCode::destination_exists, "Destination name collision: " + entry.path);
+                require(io::create_directory(path), ErrorCode::destination_exists, "Destination name collision: " + entry.path);
             } else {
                 io::File output(path,true); impl_->decode_file(entry,&output,cancellation); output.finish(); restore_time(path,entry);
             }

@@ -72,3 +72,14 @@ is resolved. Native CLI uses wide Windows arguments and UTF-8 archive paths.
 
 Validated source is promoted to main with this documentation checkpoint. Git
 history is retained. Do not create a release tag until all release gates pass.
+
+## Milestone 3 checkpoint — validation in progress
+
+Native directory-relative no-follow I/O, private staging ACLs/modes, relative
+no-replace publication and Linux descriptor-relative cleanup are implemented.
+Nine additional tests cover deterministic failure injection, in-flight
+cancellation, source mutation, publication races, ancestor swaps, symlink cleanup,
+private permissions and native case collisions. Debug passed 36/36 locally.
+Release and hosted MSVC/Linux sanitizer validation, plus the newly configured
+20,000 archive and 100,000 path libFuzzer iterations, remain pending. Do not mark
+milestone 3 complete before the evidence is recorded.

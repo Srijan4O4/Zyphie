@@ -195,3 +195,108 @@ TEST(Timestamp, PreservesUnixSecondsAtSupportedBoundaries) {
         EXPECT_EQ(std::chrono::floor<std::chrono::seconds>(to_system_time(to_file_time(system))),system);
     }
 }
+
+#include "filesystem/io.hpp"
+#ifdef _WIN32
+#define NOMINMAX
+#include <windows.h>
+#include <aclapi.h>
+#else
+#include <sys/stat.h>
+#endif
+namespace {
+struct HookReset { ~HookReset() { io::test_hook={}; } };
+void no_staging(const fs::path& root) {
+    for (const auto& item:fs::directory_iterator(root)) { EXPECT_FALSE(item.path().filename().string().starts_with(".zyph-part-")); }
+}
+void error_code(const std::function<void()>& operation,ErrorCode expected) {
+    try { operation(); FAIL() << "Expected error"; }
+    catch(const Error& e) { EXPECT_EQ(e.code(),expected) << e.what(); }
+}
+}
+TEST(Security, PackingFaultsPreserveSourcesAndCleanPartialOutputs) {
+    for(auto failure:{io::Event::write,io::Event::flush,io::Event::publish}) {
+        Workspace w; HookReset reset; write(w.root/"source",binary::Bytes(4096,'s')); int writes=0;
+        io::test_hook=[&](io::Event e) { if(e==failure && (e!=io::Event::write || ++writes==2)) throw Error(ErrorCode::io,"Injected disk/flush/publish failure"); };
+        error_code([&]{ ArchiveWriter::pack({w.root/"source"},w.root/"archive"); },ErrorCode::io);
+        io::test_hook={}; EXPECT_EQ(read(w.root/"source"),binary::Bytes(4096,'s')); EXPECT_FALSE(fs::exists(w.root/"archive")); no_staging(w.root);
+    }
+}
+TEST(Security, ExtractionFaultsAreTransactional) {
+    for(auto failure:{io::Event::write,io::Event::flush,io::Event::publish,io::Event::mkdir}) {
+        Workspace w; HookReset reset; ArchiveReader r(fs::path(ZYPH_FIXTURES)/"store-abc.zyph");
+        io::test_hook=[&](io::Event e) { if(e==failure) throw Error(ErrorCode::io,"Injected failure"); };
+        error_code([&]{r.extract(w.root/"out");},ErrorCode::io);
+        io::test_hook={}; EXPECT_FALSE(fs::exists(w.root/"out")); no_staging(w.root);
+    }
+}
+TEST(Security, InFlightCancellationCleansOutputs) {
+    Workspace w; HookReset reset; write(w.root/"source",binary::Bytes(4096,'x'));
+    PackOptions options; options.store=true; options.block_size=256; std::stop_source stop; options.cancellation=stop.get_token(); int writes=0;
+    io::test_hook=[&](io::Event e){if(e==io::Event::write && ++writes==2) stop.request_stop();};
+    error_code([&]{ArchiveWriter::pack({w.root/"source"},w.root/"archive",options);},ErrorCode::cancelled);
+    io::test_hook={}; EXPECT_FALSE(fs::exists(w.root/"archive")); no_staging(w.root);
+    std::stop_source extraction; ArchiveReader r(fs::path(ZYPH_FIXTURES)/"store-abc.zyph");
+    io::test_hook=[&](io::Event e){if(e==io::Event::write) extraction.request_stop();};
+    error_code([&]{r.extract(w.root/"out",extraction.get_token());},ErrorCode::cancelled);
+    io::test_hook={}; EXPECT_FALSE(fs::exists(w.root/"out")); no_staging(w.root);
+}
+TEST(Security, PublicationRaceNeverReplacesWinner) {
+    Workspace w; HookReset reset; ArchiveReader r(fs::path(ZYPH_FIXTURES)/"store-abc.zyph");
+    io::test_hook=[&](io::Event e){if(e==io::Event::publish){fs::create_directory(w.root/"out");write(w.root/"out"/"sentinel",{42});}};
+    EXPECT_THROW(r.extract(w.root/"out"),Error); io::test_hook={};
+    EXPECT_EQ(read(w.root/"out"/"sentinel"),binary::Bytes{42}); no_staging(w.root);
+}
+TEST(Security, AncestorSwapCannotRedirectCreation) {
+    Workspace w; HookReset reset; fs::create_directory(w.root/"parent"); fs::create_directory(w.root/"outside");
+    bool attempted=false; std::error_code ec;
+    io::test_hook=[&](io::Event e){if(e!=io::Event::mkdir || attempted)return; attempted=true;
+        fs::rename(w.root/"parent",w.root/"moved",ec); if(!ec) fs::create_directory_symlink(w.root/"outside",w.root/"parent");};
+    EXPECT_TRUE(io::create_directory(w.root/"parent"/"child")); io::test_hook={};
+    EXPECT_TRUE(attempted); EXPECT_FALSE(fs::exists(w.root/"outside"/"child"));
+#ifdef _WIN32
+    EXPECT_TRUE(ec); EXPECT_TRUE(fs::exists(w.root/"parent"/"child"));
+#else
+    EXPECT_FALSE(ec); EXPECT_TRUE(fs::exists(w.root/"moved"/"child"));
+#endif
+}
+TEST(Security, NativeMutationsAndCleanupDoNotFollowLinks) {
+    Workspace w; fs::create_directory(w.root/"outside"); write(w.root/"outside"/"sentinel",{42});fs::create_directory(w.root/"stage");
+    std::error_code ec;fs::create_directory_symlink(w.root/"outside",w.root/"stage"/"link",ec);
+    if(ec) GTEST_SKIP()<<"Symlink privilege unavailable: "<<ec.message();
+    EXPECT_THROW(io::File(w.root/"stage"/"link"/"bad",true),Error);
+    EXPECT_THROW(io::create_directory(w.root/"stage"/"link"/"bad"),Error);
+    EXPECT_THROW(io::set_time(w.root/"stage"/"link"/"sentinel",0),Error);
+    {io::Temporary cleanup;cleanup.path=w.root/"stage";cleanup.directory=true;cleanup.active=true;}
+    EXPECT_EQ(read(w.root/"outside"/"sentinel"),binary::Bytes{42});EXPECT_FALSE(fs::exists(w.root/"stage"));
+}
+TEST(Security, PrivateDirectoryPermissionsAreAppliedAtCreation) {
+    Workspace w;ASSERT_TRUE(io::create_directory(w.root/"private"));
+#ifdef _WIN32
+    PSECURITY_DESCRIPTOR descriptor=nullptr;PACL acl=nullptr;
+    ASSERT_EQ(GetNamedSecurityInfoW((w.root/"private").c_str(),SE_FILE_OBJECT,DACL_SECURITY_INFORMATION,nullptr,nullptr,&acl,nullptr,&descriptor),ERROR_SUCCESS);
+    SECURITY_DESCRIPTOR_CONTROL control{};DWORD revision=0;
+    EXPECT_TRUE(GetSecurityDescriptorControl(descriptor,&control,&revision));EXPECT_NE(control & SE_DACL_PROTECTED,0);EXPECT_NE(acl,nullptr);
+    if(acl){EXPECT_EQ(acl->AceCount,2);} LocalFree(descriptor);
+#else
+    struct stat st{};ASSERT_EQ(::stat((w.root/"private").c_str(),&st),0);EXPECT_EQ(st.st_mode & 0777,0700);
+#endif
+}
+TEST(Security, SourceMutationIsDetectedBeforePublication) {
+    Workspace w;HookReset reset;write(w.root/"source",{1,2});int writes=0;
+    io::test_hook=[&](io::Event e){if(e==io::Event::write && ++writes==1)write(w.root/"source",{3,4,5});};
+    error_code([&]{ArchiveWriter::pack({w.root/"source"},w.root/"archive");},ErrorCode::source_changed);
+    io::test_hook={};EXPECT_EQ(read(w.root/"source"),(binary::Bytes{3,4,5}));EXPECT_FALSE(fs::exists(w.root/"archive"));no_staging(w.root);
+}
+TEST(Security, NativeCaseCollisionFailsWithoutPartialPublication) {
+    Workspace w;fs::create_directory(w.root/"source");write(w.root/"source"/"A",{});write(w.root/"source"/"b",{});
+    PackOptions options;options.store=true;ArchiveWriter::pack({w.root/"source"},w.root/"archive",options);
+    auto bytes=read(w.root/"archive");const std::string path="source/b";
+    auto at=std::search(bytes.begin(),bytes.end(),path.begin(),path.end());ASSERT_NE(at,bytes.end());*(at+7)='a';refresh_metadata(bytes);write(w.root/"forged",bytes);
+    ArchiveReader r(w.root/"forged");
+#ifdef _WIN32
+    EXPECT_THROW(r.extract(w.root/"out"),Error);EXPECT_FALSE(fs::exists(w.root/"out"));no_staging(w.root);
+#else
+    r.extract(w.root/"out");EXPECT_TRUE(fs::exists(w.root/"out"/"source"/"A"));EXPECT_TRUE(fs::exists(w.root/"out"/"source"/"a"));
+#endif
+}

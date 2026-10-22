@@ -61,3 +61,30 @@ jobs:
           cmake --preset ${{ matrix.preset }}
           cmake --build --preset ${{ matrix.preset }}
           ctest --preset ${{ matrix.preset }}
+  fuzz:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          repository: microsoft/vcpkg
+          ref: 9eec002df1cd109f8f104cd966a763daf9751489
+          path: .tools/vcpkg
+      - name: Build instrumented fuzz targets
+        shell: bash
+        run: |
+          ./.tools/vcpkg/bootstrap-vcpkg.sh -disableMetrics
+          export VCPKG_ROOT="$GITHUB_WORKSPACE/.tools/vcpkg" VCPKG_DISABLE_METRICS=1
+          cmake -S . -B build/fuzz -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" -DBUILD_TESTING=OFF -DZYPH_ENABLE_SANITIZERS=ON -DZYPH_BUILD_FUZZERS=ON
+          cmake --build build/fuzz --parallel 2
+      - name: Bounded archive and path campaigns
+        shell: bash
+        run: |
+          mkdir -p build/corpus-archive build/corpus-path build/fuzz-artifacts
+          cp tests/fixtures/*.zyph build/corpus-archive/
+          printf '../escape' > build/corpus-path/traversal
+          printf 'folder/file.txt' > build/corpus-path/valid
+          printf 'COM1.txt' > build/corpus-path/device
+          build/fuzz/zyph_fuzz_archive build/corpus-archive -runs=20000 -seed=20261022 -max_len=65536 -timeout=10 -rss_limit_mb=1024 -artifact_prefix=build/fuzz-artifacts/
+          build/fuzz/zyph_fuzz_path build/corpus-path -runs=100000 -seed=20261022 -max_len=8192 -timeout=5 -rss_limit_mb=512 -artifact_prefix=build/fuzz-artifacts/

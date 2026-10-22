@@ -22,3 +22,10 @@
 - Security hardening, selective extraction, parallelism, GUI and release remain pending.
 - Fixed MSVC filesystem clock conversion and clarified conditional test assertions for warning-free GCC builds.
 - Milestones 1 and 2 validated: final engine suite passed 27/27 locally in Debug/Release and in hosted MSVC Debug/Release plus Linux ASan/UBSan (run 39721579235).
+
+## Milestone 3 — validation in progress
+
+- Resolve native writes and publication relative to checked directory handles.
+- Apply private Windows staging DACLs and POSIX modes at creation.
+- Add fault, cancellation, mutation, race, collision and permission regressions.
+- Add bounded Linux Clang archive/path fuzz campaigns with ASan/UBSan.

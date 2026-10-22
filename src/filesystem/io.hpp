@@ -2,7 +2,16 @@
 #include "zyphie/binary.hpp"
 #include <filesystem>
 #include <memory>
+#include <functional>
 namespace zyphie::io {
+// Internal deterministic fault seam. No environment variables or archive-controlled hooks.
+enum class Event { read, write, flush, publish, mkdir };
+void checkpoint(Event event);
+#ifdef ZYPH_TEST_HOOKS
+extern thread_local std::function<void(Event)> test_hook;
+#endif
+bool create_directory(const std::filesystem::path& path);
+void set_time(const std::filesystem::path& path, std::int64_t seconds);
 std::string utf8(const std::filesystem::path& path);
 std::filesystem::path native(std::string_view path);
 void reject_links(const std::filesystem::path& path);

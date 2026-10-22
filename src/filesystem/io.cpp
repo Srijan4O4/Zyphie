@@ -7,10 +7,13 @@
 #ifdef _WIN32
 #define NOMINMAX
 #include <windows.h>
+#include <sddl.h>
+#include <winternl.h>
 #else
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/stat.h>
+#include <dirent.h>
 #ifdef __linux__
 #include <sys/syscall.h>
 #endif
@@ -38,7 +41,138 @@ void reject_links(const fs::path& path) {
 #endif
     }
 }
+#ifdef _WIN32
+// Open a single component relative to an already validated directory handle.
+// Native flags: FILE_OPEN_REPARSE_POINT, FILE_SYNCHRONOUS_IO_NONALERT.
+HANDLE relative_open(HANDLE parent,const fs::path& name,ACCESS_MASK access,ULONG share,
+    ULONG disposition,ULONG kind,PSECURITY_DESCRIPTOR security=nullptr) {
+    const auto text=name.native();
+    require(!text.empty() && text.size() <= 32767 && name == name.filename(),ErrorCode::unsafe_path,"Invalid native component");
+    UNICODE_STRING unicode{};unicode.Buffer=const_cast<PWSTR>(text.c_str());
+    unicode.Length=static_cast<USHORT>(text.size()*sizeof(wchar_t));unicode.MaximumLength=unicode.Length;
+    OBJECT_ATTRIBUTES attributes{};attributes.Length=sizeof(attributes);attributes.RootDirectory=parent;
+    attributes.ObjectName=&unicode;attributes.Attributes=0x40;attributes.SecurityDescriptor=security;
+    IO_STATUS_BLOCK status{};HANDLE handle=INVALID_HANDLE_VALUE;
+    const auto result=NtCreateFile(&handle,access|SYNCHRONIZE|FILE_READ_ATTRIBUTES,&attributes,&status,nullptr,
+        FILE_ATTRIBUTE_NORMAL,share,disposition,0x00200000|0x20|kind,nullptr,0);
+    if(result<0){SetLastError(RtlNtStatusToDosError(result));return INVALID_HANDLE_VALUE;}
+    BY_HANDLE_FILE_INFORMATION info{};
+    if(!GetFileInformationByHandle(handle,&info) || (info.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT)) {
+        CloseHandle(handle);SetLastError(ERROR_CANT_ACCESS_FILE);return INVALID_HANDLE_VALUE;
+    }
+    return handle;
+}
+#endif
+
+// Pins every Windows ancestor against rename/reparse mutation. On POSIX each
+// component is opened relative to the preceding descriptor without following links.
+struct Parent {
+    fs::path absolute;
+#ifdef _WIN32
+    std::vector<HANDLE> handles;
+#else
+    int fd = -1;
+#endif
+    explicit Parent(const fs::path& path) : absolute(fs::absolute(path).lexically_normal()) {
+        try {
+#ifdef _WIN32
+            fs::path current = absolute.root_path();
+            auto lock = [&](const fs::path& component) {
+                auto h = handles.empty() ? CreateFileW(component.c_str(), FILE_LIST_DIRECTORY | FILE_READ_ATTRIBUTES,
+                    FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING,
+                    FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT, nullptr) : relative_open(handles.back(),component.filename(),FILE_LIST_DIRECTORY | FILE_READ_ATTRIBUTES,FILE_SHARE_READ | FILE_SHARE_WRITE,1,1);
+                require(h != INVALID_HANDLE_VALUE, ErrorCode::unsafe_path, "Cannot lock directory ancestor");
+                handles.push_back(h);
+                BY_HANDLE_FILE_INFORMATION info{};
+                require(GetFileInformationByHandle(h,&info) &&
+                    (info.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) &&
+                    !(info.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT),
+                    ErrorCode::unsafe_path, "Unsafe directory ancestor");
+            };
+            lock(current);
+            for (const auto& part : absolute.parent_path().relative_path()) { current /= part; lock(current); }
+#else
+            fd = ::open("/", O_RDONLY | O_DIRECTORY | O_CLOEXEC);
+            require(fd >= 0, ErrorCode::io, "Cannot open filesystem root");
+            for (const auto& part : absolute.parent_path().relative_path()) {
+                const int next = ::openat(fd,part.c_str(),O_RDONLY | O_DIRECTORY | O_NOFOLLOW | O_CLOEXEC);
+                require(next >= 0, ErrorCode::unsafe_path, "Unsafe or inaccessible directory ancestor");
+                ::close(fd); fd = next;
+            }
+#endif
+        } catch (...) { close(); throw; }
+    }
+    Parent(const Parent&) = delete;
+    void close() noexcept {
+#ifdef _WIN32
+        for (auto h : handles) CloseHandle(h);
+        handles.clear();
+#else
+        if (fd >= 0) ::close(fd);
+        fd = -1;
+#endif
+    }
+    ~Parent() { close(); }
+};
+#ifdef ZYPH_TEST_HOOKS
+thread_local std::function<void(Event)> test_hook;
+#endif
+void checkpoint(Event event) {
+#ifdef ZYPH_TEST_HOOKS
+    if (test_hook) test_hook(event);
+#else
+    (void)event;
+#endif
+}
+#ifdef _WIN32
+struct PrivateSecurity {
+    PSECURITY_DESCRIPTOR descriptor = nullptr;
+    SECURITY_ATTRIBUTES attributes{sizeof(SECURITY_ATTRIBUTES),nullptr,FALSE};
+    PrivateSecurity() {
+        // Protected DACL: object owner and SYSTEM only, inherited by all children.
+        require(ConvertStringSecurityDescriptorToSecurityDescriptorW(
+            L"D:P(A;OICI;FA;;;OW)(A;OICI;FA;;;SY)",SDDL_REVISION_1,&descriptor,nullptr),
+            ErrorCode::io,"Cannot construct private staging ACL");
+        attributes.lpSecurityDescriptor = descriptor;
+    }
+    ~PrivateSecurity() { if (descriptor) LocalFree(descriptor); }
+};
+#endif
+bool create_directory(const fs::path& path) {
+    Parent parent(path); checkpoint(Event::mkdir);
+#ifdef _WIN32
+    PrivateSecurity security;
+    auto h=relative_open(parent.handles.back(),parent.absolute.filename(),FILE_LIST_DIRECTORY | FILE_READ_ATTRIBUTES,FILE_SHARE_READ | FILE_SHARE_WRITE,2,1,security.descriptor);
+    if(h!=INVALID_HANDLE_VALUE){CloseHandle(h);return true;}
+    if (GetLastError() == ERROR_ALREADY_EXISTS || GetLastError() == ERROR_FILE_EXISTS) return false;
+#else
+    if (::mkdirat(parent.fd,parent.absolute.filename().c_str(),0700) == 0) return true;
+    if (errno == EEXIST) return false;
+#endif
+    throw Error(ErrorCode::io,"Cannot create private directory");
+}
+void set_time(const fs::path& path, std::int64_t seconds) {
+    Parent parent(path);
+#ifdef _WIN32
+    auto h=relative_open(parent.handles.back(),parent.absolute.filename(),FILE_WRITE_ATTRIBUTES,FILE_SHARE_READ,1,0);
+    require(h != INVALID_HANDLE_VALUE,ErrorCode::io,"Cannot open timestamp target");
+    BY_HANDLE_FILE_INFORMATION info{};
+    const bool safe = GetFileInformationByHandle(h,&info) && !(info.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT);
+    const auto ticks = static_cast<std::uint64_t>(seconds + 11644473600LL) * 10000000ULL;
+    FILETIME time{static_cast<DWORD>(ticks),static_cast<DWORD>(ticks >> 32)};
+    const bool ok = safe && SetFileTime(h,nullptr,nullptr,&time);
+    CloseHandle(h); require(ok,ErrorCode::io,"Cannot restore timestamp safely");
+#else
+    const int fd = ::openat(parent.fd,parent.absolute.filename().c_str(),O_RDONLY | O_NONBLOCK | O_NOFOLLOW | O_CLOEXEC);
+    require(fd >= 0,ErrorCode::io,"Cannot open timestamp target");
+    const timespec times[2]{{0,UTIME_OMIT},{static_cast<time_t>(seconds),0}};
+    const bool ok = ::futimens(fd,times) == 0; ::close(fd);
+    require(ok,ErrorCode::io,"Cannot restore timestamp safely");
+#endif
+}
+
 struct File::Impl {
+    std::unique_ptr<Parent> parent;
 #ifdef _WIN32
     HANDLE handle = INVALID_HANDLE_VALUE;
     ~Impl() { if (handle != INVALID_HANDLE_VALUE) CloseHandle(handle); }
@@ -48,10 +182,11 @@ struct File::Impl {
 #endif
 };
 File::File(const fs::path& path, bool create) : impl_(std::make_unique<Impl>()) {
+    impl_->parent = std::make_unique<Parent>(path);
 #ifdef _WIN32
-    impl_->handle = CreateFileW(path.c_str(), create ? GENERIC_WRITE : GENERIC_READ,
-        create ? 0 : FILE_SHARE_READ, nullptr, create ? CREATE_NEW : OPEN_EXISTING,
-        FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OPEN_REPARSE_POINT, nullptr);
+    PrivateSecurity security;
+    impl_->handle = relative_open(impl_->parent->handles.back(),impl_->parent->absolute.filename(),
+        create ? GENERIC_WRITE : GENERIC_READ,create ? 0 : FILE_SHARE_READ,create ? 2 : 1,0x40,create ? security.descriptor : nullptr);
     if (impl_->handle == INVALID_HANDLE_VALUE) {
         const auto error = GetLastError();
         throw Error(error == ERROR_FILE_EXISTS || error == ERROR_ALREADY_EXISTS ? ErrorCode::destination_exists : ErrorCode::io,
@@ -62,7 +197,7 @@ File::File(const fs::path& path, bool create) : impl_(std::make_unique<Impl>()) 
         !(info.dwFileAttributes & (FILE_ATTRIBUTE_DIRECTORY | FILE_ATTRIBUTE_REPARSE_POINT)),
         ErrorCode::unsafe_path, "Only regular non-reparse files are supported");
 #else
-    impl_->handle = ::open(path.c_str(), (create ? O_WRONLY | O_CREAT | O_EXCL : O_RDONLY | O_NONBLOCK) | O_NOFOLLOW | O_CLOEXEC, 0600);
+    impl_->handle = ::openat(impl_->parent->fd, impl_->parent->absolute.filename().c_str(), (create ? O_WRONLY | O_CREAT | O_EXCL : O_RDONLY | O_NONBLOCK) | O_NOFOLLOW | O_CLOEXEC, 0600);
     if (impl_->handle < 0) throw Error(errno == EEXIST ? ErrorCode::destination_exists : ErrorCode::io, "Cannot open file: " + utf8(path));
     struct stat info{};
     require(::fstat(impl_->handle, &info) == 0 && S_ISREG(info.st_mode), ErrorCode::unsafe_path, "Only regular files are supported");
@@ -80,6 +215,7 @@ std::uint64_t File::size() const {
 #endif
 }
 binary::Bytes File::read(std::uint64_t offset, std::size_t length) const {
+    checkpoint(Event::read);
     require(binary::add(offset, length) <= size() && offset <= INT64_MAX, ErrorCode::corrupt_archive, "Read outside file bounds");
     binary::Bytes result(length); std::size_t done = 0;
 #ifdef _WIN32
@@ -102,6 +238,7 @@ binary::Bytes File::read(std::uint64_t offset, std::size_t length) const {
     return result;
 }
 void File::write(std::span<const std::uint8_t> bytes) {
+    checkpoint(Event::write);
     while (!bytes.empty()) {
         const auto count = (std::min)(bytes.size(), std::size_t{1048576});
 #ifdef _WIN32
@@ -118,6 +255,7 @@ void File::write(std::span<const std::uint8_t> bytes) {
     }
 }
 void File::finish() {
+    checkpoint(Event::flush);
 #ifdef _WIN32
     require(FlushFileBuffers(impl_->handle), ErrorCode::io, "Flushing file failed");
     const auto handle = impl_->handle; impl_->handle = INVALID_HANDLE_VALUE;
@@ -134,22 +272,59 @@ fs::path temporary_name(const fs::path& parent) {
     for (int i = 0; i < 32; ++i) name += digits[random() & 15];
     return parent / name;
 }
-Temporary::~Temporary() {
-    if (active) {
-        std::error_code ignored;
-        if (directory) fs::remove_all(path, ignored); else fs::remove(path, ignored);
+#ifndef _WIN32
+namespace {
+void remove_at(int parent, const char* name) noexcept {
+    const int fd = ::openat(parent,name,O_RDONLY | O_DIRECTORY | O_NOFOLLOW | O_CLOEXEC);
+    if (fd < 0) { ::unlinkat(parent,name,0); return; }
+    DIR* directory = ::fdopendir(fd);
+    if (!directory) { ::close(fd); return; }
+    while (const auto* entry = ::readdir(directory)) {
+        const std::string_view child(entry->d_name);
+        if (child != "." && child != "..") remove_at(fd,entry->d_name);
     }
+    ::closedir(directory);
+    ::unlinkat(parent,name,AT_REMOVEDIR);
 }
-void publish(const fs::path& temporary, const fs::path& destination) {
-    reject_links(destination.parent_path());
+}
+#endif
+Temporary::~Temporary() {
+    if (!active) return;
+    try {
+        Parent parent(path);
 #ifdef _WIN32
-    if (!MoveFileExW(temporary.c_str(), destination.c_str(), 0)) {
-        const auto error = GetLastError();
+        // Ancestors stay pinned. remove_all does not recurse through reparse links.
+        std::error_code ignored;
+        if (directory) fs::remove_all(parent.absolute,ignored); else fs::remove(parent.absolute,ignored);
+#else
+        remove_at(parent.fd,parent.absolute.filename().c_str());
+#endif
+    } catch (...) { /* Isolate failed cleanup; never turn it into deletion elsewhere. */ }
+}
+
+void publish(const fs::path& temporary, const fs::path& destination) {
+    Parent source(temporary), target(destination);
+    checkpoint(Event::publish);
+#ifdef _WIN32
+    auto h=relative_open(source.handles.back(),source.absolute.filename(),DELETE,0,1,0);
+    require(h!=INVALID_HANDLE_VALUE,ErrorCode::io,"Cannot open publication source");
+    const auto name=target.absolute.filename().native();
+    const auto length=offsetof(FILE_RENAME_INFO,FileName)+name.size()*sizeof(wchar_t);
+    std::vector<std::uint64_t> storage((length+7)/8,0);
+    auto* rename=reinterpret_cast<FILE_RENAME_INFO*>(storage.data());
+    rename->ReplaceIfExists=FALSE;rename->RootDirectory=target.handles.back();
+    rename->FileNameLength=static_cast<DWORD>(name.size()*sizeof(wchar_t));
+    std::copy(name.begin(),name.end(),rename->FileName);
+    IO_STATUS_BLOCK status{};
+    const auto result=NtSetInformationFile(h,&status,rename,static_cast<ULONG>(length),static_cast<FILE_INFORMATION_CLASS>(10));
+    CloseHandle(h);
+    if (result<0) {
+        const auto error = RtlNtStatusToDosError(result);
         throw Error(error == ERROR_ALREADY_EXISTS || error == ERROR_FILE_EXISTS ? ErrorCode::destination_exists : ErrorCode::io,
             "Cannot publish output (Windows error " + std::to_string(error) + ")");
     }
 #elif defined(__linux__)
-    if (::syscall(SYS_renameat2, AT_FDCWD, temporary.c_str(), AT_FDCWD, destination.c_str(), 1) != 0) {
+    if (::syscall(SYS_renameat2, source.fd, source.absolute.filename().c_str(), target.fd, target.absolute.filename().c_str(), 1) != 0) {
         const auto error = errno;
         throw Error(error == EEXIST || error == ENOTEMPTY ? ErrorCode::destination_exists : ErrorCode::io,
             "Cannot publish output: " + std::error_code(error,std::generic_category()).message());

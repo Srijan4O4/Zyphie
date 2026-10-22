@@ -71,3 +71,32 @@ clock_cast and the respective system-clock conversion elsewhere. This follows
 https://learn.microsoft.com/en-us/cpp/standard-library/file-clock-class and keeps
 wire timestamps as Unix seconds. Boundary tests include 1901, the Unix epoch,
 2023 and 2100. No format change is involved.
+
+## ADR-009 — Native directory-relative operations (2026-10-22)
+
+Path checks alone cannot authorize later writes. Windows now walks one component
+at a time through NtCreateFile RootDirectory handles with FILE_OPEN_REPARSE_POINT,
+queries each handle and rejects reparse points. Directory handles request list
+access and exclude delete sharing. NtSetInformationFile performs a relative,
+no-replace rename. Linux uses openat/O_NOFOLLOW/O_DIRECTORY, mkdirat, futimens,
+renameat2(RENAME_NOREPLACE) and descriptor-relative cleanup. Windows staging has
+a protected owner/SYSTEM DACL; Linux creates mode 0700 directly (no chmod window).
+A moved Linux ancestor stays the opened object; a concurrent replacement link
+cannot redirect that operation. Same-identity/privileged processes can still
+modify owned data and are not an isolation boundary. This is not a snapshot.
+
+A deterministic race regression exposed that Windows FILE_READ_ATTRIBUTES-only
+handles did not block directory rename. FILE_LIST_DIRECTORY access plus native
+relative operations replaced that insufficient approach. No wire-format change.
+References: https://learn.microsoft.com/en-us/windows/win32/api/winternl/nf-winternl-ntcreatefile
+and https://man7.org/linux/man-pages/man2/openat.2.html .
+
+## ADR-010 — Reproducible adversarial validation
+
+Internal thread-local test hooks inject read/write/flush/publication/mkdir events
+only in BUILD_TESTING builds; no environment or archive field can activate them.
+Production BUILD_TESTING=OFF omits the callback. Linux Clang libFuzzer targets test
+full archive parsing/verification and UTF-8/path validation independently, under
+ASan/UBSan. The archive harness repairs bounded metadata hashes as a second pass
+to reach structural checks beneath checksums. Fixed seeds and finite run budgets
+make the initial campaign reproducible; absence of findings is not a proof.
