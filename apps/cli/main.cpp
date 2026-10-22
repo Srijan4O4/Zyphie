@@ -75,7 +75,7 @@ void usage() {
         "  zyph info <archive.zyph>\n"
         "  zyph --help | --version\n"
         "Destinations must not exist. Inputs are preserved. Use -- before source names beginning with -.\n"
-        "Ctrl+C cancels before publication. Overwrite and GUI are not implemented.\n";
+        "Ctrl+C cancels before publication. Overwrite is not supported. Use zyphie for the desktop application.\n";
 }
 int run(const std::vector<std::string>& args) {
     using namespace zyphie;

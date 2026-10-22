@@ -1,0 +1,8 @@
+execute_process(COMMAND "${TEST_EXE}" -platform offscreen -o desktop-tests.txt,txt RESULT_VARIABLE result TIMEOUT 100)
+if(EXISTS desktop-tests.txt)
+  file(READ desktop-tests.txt report)
+  message("${report}")
+endif()
+if(NOT result EQUAL 0)
+  message(FATAL_ERROR "Desktop workflow tests failed: ${result}")
+endif()
