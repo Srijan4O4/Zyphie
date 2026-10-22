@@ -32,8 +32,11 @@
 
 - Validated local/hosted Windows 39/39 and Linux sanitizer 37/37; bounded fuzz campaigns passed 20,000 archive and 100,000 path iterations (run 39723324891).
 
-## Milestone 4 — in progress
+## Milestone 4 — validated — 2026-10-22
 
 - Add a bounded ordered worker pipeline, caller-thread progress and cooperative CLI cancellation.
 - Add indexed selective file/subtree extraction and worker/memory CLI options.
 - Add deterministic parallel/selection/cancellation tests and a reproducible benchmark runner.
+- Fix transient Windows publication open/rename contention with bounded cancellation-aware retries and native handle regression coverage.
+- Validate 46/46 Windows and 43/43 Linux sanitizer tests, real CLI signals and 20,000/100,000 archive/path fuzz iterations (run 39787815489).
+- Record 156 benchmark operations with verified round trips, baseline comparisons and 4 GiB + 1 MiB memory profiling (31.88 MiB peak pack working set).

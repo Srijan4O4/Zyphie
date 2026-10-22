@@ -179,3 +179,8 @@ Reference encoder source and hashes must accompany the archives.
 Milestone 3 changes only filesystem enforcement and validation; all V1 byte layouts
 and golden archive compatibility remain unchanged. Extraction creates private
 native permissions rather than restoring permissions not represented by V1.
+
+Milestone 4 adds ordered worker scheduling and selective extraction without a wire
+change. A selector is an exact case-sensitive manifest path, with directories
+expanding to descendants and ancestors retained. Metadata is validated globally;
+payload verification applies only to selected files unless full verify is requested.

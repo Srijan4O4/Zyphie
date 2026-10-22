@@ -124,3 +124,10 @@ atomic flag; a small monitor requests cooperative cancellation outside the handl
 One codec call is not preempted; cancellation is bounded by a block operation.
 
 Windows publication now retries only access-denied/sharing errors up to eight times at 25 ms intervals, retaining pinned parents and no-replace semantics. A real child-handle sharing test reproduces the condition. Each retry checks cancellation; permanent errors still fail explicitly.
+
+Publication-source open permits compatible read/write sharing while excluding
+delete sharing; both open and rename retain bounded retries. A fresh complete
+benchmark follows the rejected partial run. Measurements show no BALANCED benefit
+from four workers on this mixed corpus, so the default remains one. MAXIMUM gains
+wall time with four workers at substantially higher CPU/memory cost; expose the
+choice rather than select workers implicitly. See BENCHMARKS.md for evidence.

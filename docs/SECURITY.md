@@ -86,3 +86,14 @@ power-loss recovery and automatic recovery of abandoned staging are not provided
 No encryption, authentication, repair, ACL/stream/ownership preservation or release
 security certification is claimed. Do not remove abandoned output automatically
 without establishing ownership; never delete original inputs to recover space.
+
+## Milestone 4 concurrency and cancellation
+
+The worker pool never shares archive I/O handles or progress callbacks. Buffered
+work is capped by worker count; memory admission covers blocks/codec workspaces,
+not metadata or total RSS. Selected extraction retains all M3 path/publication
+checks and verifies selected file/block hashes; unrelated payloads are not read.
+An actual CLI signal integration test supplements API cancellation regressions.
+Windows publication can retry transient access/sharing failures for up to eight
+25 ms waits at each of its open and rename steps; each attempt checks cancellation
+and retains no-replace behavior. Permanent failures still return an error.

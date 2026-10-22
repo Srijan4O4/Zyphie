@@ -1,0 +1,3897 @@
+{
+  "platform": "Windows-11-10.0.26300-SP0",
+  "logical_cpus": 16,
+  "seed": 20261022,
+  "repeats": 3,
+  "cache": "uncontrolled warm/mixed; no cache eviction",
+  "rows": [
+    {
+      "label": "milestone3-balanced-1",
+      "operation": "pack",
+      "repetition": 0,
+      "seconds": 0.46383459999924526,
+      "cpu_seconds": 0.421875,
+      "peak_working_set_bytes": 15634432,
+      "input_bytes": 27858143,
+      "mib_per_second": 57.27816657471389,
+      "command": [
+        "$REPO\\build\\production\\zyph.exe",
+        "pack",
+        "$BENCH_ROOT\\mixed",
+        "-o",
+        "$BENCH_ROOT\\milestone3-balanced-1-0.zyph"
+      ],
+      "archive_bytes": 10369620
+    },
+    {
+      "label": "milestone3-balanced-1",
+      "operation": "verify",
+      "repetition": 0,
+      "seconds": 0.05257900001015514,
+      "cpu_seconds": 0.046875,
+      "peak_working_set_bytes": 10199040,
+      "input_bytes": 27858143,
+      "mib_per_second": 505.28909786685324,
+      "command": [
+        "$REPO\\build\\production\\zyph.exe",
+        "verify",
+        "$BENCH_ROOT\\milestone3-balanced-1-0.zyph"
+      ]
+    },
+    {
+      "label": "milestone3-balanced-1",
+      "operation": "list",
+      "repetition": 0,
+      "seconds": 0.016246800019871444,
+      "cpu_seconds": 0.015625,
+      "peak_working_set_bytes": 6160384,
+      "input_bytes": 27858143,
+      "mib_per_second": 1635.2509693833715,
+      "command": [
+        "$REPO\\build\\production\\zyph.exe",
+        "list",
+        "$BENCH_ROOT\\milestone3-balanced-1-0.zyph"
+      ]
+    },
+    {
+      "label": "milestone3-balanced-1",
+      "operation": "extract",
+      "repetition": 0,
+      "seconds": 1.429030100000091,
+      "cpu_seconds": 0.4375,
+      "peak_working_set_bytes": 10309632,
+      "input_bytes": 27858143,
+      "mib_per_second": 18.5913477132993,
+      "command": [
+        "$REPO\\build\\production\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\milestone3-balanced-1-0.zyph",
+        "-o",
+        "$BENCH_ROOT\\milestone3-balanced-1-0-out"
+      ]
+    },
+    {
+      "label": "store-1",
+      "operation": "pack",
+      "repetition": 0,
+      "seconds": 0.4838035000138916,
+      "cpu_seconds": 0.4375,
+      "peak_working_set_bytes": 10608640,
+      "input_bytes": 27858143,
+      "mib_per_second": 54.91402083926577,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "pack",
+        "$BENCH_ROOT\\mixed",
+        "-o",
+        "$BENCH_ROOT\\store-1-0.zyph",
+        "--store"
+      ],
+      "archive_bytes": 27903290
+    },
+    {
+      "label": "store-1",
+      "operation": "verify",
+      "repetition": 0,
+      "seconds": 0.054602500022156164,
+      "cpu_seconds": 0.046875,
+      "peak_working_set_bytes": 10321920,
+      "input_bytes": 27858143,
+      "mib_per_second": 486.5637190804848,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "verify",
+        "$BENCH_ROOT\\store-1-0.zyph"
+      ]
+    },
+    {
+      "label": "store-1",
+      "operation": "list",
+      "repetition": 0,
+      "seconds": 0.017095699993660673,
+      "cpu_seconds": 0.0,
+      "peak_working_set_bytes": 6242304,
+      "input_bytes": 27858143,
+      "mib_per_second": 1554.0513399114514,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "list",
+        "$BENCH_ROOT\\store-1-0.zyph"
+      ]
+    },
+    {
+      "label": "store-1",
+      "operation": "extract",
+      "repetition": 0,
+      "seconds": 1.4813207999977749,
+      "cpu_seconds": 0.4375,
+      "peak_working_set_bytes": 10362880,
+      "input_bytes": 27858143,
+      "mib_per_second": 17.93507218822045,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\store-1-0.zyph",
+        "-o",
+        "$BENCH_ROOT\\store-1-0-out"
+      ]
+    },
+    {
+      "label": "store-1",
+      "operation": "select",
+      "repetition": 0,
+      "seconds": 0.03360969998175278,
+      "cpu_seconds": 0.015625,
+      "peak_working_set_bytes": 6303744,
+      "input_bytes": 45,
+      "mib_per_second": 0.0012768737674415612,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\store-1-0.zyph",
+        "-o",
+        "$BENCH_ROOT\\store-1-0-selected",
+        "--select",
+        "mixed/tiny-0000.cpp"
+      ]
+    },
+    {
+      "label": "fast-1",
+      "operation": "pack",
+      "repetition": 0,
+      "seconds": 0.4784924999985378,
+      "cpu_seconds": 0.40625,
+      "peak_working_set_bytes": 15060992,
+      "input_bytes": 27858143,
+      "mib_per_second": 55.52353585887708,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "pack",
+        "$BENCH_ROOT\\mixed",
+        "-o",
+        "$BENCH_ROOT\\fast-1-0.zyph",
+        "--preset",
+        "fast"
+      ],
+      "archive_bytes": 10377738
+    },
+    {
+      "label": "fast-1",
+      "operation": "verify",
+      "repetition": 0,
+      "seconds": 0.053205300006084144,
+      "cpu_seconds": 0.046875,
+      "peak_working_set_bytes": 10457088,
+      "input_bytes": 27858143,
+      "mib_per_second": 499.34114606692367,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "verify",
+        "$BENCH_ROOT\\fast-1-0.zyph"
+      ]
+    },
+    {
+      "label": "fast-1",
+      "operation": "list",
+      "repetition": 0,
+      "seconds": 0.014803900005063042,
+      "cpu_seconds": 0.0,
+      "peak_working_set_bytes": 6242304,
+      "input_bytes": 27858143,
+      "mib_per_second": 1794.6348916695092,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "list",
+        "$BENCH_ROOT\\fast-1-0.zyph"
+      ]
+    },
+    {
+      "label": "fast-1",
+      "operation": "extract",
+      "repetition": 0,
+      "seconds": 1.3206619000120554,
+      "cpu_seconds": 0.453125,
+      "peak_working_set_bytes": 10502144,
+      "input_bytes": 27858143,
+      "mib_per_second": 20.11687887840941,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\fast-1-0.zyph",
+        "-o",
+        "$BENCH_ROOT\\fast-1-0-out"
+      ]
+    },
+    {
+      "label": "fast-1",
+      "operation": "select",
+      "repetition": 0,
+      "seconds": 0.020370899990666658,
+      "cpu_seconds": 0.015625,
+      "peak_working_set_bytes": 6316032,
+      "input_bytes": 45,
+      "mib_per_second": 0.0021066984894110613,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\fast-1-0.zyph",
+        "-o",
+        "$BENCH_ROOT\\fast-1-0-selected",
+        "--select",
+        "mixed/tiny-0000.cpp"
+      ]
+    },
+    {
+      "label": "fast-4",
+      "operation": "pack",
+      "repetition": 0,
+      "seconds": 0.4802313999971375,
+      "cpu_seconds": 0.421875,
+      "peak_working_set_bytes": 27639808,
+      "input_bytes": 27858143,
+      "mib_per_second": 55.32248720519092,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "pack",
+        "$BENCH_ROOT\\mixed",
+        "-o",
+        "$BENCH_ROOT\\fast-4-0.zyph",
+        "--preset",
+        "fast",
+        "--threads",
+        "4"
+      ],
+      "archive_bytes": 10377738
+    },
+    {
+      "label": "fast-4",
+      "operation": "verify",
+      "repetition": 0,
+      "seconds": 0.05395389997283928,
+      "cpu_seconds": 0.046875,
+      "peak_working_set_bytes": 10387456,
+      "input_bytes": 27858143,
+      "mib_per_second": 492.4128838739525,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "verify",
+        "$BENCH_ROOT\\fast-4-0.zyph"
+      ]
+    },
+    {
+      "label": "fast-4",
+      "operation": "list",
+      "repetition": 0,
+      "seconds": 0.01608299999497831,
+      "cpu_seconds": 0.015625,
+      "peak_working_set_bytes": 6238208,
+      "input_bytes": 27858143,
+      "mib_per_second": 1651.9054585691674,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "list",
+        "$BENCH_ROOT\\fast-4-0.zyph"
+      ]
+    },
+    {
+      "label": "fast-4",
+      "operation": "extract",
+      "repetition": 0,
+      "seconds": 1.7866175000090152,
+      "cpu_seconds": 0.421875,
+      "peak_working_set_bytes": 10502144,
+      "input_bytes": 27858143,
+      "mib_per_second": 14.870332055819727,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\fast-4-0.zyph",
+        "-o",
+        "$BENCH_ROOT\\fast-4-0-out"
+      ]
+    },
+    {
+      "label": "fast-4",
+      "operation": "select",
+      "repetition": 0,
+      "seconds": 0.021526600001379848,
+      "cpu_seconds": 0.015625,
+      "peak_working_set_bytes": 6303744,
+      "input_bytes": 45,
+      "mib_per_second": 0.0019935960270330844,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\fast-4-0.zyph",
+        "-o",
+        "$BENCH_ROOT\\fast-4-0-selected",
+        "--select",
+        "mixed/tiny-0000.cpp"
+      ]
+    },
+    {
+      "label": "balanced-1",
+      "operation": "pack",
+      "repetition": 0,
+      "seconds": 0.5528467999829445,
+      "cpu_seconds": 0.46875,
+      "peak_working_set_bytes": 15826944,
+      "input_bytes": 27858143,
+      "mib_per_second": 48.05598130023033,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "pack",
+        "$BENCH_ROOT\\mixed",
+        "-o",
+        "$BENCH_ROOT\\balanced-1-0.zyph"
+      ],
+      "archive_bytes": 10369620
+    },
+    {
+      "label": "balanced-1",
+      "operation": "verify",
+      "repetition": 0,
+      "seconds": 0.0669859999907203,
+      "cpu_seconds": 0.046875,
+      "peak_working_set_bytes": 10391552,
+      "input_bytes": 27858143,
+      "mib_per_second": 396.61415050238884,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "verify",
+        "$BENCH_ROOT\\balanced-1-0.zyph"
+      ]
+    },
+    {
+      "label": "balanced-1",
+      "operation": "list",
+      "repetition": 0,
+      "seconds": 0.016860099975019693,
+      "cpu_seconds": 0.015625,
+      "peak_working_set_bytes": 6234112,
+      "input_bytes": 27858143,
+      "mib_per_second": 1575.767375118517,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "list",
+        "$BENCH_ROOT\\balanced-1-0.zyph"
+      ]
+    },
+    {
+      "label": "balanced-1",
+      "operation": "extract",
+      "repetition": 0,
+      "seconds": 1.2602035999880172,
+      "cpu_seconds": 0.421875,
+      "peak_working_set_bytes": 10493952,
+      "input_bytes": 27858143,
+      "mib_per_second": 21.08198665844565,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\balanced-1-0.zyph",
+        "-o",
+        "$BENCH_ROOT\\balanced-1-0-out"
+      ]
+    },
+    {
+      "label": "balanced-1",
+      "operation": "select",
+      "repetition": 0,
+      "seconds": 0.0264463999774307,
+      "cpu_seconds": 0.015625,
+      "peak_working_set_bytes": 6316032,
+      "input_bytes": 45,
+      "mib_per_second": 0.0016227291531136605,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\balanced-1-0.zyph",
+        "-o",
+        "$BENCH_ROOT\\balanced-1-0-selected",
+        "--select",
+        "mixed/tiny-0000.cpp"
+      ]
+    },
+    {
+      "label": "balanced-4",
+      "operation": "pack",
+      "repetition": 0,
+      "seconds": 0.5029607000178657,
+      "cpu_seconds": 0.515625,
+      "peak_working_set_bytes": 28381184,
+      "input_bytes": 27858143,
+      "mib_per_second": 52.822408353036025,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "pack",
+        "$BENCH_ROOT\\mixed",
+        "-o",
+        "$BENCH_ROOT\\balanced-4-0.zyph",
+        "--threads",
+        "4"
+      ],
+      "archive_bytes": 10369620
+    },
+    {
+      "label": "balanced-4",
+      "operation": "verify",
+      "repetition": 0,
+      "seconds": 0.054831999994348735,
+      "cpu_seconds": 0.046875,
+      "peak_working_set_bytes": 10457088,
+      "input_bytes": 27858143,
+      "mib_per_second": 484.52720098866996,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "verify",
+        "$BENCH_ROOT\\balanced-4-0.zyph"
+      ]
+    },
+    {
+      "label": "balanced-4",
+      "operation": "list",
+      "repetition": 0,
+      "seconds": 0.015932700014673173,
+      "cpu_seconds": 0.015625,
+      "peak_working_set_bytes": 6238208,
+      "input_bytes": 27858143,
+      "mib_per_second": 1667.4885899693843,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "list",
+        "$BENCH_ROOT\\balanced-4-0.zyph"
+      ]
+    },
+    {
+      "label": "balanced-4",
+      "operation": "extract",
+      "repetition": 0,
+      "seconds": 1.276021600002423,
+      "cpu_seconds": 0.4375,
+      "peak_working_set_bytes": 10493952,
+      "input_bytes": 27858143,
+      "mib_per_second": 20.82064714407821,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\balanced-4-0.zyph",
+        "-o",
+        "$BENCH_ROOT\\balanced-4-0-out"
+      ]
+    },
+    {
+      "label": "balanced-4",
+      "operation": "select",
+      "repetition": 0,
+      "seconds": 0.02230549999512732,
+      "cpu_seconds": 0.015625,
+      "peak_working_set_bytes": 6299648,
+      "input_bytes": 45,
+      "mib_per_second": 0.0019239803746903764,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\balanced-4-0.zyph",
+        "-o",
+        "$BENCH_ROOT\\balanced-4-0-selected",
+        "--select",
+        "mixed/tiny-0000.cpp"
+      ]
+    },
+    {
+      "label": "maximum-1",
+      "operation": "pack",
+      "repetition": 0,
+      "seconds": 1.757338900002651,
+      "cpu_seconds": 1.734375,
+      "peak_working_set_bytes": 65884160,
+      "input_bytes": 27858143,
+      "mib_per_second": 15.118083075400245,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "pack",
+        "$BENCH_ROOT\\mixed",
+        "-o",
+        "$BENCH_ROOT\\maximum-1-0.zyph",
+        "--preset",
+        "maximum"
+      ],
+      "archive_bytes": 10359881
+    },
+    {
+      "label": "maximum-1",
+      "operation": "verify",
+      "repetition": 0,
+      "seconds": 0.055249600001843646,
+      "cpu_seconds": 0.046875,
+      "peak_working_set_bytes": 10375168,
+      "input_bytes": 27858143,
+      "mib_per_second": 480.86493804454716,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "verify",
+        "$BENCH_ROOT\\maximum-1-0.zyph"
+      ]
+    },
+    {
+      "label": "maximum-1",
+      "operation": "list",
+      "repetition": 0,
+      "seconds": 0.016928099998040125,
+      "cpu_seconds": 0.0,
+      "peak_working_set_bytes": 6230016,
+      "input_bytes": 27858143,
+      "mib_per_second": 1569.4375319704195,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "list",
+        "$BENCH_ROOT\\maximum-1-0.zyph"
+      ]
+    },
+    {
+      "label": "maximum-1",
+      "operation": "extract",
+      "repetition": 0,
+      "seconds": 1.329838599980576,
+      "cpu_seconds": 0.484375,
+      "peak_working_set_bytes": 10481664,
+      "input_bytes": 27858143,
+      "mib_per_second": 19.97806010613665,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\maximum-1-0.zyph",
+        "-o",
+        "$BENCH_ROOT\\maximum-1-0-out"
+      ]
+    },
+    {
+      "label": "maximum-1",
+      "operation": "select",
+      "repetition": 0,
+      "seconds": 0.026332100009312853,
+      "cpu_seconds": 0.015625,
+      "peak_working_set_bytes": 6303744,
+      "input_bytes": 45,
+      "mib_per_second": 0.001629772947205252,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\maximum-1-0.zyph",
+        "-o",
+        "$BENCH_ROOT\\maximum-1-0-selected",
+        "--select",
+        "mixed/tiny-0000.cpp"
+      ]
+    },
+    {
+      "label": "maximum-4",
+      "operation": "pack",
+      "repetition": 0,
+      "seconds": 1.435290299996268,
+      "cpu_seconds": 1.90625,
+      "peak_working_set_bytes": 176623616,
+      "input_bytes": 27858143,
+      "mib_per_second": 18.510259201181558,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "pack",
+        "$BENCH_ROOT\\mixed",
+        "-o",
+        "$BENCH_ROOT\\maximum-4-0.zyph",
+        "--preset",
+        "maximum",
+        "--threads",
+        "4",
+        "--memory-mib",
+        "1024"
+      ],
+      "archive_bytes": 10359881
+    },
+    {
+      "label": "maximum-4",
+      "operation": "verify",
+      "repetition": 0,
+      "seconds": 0.05441360000986606,
+      "cpu_seconds": 0.046875,
+      "peak_working_set_bytes": 10428416,
+      "input_bytes": 27858143,
+      "mib_per_second": 488.25285364422547,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "verify",
+        "$BENCH_ROOT\\maximum-4-0.zyph"
+      ]
+    },
+    {
+      "label": "maximum-4",
+      "operation": "list",
+      "repetition": 0,
+      "seconds": 0.016553199995541945,
+      "cpu_seconds": 0.015625,
+      "peak_working_set_bytes": 6242304,
+      "input_bytes": 27858143,
+      "mib_per_second": 1604.9824498603084,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "list",
+        "$BENCH_ROOT\\maximum-4-0.zyph"
+      ]
+    },
+    {
+      "label": "maximum-4",
+      "operation": "extract",
+      "repetition": 0,
+      "seconds": 1.5172056999872439,
+      "cpu_seconds": 0.453125,
+      "peak_working_set_bytes": 10473472,
+      "input_bytes": 27858143,
+      "mib_per_second": 17.510872442738602,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\maximum-4-0.zyph",
+        "-o",
+        "$BENCH_ROOT\\maximum-4-0-out"
+      ]
+    },
+    {
+      "label": "maximum-4",
+      "operation": "select",
+      "repetition": 0,
+      "seconds": 0.027958799997577444,
+      "cpu_seconds": 0.0,
+      "peak_working_set_bytes": 6320128,
+      "input_bytes": 45,
+      "mib_per_second": 0.0015349494342389426,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\maximum-4-0.zyph",
+        "-o",
+        "$BENCH_ROOT\\maximum-4-0-selected",
+        "--select",
+        "mixed/tiny-0000.cpp"
+      ]
+    },
+    {
+      "label": "zip-deflate-5-1",
+      "operation": "pack",
+      "repetition": 0,
+      "seconds": 0.5475723000126891,
+      "cpu_seconds": 0.53125,
+      "peak_working_set_bytes": 14327808,
+      "input_bytes": 27858143,
+      "mib_per_second": 48.518881399327356,
+      "command": [
+        "$REPO\\.tools\\vcpkg\\downloads\\tools\\7zip-26.03-windows\\7z.exe",
+        "a",
+        "-tzip",
+        "-mm=Deflate",
+        "-mx=5",
+        "-mmt=1",
+        "$BENCH_ROOT\\zip-deflate-5-1-0.archive",
+        "mixed"
+      ],
+      "archive_bytes": 10460336
+    },
+    {
+      "label": "zip-deflate-5-1",
+      "operation": "verify",
+      "repetition": 0,
+      "seconds": 0.05792010002187453,
+      "cpu_seconds": 0.03125,
+      "peak_working_set_bytes": 9068544,
+      "input_bytes": 27858143,
+      "mib_per_second": 458.69388125778175,
+      "command": [
+        "$REPO\\.tools\\vcpkg\\downloads\\tools\\7zip-26.03-windows\\7z.exe",
+        "t",
+        "$BENCH_ROOT\\zip-deflate-5-1-0.archive"
+      ]
+    },
+    {
+      "label": "zip-deflate-5-1",
+      "operation": "extract",
+      "repetition": 0,
+      "seconds": 0.24383799999486655,
+      "cpu_seconds": 0.15625,
+      "peak_working_set_bytes": 9064448,
+      "input_bytes": 27858143,
+      "mib_per_second": 108.95592763405162,
+      "command": [
+        "$REPO\\.tools\\vcpkg\\downloads\\tools\\7zip-26.03-windows\\7z.exe",
+        "x",
+        "$BENCH_ROOT\\zip-deflate-5-1-0.archive",
+        "-o$BENCH_ROOT\\zip-deflate-5-1-0-out"
+      ]
+    },
+    {
+      "label": "7z-lzma2-5-1",
+      "operation": "pack",
+      "repetition": 0,
+      "seconds": 2.596035700000357,
+      "cpu_seconds": 2.5625,
+      "peak_working_set_bytes": 194240512,
+      "input_bytes": 27858143,
+      "mib_per_second": 10.23390991189717,
+      "command": [
+        "$REPO\\.tools\\vcpkg\\downloads\\tools\\7zip-26.03-windows\\7z.exe",
+        "a",
+        "-t7z",
+        "-m0=lzma2",
+        "-mx=5",
+        "-ms=off",
+        "-mmt=1",
+        "$BENCH_ROOT\\7z-lzma2-5-1-0.archive",
+        "mixed"
+      ],
+      "archive_bytes": 10320208
+    },
+    {
+      "label": "7z-lzma2-5-1",
+      "operation": "verify",
+      "repetition": 0,
+      "seconds": 0.053843600006075576,
+      "cpu_seconds": 0.015625,
+      "peak_working_set_bytes": 33230848,
+      "input_bytes": 27858143,
+      "mib_per_second": 493.4216040323221,
+      "command": [
+        "$REPO\\.tools\\vcpkg\\downloads\\tools\\7zip-26.03-windows\\7z.exe",
+        "t",
+        "$BENCH_ROOT\\7z-lzma2-5-1-0.archive"
+      ]
+    },
+    {
+      "label": "7z-lzma2-5-1",
+      "operation": "extract",
+      "repetition": 0,
+      "seconds": 0.19724449998466298,
+      "cpu_seconds": 0.1875,
+      "peak_working_set_bytes": 33263616,
+      "input_bytes": 27858143,
+      "mib_per_second": 134.69372014904528,
+      "command": [
+        "$REPO\\.tools\\vcpkg\\downloads\\tools\\7zip-26.03-windows\\7z.exe",
+        "x",
+        "$BENCH_ROOT\\7z-lzma2-5-1-0.archive",
+        "-o$BENCH_ROOT\\7z-lzma2-5-1-0-out"
+      ]
+    },
+    {
+      "label": "native-zstd-3-1",
+      "operation": "pack",
+      "repetition": 0,
+      "seconds": 0.36076999999932013,
+      "cpu_seconds": 0.078125,
+      "peak_working_set_bytes": 45281280,
+      "input_bytes": 27858143,
+      "mib_per_second": 73.64136563994408,
+      "command": [
+        "$REPO\\build\\zstd-cli\\programs\\zstd.exe",
+        "-3",
+        "-T1",
+        "$BENCH_ROOT\\mixed.tar",
+        "-o",
+        "$BENCH_ROOT\\native-zstd-0.zst"
+      ],
+      "archive_bytes": 10325701
+    },
+    {
+      "label": "native-zstd-3-1",
+      "operation": "verify",
+      "repetition": 0,
+      "seconds": 0.02219869999680668,
+      "cpu_seconds": 0.015625,
+      "peak_working_set_bytes": 9195520,
+      "input_bytes": 27858143,
+      "mib_per_second": 1196.8086187792235,
+      "command": [
+        "$REPO\\build\\zstd-cli\\programs\\zstd.exe",
+        "-t",
+        "$BENCH_ROOT\\native-zstd-0.zst"
+      ]
+    },
+    {
+      "label": "native-zstd-3-1",
+      "operation": "extract",
+      "repetition": 0,
+      "seconds": 0.03835459999390878,
+      "cpu_seconds": 0.03125,
+      "peak_working_set_bytes": 10735616,
+      "input_bytes": 27858143,
+      "mib_per_second": 692.6834196182947,
+      "command": [
+        "$REPO\\build\\zstd-cli\\programs\\zstd.exe",
+        "-d",
+        "$BENCH_ROOT\\native-zstd-0.zst",
+        "-o",
+        "$BENCH_ROOT\\native-zstd-0.tar"
+      ]
+    },
+    {
+      "label": "milestone3-balanced-1",
+      "operation": "pack",
+      "repetition": 1,
+      "seconds": 0.5103019000089262,
+      "cpu_seconds": 0.484375,
+      "peak_working_set_bytes": 15659008,
+      "input_bytes": 27858143,
+      "mib_per_second": 52.06250551175263,
+      "command": [
+        "$REPO\\build\\production\\zyph.exe",
+        "pack",
+        "$BENCH_ROOT\\mixed",
+        "-o",
+        "$BENCH_ROOT\\milestone3-balanced-1-1.zyph"
+      ],
+      "archive_bytes": 10369620
+    },
+    {
+      "label": "milestone3-balanced-1",
+      "operation": "verify",
+      "repetition": 1,
+      "seconds": 0.055898899998283014,
+      "cpu_seconds": 0.046875,
+      "peak_working_set_bytes": 10194944,
+      "input_bytes": 27858143,
+      "mib_per_second": 475.279396959307,
+      "command": [
+        "$REPO\\build\\production\\zyph.exe",
+        "verify",
+        "$BENCH_ROOT\\milestone3-balanced-1-1.zyph"
+      ]
+    },
+    {
+      "label": "milestone3-balanced-1",
+      "operation": "list",
+      "repetition": 1,
+      "seconds": 0.014647900010459125,
+      "cpu_seconds": 0.0,
+      "peak_working_set_bytes": 6164480,
+      "input_bytes": 27858143,
+      "mib_per_second": 1813.7477360510616,
+      "command": [
+        "$REPO\\build\\production\\zyph.exe",
+        "list",
+        "$BENCH_ROOT\\milestone3-balanced-1-1.zyph"
+      ]
+    },
+    {
+      "label": "milestone3-balanced-1",
+      "operation": "extract",
+      "repetition": 1,
+      "seconds": 1.5142252999939956,
+      "cpu_seconds": 0.640625,
+      "peak_working_set_bytes": 10321920,
+      "input_bytes": 27858143,
+      "mib_per_second": 17.545338518632537,
+      "command": [
+        "$REPO\\build\\production\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\milestone3-balanced-1-1.zyph",
+        "-o",
+        "$BENCH_ROOT\\milestone3-balanced-1-1-out"
+      ]
+    },
+    {
+      "label": "store-1",
+      "operation": "pack",
+      "repetition": 1,
+      "seconds": 0.4687950999941677,
+      "cpu_seconds": 0.390625,
+      "peak_working_set_bytes": 10612736,
+      "input_bytes": 27858143,
+      "mib_per_second": 56.672084418551066,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "pack",
+        "$BENCH_ROOT\\mixed",
+        "-o",
+        "$BENCH_ROOT\\store-1-1.zyph",
+        "--store"
+      ],
+      "archive_bytes": 27903290
+    },
+    {
+      "label": "store-1",
+      "operation": "verify",
+      "repetition": 1,
+      "seconds": 0.056540299992775545,
+      "cpu_seconds": 0.046875,
+      "peak_working_set_bytes": 10256384,
+      "input_bytes": 27858143,
+      "mib_per_second": 469.88777005546916,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "verify",
+        "$BENCH_ROOT\\store-1-1.zyph"
+      ]
+    },
+    {
+      "label": "store-1",
+      "operation": "list",
+      "repetition": 1,
+      "seconds": 0.017360900004860014,
+      "cpu_seconds": 0.015625,
+      "peak_working_set_bytes": 6238208,
+      "input_bytes": 27858143,
+      "mib_per_second": 1530.312107922701,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "list",
+        "$BENCH_ROOT\\store-1-1.zyph"
+      ]
+    },
+    {
+      "label": "store-1",
+      "operation": "extract",
+      "repetition": 1,
+      "seconds": 1.3105157999962103,
+      "cpu_seconds": 0.375,
+      "peak_working_set_bytes": 10350592,
+      "input_bytes": 27858143,
+      "mib_per_second": 20.27262508544299,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\store-1-1.zyph",
+        "-o",
+        "$BENCH_ROOT\\store-1-1-out"
+      ]
+    },
+    {
+      "label": "store-1",
+      "operation": "select",
+      "repetition": 1,
+      "seconds": 0.021651199989719316,
+      "cpu_seconds": 0.015625,
+      "peak_working_set_bytes": 6307840,
+      "input_bytes": 45,
+      "mib_per_second": 0.0019821231275245176,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\store-1-1.zyph",
+        "-o",
+        "$BENCH_ROOT\\store-1-1-selected",
+        "--select",
+        "mixed/tiny-0000.cpp"
+      ]
+    },
+    {
+      "label": "fast-1",
+      "operation": "pack",
+      "repetition": 1,
+      "seconds": 0.4458724999858532,
+      "cpu_seconds": 0.40625,
+      "peak_working_set_bytes": 15069184,
+      "input_bytes": 27858143,
+      "mib_per_second": 59.585633746677594,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "pack",
+        "$BENCH_ROOT\\mixed",
+        "-o",
+        "$BENCH_ROOT\\fast-1-1.zyph",
+        "--preset",
+        "fast"
+      ],
+      "archive_bytes": 10377738
+    },
+    {
+      "label": "fast-1",
+      "operation": "verify",
+      "repetition": 1,
+      "seconds": 0.05332010000711307,
+      "cpu_seconds": 0.046875,
+      "peak_working_set_bytes": 10407936,
+      "input_bytes": 27858143,
+      "mib_per_second": 498.2660474816881,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "verify",
+        "$BENCH_ROOT\\fast-1-1.zyph"
+      ]
+    },
+    {
+      "label": "fast-1",
+      "operation": "list",
+      "repetition": 1,
+      "seconds": 0.015212400001473725,
+      "cpu_seconds": 0.0,
+      "peak_working_set_bytes": 6238208,
+      "input_bytes": 27858143,
+      "mib_per_second": 1746.4433935012742,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "list",
+        "$BENCH_ROOT\\fast-1-1.zyph"
+      ]
+    },
+    {
+      "label": "fast-1",
+      "operation": "extract",
+      "repetition": 1,
+      "seconds": 1.6984854000038467,
+      "cpu_seconds": 0.4375,
+      "peak_working_set_bytes": 10489856,
+      "input_bytes": 27858143,
+      "mib_per_second": 15.641933384774687,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\fast-1-1.zyph",
+        "-o",
+        "$BENCH_ROOT\\fast-1-1-out"
+      ]
+    },
+    {
+      "label": "fast-1",
+      "operation": "select",
+      "repetition": 1,
+      "seconds": 0.02072329999646172,
+      "cpu_seconds": 0.0,
+      "peak_working_set_bytes": 6303744,
+      "input_bytes": 45,
+      "mib_per_second": 0.002070874052183223,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\fast-1-1.zyph",
+        "-o",
+        "$BENCH_ROOT\\fast-1-1-selected",
+        "--select",
+        "mixed/tiny-0000.cpp"
+      ]
+    },
+    {
+      "label": "fast-4",
+      "operation": "pack",
+      "repetition": 1,
+      "seconds": 0.48072059999685735,
+      "cpu_seconds": 0.484375,
+      "peak_working_set_bytes": 27754496,
+      "input_bytes": 27858143,
+      "mib_per_second": 55.2661888881946,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "pack",
+        "$BENCH_ROOT\\mixed",
+        "-o",
+        "$BENCH_ROOT\\fast-4-1.zyph",
+        "--preset",
+        "fast",
+        "--threads",
+        "4"
+      ],
+      "archive_bytes": 10377738
+    },
+    {
+      "label": "fast-4",
+      "operation": "verify",
+      "repetition": 1,
+      "seconds": 0.05266619997564703,
+      "cpu_seconds": 0.0625,
+      "peak_working_set_bytes": 10457088,
+      "input_bytes": 27858143,
+      "mib_per_second": 504.45248554400115,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "verify",
+        "$BENCH_ROOT\\fast-4-1.zyph"
+      ]
+    },
+    {
+      "label": "fast-4",
+      "operation": "list",
+      "repetition": 1,
+      "seconds": 0.017875100020319223,
+      "cpu_seconds": 0.0,
+      "peak_working_set_bytes": 6234112,
+      "input_bytes": 27858143,
+      "mib_per_second": 1486.2907313342182,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "list",
+        "$BENCH_ROOT\\fast-4-1.zyph"
+      ]
+    },
+    {
+      "label": "fast-4",
+      "operation": "extract",
+      "repetition": 1,
+      "seconds": 1.259302899998147,
+      "cpu_seconds": 0.390625,
+      "peak_working_set_bytes": 10510336,
+      "input_bytes": 27858143,
+      "mib_per_second": 21.09706527469416,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\fast-4-1.zyph",
+        "-o",
+        "$BENCH_ROOT\\fast-4-1-out"
+      ]
+    },
+    {
+      "label": "fast-4",
+      "operation": "select",
+      "repetition": 1,
+      "seconds": 0.022431099991081282,
+      "cpu_seconds": 0.0,
+      "peak_working_set_bytes": 6311936,
+      "input_bytes": 45,
+      "mib_per_second": 0.0019132072994790539,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\fast-4-1.zyph",
+        "-o",
+        "$BENCH_ROOT\\fast-4-1-selected",
+        "--select",
+        "mixed/tiny-0000.cpp"
+      ]
+    },
+    {
+      "label": "balanced-1",
+      "operation": "pack",
+      "repetition": 1,
+      "seconds": 0.482839000003878,
+      "cpu_seconds": 0.453125,
+      "peak_working_set_bytes": 15847424,
+      "input_bytes": 27858143,
+      "mib_per_second": 55.02371490633353,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "pack",
+        "$BENCH_ROOT\\mixed",
+        "-o",
+        "$BENCH_ROOT\\balanced-1-1.zyph"
+      ],
+      "archive_bytes": 10369620
+    },
+    {
+      "label": "balanced-1",
+      "operation": "verify",
+      "repetition": 1,
+      "seconds": 0.05711580000934191,
+      "cpu_seconds": 0.046875,
+      "peak_working_set_bytes": 10403840,
+      "input_bytes": 27858143,
+      "mib_per_second": 465.1531708831381,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "verify",
+        "$BENCH_ROOT\\balanced-1-1.zyph"
+      ]
+    },
+    {
+      "label": "balanced-1",
+      "operation": "list",
+      "repetition": 1,
+      "seconds": 0.016732399992179126,
+      "cpu_seconds": 0.015625,
+      "peak_working_set_bytes": 6242304,
+      "input_bytes": 27858143,
+      "mib_per_second": 1587.7934722030607,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "list",
+        "$BENCH_ROOT\\balanced-1-1.zyph"
+      ]
+    },
+    {
+      "label": "balanced-1",
+      "operation": "extract",
+      "repetition": 1,
+      "seconds": 1.2786014000012074,
+      "cpu_seconds": 0.46875,
+      "peak_working_set_bytes": 10493952,
+      "input_bytes": 27858143,
+      "mib_per_second": 20.778637878738028,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\balanced-1-1.zyph",
+        "-o",
+        "$BENCH_ROOT\\balanced-1-1-out"
+      ]
+    },
+    {
+      "label": "balanced-1",
+      "operation": "select",
+      "repetition": 1,
+      "seconds": 0.025307000003522262,
+      "cpu_seconds": 0.015625,
+      "peak_working_set_bytes": 6307840,
+      "input_bytes": 45,
+      "mib_per_second": 0.0016957894745449177,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\balanced-1-1.zyph",
+        "-o",
+        "$BENCH_ROOT\\balanced-1-1-selected",
+        "--select",
+        "mixed/tiny-0000.cpp"
+      ]
+    },
+    {
+      "label": "balanced-4",
+      "operation": "pack",
+      "repetition": 1,
+      "seconds": 0.4942311000195332,
+      "cpu_seconds": 0.46875,
+      "peak_working_set_bytes": 28377088,
+      "input_bytes": 27858143,
+      "mib_per_second": 53.75541013267385,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "pack",
+        "$BENCH_ROOT\\mixed",
+        "-o",
+        "$BENCH_ROOT\\balanced-4-1.zyph",
+        "--threads",
+        "4"
+      ],
+      "archive_bytes": 10369620
+    },
+    {
+      "label": "balanced-4",
+      "operation": "verify",
+      "repetition": 1,
+      "seconds": 0.053902999992715195,
+      "cpu_seconds": 0.046875,
+      "peak_working_set_bytes": 10399744,
+      "input_bytes": 27858143,
+      "mib_per_second": 492.87786367109584,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "verify",
+        "$BENCH_ROOT\\balanced-4-1.zyph"
+      ]
+    },
+    {
+      "label": "balanced-4",
+      "operation": "list",
+      "repetition": 1,
+      "seconds": 0.014721999992616475,
+      "cpu_seconds": 0.015625,
+      "peak_working_set_bytes": 6234112,
+      "input_bytes": 27858143,
+      "mib_per_second": 1804.6186316531046,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "list",
+        "$BENCH_ROOT\\balanced-4-1.zyph"
+      ]
+    },
+    {
+      "label": "balanced-4",
+      "operation": "extract",
+      "repetition": 1,
+      "seconds": 1.2931291999993846,
+      "cpu_seconds": 0.4375,
+      "peak_working_set_bytes": 10514432,
+      "input_bytes": 27858143,
+      "mib_per_second": 20.545198021887682,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\balanced-4-1.zyph",
+        "-o",
+        "$BENCH_ROOT\\balanced-4-1-out"
+      ]
+    },
+    {
+      "label": "balanced-4",
+      "operation": "select",
+      "repetition": 1,
+      "seconds": 0.024100200011162087,
+      "cpu_seconds": 0.0,
+      "peak_working_set_bytes": 6320128,
+      "input_bytes": 45,
+      "mib_per_second": 0.0017807048994782145,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\balanced-4-1.zyph",
+        "-o",
+        "$BENCH_ROOT\\balanced-4-1-selected",
+        "--select",
+        "mixed/tiny-0000.cpp"
+      ]
+    },
+    {
+      "label": "maximum-1",
+      "operation": "pack",
+      "repetition": 1,
+      "seconds": 1.700827200023923,
+      "cpu_seconds": 1.703125,
+      "peak_working_set_bytes": 65855488,
+      "input_bytes": 27858143,
+      "mib_per_second": 15.620396640822108,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "pack",
+        "$BENCH_ROOT\\mixed",
+        "-o",
+        "$BENCH_ROOT\\maximum-1-1.zyph",
+        "--preset",
+        "maximum"
+      ],
+      "archive_bytes": 10359881
+    },
+    {
+      "label": "maximum-1",
+      "operation": "verify",
+      "repetition": 1,
+      "seconds": 0.05555839999578893,
+      "cpu_seconds": 0.046875,
+      "peak_working_set_bytes": 10383360,
+      "input_bytes": 27858143,
+      "mib_per_second": 478.192235267507,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "verify",
+        "$BENCH_ROOT\\maximum-1-1.zyph"
+      ]
+    },
+    {
+      "label": "maximum-1",
+      "operation": "list",
+      "repetition": 1,
+      "seconds": 0.015104799997061491,
+      "cpu_seconds": 0.0,
+      "peak_working_set_bytes": 6238208,
+      "input_bytes": 27858143,
+      "mib_per_second": 1758.884294200589,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "list",
+        "$BENCH_ROOT\\maximum-1-1.zyph"
+      ]
+    },
+    {
+      "label": "maximum-1",
+      "operation": "extract",
+      "repetition": 1,
+      "seconds": 1.3618471000227146,
+      "cpu_seconds": 0.46875,
+      "peak_working_set_bytes": 10485760,
+      "input_bytes": 27858143,
+      "mib_per_second": 19.508500977407397,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\maximum-1-1.zyph",
+        "-o",
+        "$BENCH_ROOT\\maximum-1-1-out"
+      ]
+    },
+    {
+      "label": "maximum-1",
+      "operation": "select",
+      "repetition": 1,
+      "seconds": 0.033159000013256446,
+      "cpu_seconds": 0.015625,
+      "peak_working_set_bytes": 6299648,
+      "input_bytes": 45,
+      "mib_per_second": 0.0012942291450624077,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\maximum-1-1.zyph",
+        "-o",
+        "$BENCH_ROOT\\maximum-1-1-selected",
+        "--select",
+        "mixed/tiny-0000.cpp"
+      ]
+    },
+    {
+      "label": "maximum-4",
+      "operation": "pack",
+      "repetition": 1,
+      "seconds": 1.4612645999877714,
+      "cpu_seconds": 1.859375,
+      "peak_working_set_bytes": 165359616,
+      "input_bytes": 27858143,
+      "mib_per_second": 18.1812352684756,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "pack",
+        "$BENCH_ROOT\\mixed",
+        "-o",
+        "$BENCH_ROOT\\maximum-4-1.zyph",
+        "--preset",
+        "maximum",
+        "--threads",
+        "4",
+        "--memory-mib",
+        "1024"
+      ],
+      "archive_bytes": 10359881
+    },
+    {
+      "label": "maximum-4",
+      "operation": "verify",
+      "repetition": 1,
+      "seconds": 0.06439670000690967,
+      "cpu_seconds": 0.0625,
+      "peak_working_set_bytes": 10440704,
+      "input_bytes": 27858143,
+      "mib_per_second": 412.5614430401231,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "verify",
+        "$BENCH_ROOT\\maximum-4-1.zyph"
+      ]
+    },
+    {
+      "label": "maximum-4",
+      "operation": "list",
+      "repetition": 1,
+      "seconds": 0.01724570000078529,
+      "cpu_seconds": 0.015625,
+      "peak_working_set_bytes": 6213632,
+      "input_bytes": 27858143,
+      "mib_per_second": 1540.5344799377694,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "list",
+        "$BENCH_ROOT\\maximum-4-1.zyph"
+      ]
+    },
+    {
+      "label": "maximum-4",
+      "operation": "extract",
+      "repetition": 1,
+      "seconds": 1.2552225000108592,
+      "cpu_seconds": 0.4375,
+      "peak_working_set_bytes": 10551296,
+      "input_bytes": 27858143,
+      "mib_per_second": 21.16564631501006,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\maximum-4-1.zyph",
+        "-o",
+        "$BENCH_ROOT\\maximum-4-1-out"
+      ]
+    },
+    {
+      "label": "maximum-4",
+      "operation": "select",
+      "repetition": 1,
+      "seconds": 0.023448599997209385,
+      "cpu_seconds": 0.015625,
+      "peak_working_set_bytes": 6307840,
+      "input_bytes": 45,
+      "mib_per_second": 0.001830187910723395,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\maximum-4-1.zyph",
+        "-o",
+        "$BENCH_ROOT\\maximum-4-1-selected",
+        "--select",
+        "mixed/tiny-0000.cpp"
+      ]
+    },
+    {
+      "label": "zip-deflate-5-1",
+      "operation": "pack",
+      "repetition": 1,
+      "seconds": 0.528707299992675,
+      "cpu_seconds": 0.53125,
+      "peak_working_set_bytes": 14344192,
+      "input_bytes": 27858143,
+      "mib_per_second": 50.25010148761071,
+      "command": [
+        "$REPO\\.tools\\vcpkg\\downloads\\tools\\7zip-26.03-windows\\7z.exe",
+        "a",
+        "-tzip",
+        "-mm=Deflate",
+        "-mx=5",
+        "-mmt=1",
+        "$BENCH_ROOT\\zip-deflate-5-1-1.archive",
+        "mixed"
+      ],
+      "archive_bytes": 10460336
+    },
+    {
+      "label": "zip-deflate-5-1",
+      "operation": "verify",
+      "repetition": 1,
+      "seconds": 0.03729639999801293,
+      "cpu_seconds": 0.015625,
+      "peak_working_set_bytes": 9060352,
+      "input_bytes": 27858143,
+      "mib_per_second": 712.3367264209957,
+      "command": [
+        "$REPO\\.tools\\vcpkg\\downloads\\tools\\7zip-26.03-windows\\7z.exe",
+        "t",
+        "$BENCH_ROOT\\zip-deflate-5-1-1.archive"
+      ]
+    },
+    {
+      "label": "zip-deflate-5-1",
+      "operation": "extract",
+      "repetition": 1,
+      "seconds": 0.1805566999828443,
+      "cpu_seconds": 0.171875,
+      "peak_working_set_bytes": 9060352,
+      "input_bytes": 27858143,
+      "mib_per_second": 147.14267310156254,
+      "command": [
+        "$REPO\\.tools\\vcpkg\\downloads\\tools\\7zip-26.03-windows\\7z.exe",
+        "x",
+        "$BENCH_ROOT\\zip-deflate-5-1-1.archive",
+        "-o$BENCH_ROOT\\zip-deflate-5-1-1-out"
+      ]
+    },
+    {
+      "label": "7z-lzma2-5-1",
+      "operation": "pack",
+      "repetition": 1,
+      "seconds": 2.4834104999899864,
+      "cpu_seconds": 2.359375,
+      "peak_working_set_bytes": 194240512,
+      "input_bytes": 27858143,
+      "mib_per_second": 10.698028168109817,
+      "command": [
+        "$REPO\\.tools\\vcpkg\\downloads\\tools\\7zip-26.03-windows\\7z.exe",
+        "a",
+        "-t7z",
+        "-m0=lzma2",
+        "-mx=5",
+        "-ms=off",
+        "-mmt=1",
+        "$BENCH_ROOT\\7z-lzma2-5-1-1.archive",
+        "mixed"
+      ],
+      "archive_bytes": 10320208
+    },
+    {
+      "label": "7z-lzma2-5-1",
+      "operation": "verify",
+      "repetition": 1,
+      "seconds": 0.050139800005126745,
+      "cpu_seconds": 0.046875,
+      "peak_working_set_bytes": 33234944,
+      "input_bytes": 27858143,
+      "mib_per_second": 529.8703919671807,
+      "command": [
+        "$REPO\\.tools\\vcpkg\\downloads\\tools\\7zip-26.03-windows\\7z.exe",
+        "t",
+        "$BENCH_ROOT\\7z-lzma2-5-1-1.archive"
+      ]
+    },
+    {
+      "label": "7z-lzma2-5-1",
+      "operation": "extract",
+      "repetition": 1,
+      "seconds": 0.19003880000673234,
+      "cpu_seconds": 0.15625,
+      "peak_working_set_bytes": 33267712,
+      "input_bytes": 27858143,
+      "mib_per_second": 139.800901084049,
+      "command": [
+        "$REPO\\.tools\\vcpkg\\downloads\\tools\\7zip-26.03-windows\\7z.exe",
+        "x",
+        "$BENCH_ROOT\\7z-lzma2-5-1-1.archive",
+        "-o$BENCH_ROOT\\7z-lzma2-5-1-1-out"
+      ]
+    },
+    {
+      "label": "native-zstd-3-1",
+      "operation": "pack",
+      "repetition": 1,
+      "seconds": 0.1349878000037279,
+      "cpu_seconds": 0.078125,
+      "peak_working_set_bytes": 45420544,
+      "input_bytes": 27858143,
+      "mib_per_second": 196.81478978943915,
+      "command": [
+        "$REPO\\build\\zstd-cli\\programs\\zstd.exe",
+        "-3",
+        "-T1",
+        "$BENCH_ROOT\\mixed.tar",
+        "-o",
+        "$BENCH_ROOT\\native-zstd-1.zst"
+      ],
+      "archive_bytes": 10325701
+    },
+    {
+      "label": "native-zstd-3-1",
+      "operation": "verify",
+      "repetition": 1,
+      "seconds": 0.023927200003527105,
+      "cpu_seconds": 0.0,
+      "peak_working_set_bytes": 9199616,
+      "input_bytes": 27858143,
+      "mib_per_second": 1110.3512102526092,
+      "command": [
+        "$REPO\\build\\zstd-cli\\programs\\zstd.exe",
+        "-t",
+        "$BENCH_ROOT\\native-zstd-1.zst"
+      ]
+    },
+    {
+      "label": "native-zstd-3-1",
+      "operation": "extract",
+      "repetition": 1,
+      "seconds": 0.04328549999627285,
+      "cpu_seconds": 0.015625,
+      "peak_working_set_bytes": 10735616,
+      "input_bytes": 27858143,
+      "mib_per_second": 613.7758714618104,
+      "command": [
+        "$REPO\\build\\zstd-cli\\programs\\zstd.exe",
+        "-d",
+        "$BENCH_ROOT\\native-zstd-1.zst",
+        "-o",
+        "$BENCH_ROOT\\native-zstd-1.tar"
+      ]
+    },
+    {
+      "label": "milestone3-balanced-1",
+      "operation": "pack",
+      "repetition": 2,
+      "seconds": 0.5104911999951582,
+      "cpu_seconds": 0.453125,
+      "peak_working_set_bytes": 15679488,
+      "input_bytes": 27858143,
+      "mib_per_second": 52.04319973022951,
+      "command": [
+        "$REPO\\build\\production\\zyph.exe",
+        "pack",
+        "$BENCH_ROOT\\mixed",
+        "-o",
+        "$BENCH_ROOT\\milestone3-balanced-1-2.zyph"
+      ],
+      "archive_bytes": 10369620
+    },
+    {
+      "label": "milestone3-balanced-1",
+      "operation": "verify",
+      "repetition": 2,
+      "seconds": 0.05535380000947043,
+      "cpu_seconds": 0.046875,
+      "peak_working_set_bytes": 11272192,
+      "input_bytes": 27858143,
+      "mib_per_second": 479.9597403850708,
+      "command": [
+        "$REPO\\build\\production\\zyph.exe",
+        "verify",
+        "$BENCH_ROOT\\milestone3-balanced-1-2.zyph"
+      ]
+    },
+    {
+      "label": "milestone3-balanced-1",
+      "operation": "list",
+      "repetition": 2,
+      "seconds": 0.020241400023223832,
+      "cpu_seconds": 0.0,
+      "peak_working_set_bytes": 6160384,
+      "input_bytes": 27858143,
+      "mib_per_second": 1312.537445601115,
+      "command": [
+        "$REPO\\build\\production\\zyph.exe",
+        "list",
+        "$BENCH_ROOT\\milestone3-balanced-1-2.zyph"
+      ]
+    },
+    {
+      "label": "milestone3-balanced-1",
+      "operation": "extract",
+      "repetition": 2,
+      "seconds": 1.5065386999922339,
+      "cpu_seconds": 0.75,
+      "peak_working_set_bytes": 10330112,
+      "input_bytes": 27858143,
+      "mib_per_second": 17.63485762563518,
+      "command": [
+        "$REPO\\build\\production\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\milestone3-balanced-1-2.zyph",
+        "-o",
+        "$BENCH_ROOT\\milestone3-balanced-1-2-out"
+      ]
+    },
+    {
+      "label": "store-1",
+      "operation": "pack",
+      "repetition": 2,
+      "seconds": 0.49402240000199527,
+      "cpu_seconds": 0.46875,
+      "peak_working_set_bytes": 10637312,
+      "input_bytes": 27858143,
+      "mib_per_second": 53.778119133394064,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "pack",
+        "$BENCH_ROOT\\mixed",
+        "-o",
+        "$BENCH_ROOT\\store-1-2.zyph",
+        "--store"
+      ],
+      "archive_bytes": 27903290
+    },
+    {
+      "label": "store-1",
+      "operation": "verify",
+      "repetition": 2,
+      "seconds": 0.06135349997202866,
+      "cpu_seconds": 0.046875,
+      "peak_working_set_bytes": 10264576,
+      "input_bytes": 27858143,
+      "mib_per_second": 433.0249373545902,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "verify",
+        "$BENCH_ROOT\\store-1-2.zyph"
+      ]
+    },
+    {
+      "label": "store-1",
+      "operation": "list",
+      "repetition": 2,
+      "seconds": 0.017088399996282533,
+      "cpu_seconds": 0.0,
+      "peak_working_set_bytes": 6234112,
+      "input_bytes": 27858143,
+      "mib_per_second": 1554.7152154474475,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "list",
+        "$BENCH_ROOT\\store-1-2.zyph"
+      ]
+    },
+    {
+      "label": "store-1",
+      "operation": "extract",
+      "repetition": 2,
+      "seconds": 1.505505799985258,
+      "cpu_seconds": 0.390625,
+      "peak_working_set_bytes": 10346496,
+      "input_bytes": 27858143,
+      "mib_per_second": 17.646956579066458,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\store-1-2.zyph",
+        "-o",
+        "$BENCH_ROOT\\store-1-2-out"
+      ]
+    },
+    {
+      "label": "store-1",
+      "operation": "select",
+      "repetition": 2,
+      "seconds": 0.023743700003251433,
+      "cpu_seconds": 0.0,
+      "peak_working_set_bytes": 6295552,
+      "input_bytes": 45,
+      "mib_per_second": 0.0018074413100066323,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\store-1-2.zyph",
+        "-o",
+        "$BENCH_ROOT\\store-1-2-selected",
+        "--select",
+        "mixed/tiny-0000.cpp"
+      ]
+    },
+    {
+      "label": "fast-1",
+      "operation": "pack",
+      "repetition": 2,
+      "seconds": 0.4834872999927029,
+      "cpu_seconds": 0.453125,
+      "peak_working_set_bytes": 15065088,
+      "input_bytes": 27858143,
+      "mib_per_second": 54.94993453245522,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "pack",
+        "$BENCH_ROOT\\mixed",
+        "-o",
+        "$BENCH_ROOT\\fast-1-2.zyph",
+        "--preset",
+        "fast"
+      ],
+      "archive_bytes": 10377738
+    },
+    {
+      "label": "fast-1",
+      "operation": "verify",
+      "repetition": 2,
+      "seconds": 0.05361179998726584,
+      "cpu_seconds": 0.03125,
+      "peak_working_set_bytes": 10461184,
+      "input_bytes": 27858143,
+      "mib_per_second": 495.5549988656049,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "verify",
+        "$BENCH_ROOT\\fast-1-2.zyph"
+      ]
+    },
+    {
+      "label": "fast-1",
+      "operation": "list",
+      "repetition": 2,
+      "seconds": 0.01626490001217462,
+      "cpu_seconds": 0.0,
+      "peak_working_set_bytes": 6234112,
+      "input_bytes": 27858143,
+      "mib_per_second": 1633.4312207259898,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "list",
+        "$BENCH_ROOT\\fast-1-2.zyph"
+      ]
+    },
+    {
+      "label": "fast-1",
+      "operation": "extract",
+      "repetition": 2,
+      "seconds": 1.2386175999999978,
+      "cpu_seconds": 0.546875,
+      "peak_working_set_bytes": 10506240,
+      "input_bytes": 27858143,
+      "mib_per_second": 21.44939284075457,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\fast-1-2.zyph",
+        "-o",
+        "$BENCH_ROOT\\fast-1-2-out"
+      ]
+    },
+    {
+      "label": "fast-1",
+      "operation": "select",
+      "repetition": 2,
+      "seconds": 0.023181900003692135,
+      "cpu_seconds": 0.015625,
+      "peak_working_set_bytes": 6320128,
+      "input_bytes": 45,
+      "mib_per_second": 0.0018512436095163127,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\fast-1-2.zyph",
+        "-o",
+        "$BENCH_ROOT\\fast-1-2-selected",
+        "--select",
+        "mixed/tiny-0000.cpp"
+      ]
+    },
+    {
+      "label": "fast-4",
+      "operation": "pack",
+      "repetition": 2,
+      "seconds": 0.47913309998693876,
+      "cpu_seconds": 0.4375,
+      "peak_working_set_bytes": 27639808,
+      "input_bytes": 27858143,
+      "mib_per_second": 55.44930100340969,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "pack",
+        "$BENCH_ROOT\\mixed",
+        "-o",
+        "$BENCH_ROOT\\fast-4-2.zyph",
+        "--preset",
+        "fast",
+        "--threads",
+        "4"
+      ],
+      "archive_bytes": 10377738
+    },
+    {
+      "label": "fast-4",
+      "operation": "verify",
+      "repetition": 2,
+      "seconds": 0.059279499982949346,
+      "cpu_seconds": 0.03125,
+      "peak_working_set_bytes": 10452992,
+      "input_bytes": 27858143,
+      "mib_per_second": 448.1750940799811,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "verify",
+        "$BENCH_ROOT\\fast-4-2.zyph"
+      ]
+    },
+    {
+      "label": "fast-4",
+      "operation": "list",
+      "repetition": 2,
+      "seconds": 0.015363299986347556,
+      "cpu_seconds": 0.015625,
+      "peak_working_set_bytes": 6238208,
+      "input_bytes": 27858143,
+      "mib_per_second": 1729.2896386506536,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "list",
+        "$BENCH_ROOT\\fast-4-2.zyph"
+      ]
+    },
+    {
+      "label": "fast-4",
+      "operation": "extract",
+      "repetition": 2,
+      "seconds": 1.2705333000048995,
+      "cpu_seconds": 0.46875,
+      "peak_working_set_bytes": 10493952,
+      "input_bytes": 27858143,
+      "mib_per_second": 20.910585721578574,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\fast-4-2.zyph",
+        "-o",
+        "$BENCH_ROOT\\fast-4-2-out"
+      ]
+    },
+    {
+      "label": "fast-4",
+      "operation": "select",
+      "repetition": 2,
+      "seconds": 0.025626199989346787,
+      "cpu_seconds": 0.015625,
+      "peak_working_set_bytes": 6307840,
+      "input_bytes": 45,
+      "mib_per_second": 0.001674666718285264,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\fast-4-2.zyph",
+        "-o",
+        "$BENCH_ROOT\\fast-4-2-selected",
+        "--select",
+        "mixed/tiny-0000.cpp"
+      ]
+    },
+    {
+      "label": "balanced-1",
+      "operation": "pack",
+      "repetition": 2,
+      "seconds": 0.47099119998165406,
+      "cpu_seconds": 0.421875,
+      "peak_working_set_bytes": 15847424,
+      "input_bytes": 27858143,
+      "mib_per_second": 56.40783836918272,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "pack",
+        "$BENCH_ROOT\\mixed",
+        "-o",
+        "$BENCH_ROOT\\balanced-1-2.zyph"
+      ],
+      "archive_bytes": 10369620
+    },
+    {
+      "label": "balanced-1",
+      "operation": "verify",
+      "repetition": 2,
+      "seconds": 0.053774100000737235,
+      "cpu_seconds": 0.046875,
+      "peak_working_set_bytes": 10399744,
+      "input_bytes": 27858143,
+      "mib_per_second": 494.0593237545272,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "verify",
+        "$BENCH_ROOT\\balanced-1-2.zyph"
+      ]
+    },
+    {
+      "label": "balanced-1",
+      "operation": "list",
+      "repetition": 2,
+      "seconds": 0.014292299980297685,
+      "cpu_seconds": 0.0,
+      "peak_working_set_bytes": 6242304,
+      "input_bytes": 27858143,
+      "mib_per_second": 1858.8747450373064,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "list",
+        "$BENCH_ROOT\\balanced-1-2.zyph"
+      ]
+    },
+    {
+      "label": "balanced-1",
+      "operation": "extract",
+      "repetition": 2,
+      "seconds": 1.2710190000070725,
+      "cpu_seconds": 0.4375,
+      "peak_working_set_bytes": 10506240,
+      "input_bytes": 27858143,
+      "mib_per_second": 20.902595068779245,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\balanced-1-2.zyph",
+        "-o",
+        "$BENCH_ROOT\\balanced-1-2-out"
+      ]
+    },
+    {
+      "label": "balanced-1",
+      "operation": "select",
+      "repetition": 2,
+      "seconds": 0.025847099983366206,
+      "cpu_seconds": 0.015625,
+      "peak_working_set_bytes": 6303744,
+      "input_bytes": 45,
+      "mib_per_second": 0.0016603543246979059,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\balanced-1-2.zyph",
+        "-o",
+        "$BENCH_ROOT\\balanced-1-2-selected",
+        "--select",
+        "mixed/tiny-0000.cpp"
+      ]
+    },
+    {
+      "label": "balanced-4",
+      "operation": "pack",
+      "repetition": 2,
+      "seconds": 0.4648019000014756,
+      "cpu_seconds": 0.4375,
+      "peak_working_set_bytes": 28385280,
+      "input_bytes": 27858143,
+      "mib_per_second": 57.15896488759666,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "pack",
+        "$BENCH_ROOT\\mixed",
+        "-o",
+        "$BENCH_ROOT\\balanced-4-2.zyph",
+        "--threads",
+        "4"
+      ],
+      "archive_bytes": 10369620
+    },
+    {
+      "label": "balanced-4",
+      "operation": "verify",
+      "repetition": 2,
+      "seconds": 0.05580179998651147,
+      "cpu_seconds": 0.03125,
+      "peak_working_set_bytes": 10395648,
+      "input_bytes": 27858143,
+      "mib_per_second": 476.1064246725829,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "verify",
+        "$BENCH_ROOT\\balanced-4-2.zyph"
+      ]
+    },
+    {
+      "label": "balanced-4",
+      "operation": "list",
+      "repetition": 2,
+      "seconds": 0.015661299985367805,
+      "cpu_seconds": 0.0,
+      "peak_working_set_bytes": 6230016,
+      "input_bytes": 27858143,
+      "mib_per_second": 1696.3850706323483,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "list",
+        "$BENCH_ROOT\\balanced-4-2.zyph"
+      ]
+    },
+    {
+      "label": "balanced-4",
+      "operation": "extract",
+      "repetition": 2,
+      "seconds": 1.3610142999968957,
+      "cpu_seconds": 0.53125,
+      "peak_working_set_bytes": 10498048,
+      "input_bytes": 27858143,
+      "mib_per_second": 19.520438162870995,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\balanced-4-2.zyph",
+        "-o",
+        "$BENCH_ROOT\\balanced-4-2-out"
+      ]
+    },
+    {
+      "label": "balanced-4",
+      "operation": "select",
+      "repetition": 2,
+      "seconds": 0.13354889999027364,
+      "cpu_seconds": 0.0,
+      "peak_working_set_bytes": 6303744,
+      "input_bytes": 45,
+      "mib_per_second": 0.00032134554639841117,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\balanced-4-2.zyph",
+        "-o",
+        "$BENCH_ROOT\\balanced-4-2-selected",
+        "--select",
+        "mixed/tiny-0000.cpp"
+      ]
+    },
+    {
+      "label": "maximum-1",
+      "operation": "pack",
+      "repetition": 2,
+      "seconds": 1.9010280000220519,
+      "cpu_seconds": 1.828125,
+      "peak_working_set_bytes": 65904640,
+      "input_bytes": 27858143,
+      "mib_per_second": 13.975383572237956,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "pack",
+        "$BENCH_ROOT\\mixed",
+        "-o",
+        "$BENCH_ROOT\\maximum-1-2.zyph",
+        "--preset",
+        "maximum"
+      ],
+      "archive_bytes": 10359881
+    },
+    {
+      "label": "maximum-1",
+      "operation": "verify",
+      "repetition": 2,
+      "seconds": 0.061942100001033396,
+      "cpu_seconds": 0.046875,
+      "peak_working_set_bytes": 10440704,
+      "input_bytes": 27858143,
+      "mib_per_second": 428.9101512772303,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "verify",
+        "$BENCH_ROOT\\maximum-1-2.zyph"
+      ]
+    },
+    {
+      "label": "maximum-1",
+      "operation": "list",
+      "repetition": 2,
+      "seconds": 0.016654400009429082,
+      "cpu_seconds": 0.015625,
+      "peak_working_set_bytes": 6234112,
+      "input_bytes": 27858143,
+      "mib_per_second": 1595.2298171552866,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "list",
+        "$BENCH_ROOT\\maximum-1-2.zyph"
+      ]
+    },
+    {
+      "label": "maximum-1",
+      "operation": "extract",
+      "repetition": 2,
+      "seconds": 1.2765476000204217,
+      "cpu_seconds": 0.421875,
+      "peak_working_set_bytes": 10489856,
+      "input_bytes": 27858143,
+      "mib_per_second": 20.812068019592488,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\maximum-1-2.zyph",
+        "-o",
+        "$BENCH_ROOT\\maximum-1-2-out"
+      ]
+    },
+    {
+      "label": "maximum-1",
+      "operation": "select",
+      "repetition": 2,
+      "seconds": 0.02311730000656098,
+      "cpu_seconds": 0.015625,
+      "peak_working_set_bytes": 6311936,
+      "input_bytes": 45,
+      "mib_per_second": 0.0018564168058597386,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\maximum-1-2.zyph",
+        "-o",
+        "$BENCH_ROOT\\maximum-1-2-selected",
+        "--select",
+        "mixed/tiny-0000.cpp"
+      ]
+    },
+    {
+      "label": "maximum-4",
+      "operation": "pack",
+      "repetition": 2,
+      "seconds": 1.4191953999979887,
+      "cpu_seconds": 1.9375,
+      "peak_working_set_bytes": 169132032,
+      "input_bytes": 27858143,
+      "mib_per_second": 18.72018150700757,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "pack",
+        "$BENCH_ROOT\\mixed",
+        "-o",
+        "$BENCH_ROOT\\maximum-4-2.zyph",
+        "--preset",
+        "maximum",
+        "--threads",
+        "4",
+        "--memory-mib",
+        "1024"
+      ],
+      "archive_bytes": 10359881
+    },
+    {
+      "label": "maximum-4",
+      "operation": "verify",
+      "repetition": 2,
+      "seconds": 0.05296720002661459,
+      "cpu_seconds": 0.046875,
+      "peak_working_set_bytes": 10391552,
+      "input_bytes": 27858143,
+      "mib_per_second": 501.58580156253413,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "verify",
+        "$BENCH_ROOT\\maximum-4-2.zyph"
+      ]
+    },
+    {
+      "label": "maximum-4",
+      "operation": "list",
+      "repetition": 2,
+      "seconds": 0.016591999999945983,
+      "cpu_seconds": 0.0,
+      "peak_working_set_bytes": 6242304,
+      "input_bytes": 27858143,
+      "mib_per_second": 1601.2292358943498,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "list",
+        "$BENCH_ROOT\\maximum-4-2.zyph"
+      ]
+    },
+    {
+      "label": "maximum-4",
+      "operation": "extract",
+      "repetition": 2,
+      "seconds": 1.2465614999819081,
+      "cpu_seconds": 0.53125,
+      "peak_working_set_bytes": 10543104,
+      "input_bytes": 27858143,
+      "mib_per_second": 21.312703370237365,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\maximum-4-2.zyph",
+        "-o",
+        "$BENCH_ROOT\\maximum-4-2-out"
+      ]
+    },
+    {
+      "label": "maximum-4",
+      "operation": "select",
+      "repetition": 2,
+      "seconds": 0.021820099995238706,
+      "cpu_seconds": 0.015625,
+      "peak_working_set_bytes": 6307840,
+      "input_bytes": 45,
+      "mib_per_second": 0.0019667803652433156,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\maximum-4-2.zyph",
+        "-o",
+        "$BENCH_ROOT\\maximum-4-2-selected",
+        "--select",
+        "mixed/tiny-0000.cpp"
+      ]
+    },
+    {
+      "label": "zip-deflate-5-1",
+      "operation": "pack",
+      "repetition": 2,
+      "seconds": 0.5955908999894746,
+      "cpu_seconds": 0.578125,
+      "peak_working_set_bytes": 14340096,
+      "input_bytes": 27858143,
+      "mib_per_second": 44.60712123429365,
+      "command": [
+        "$REPO\\.tools\\vcpkg\\downloads\\tools\\7zip-26.03-windows\\7z.exe",
+        "a",
+        "-tzip",
+        "-mm=Deflate",
+        "-mx=5",
+        "-mmt=1",
+        "$BENCH_ROOT\\zip-deflate-5-1-2.archive",
+        "mixed"
+      ],
+      "archive_bytes": 10460336
+    },
+    {
+      "label": "zip-deflate-5-1",
+      "operation": "verify",
+      "repetition": 2,
+      "seconds": 0.03472740002325736,
+      "cpu_seconds": 0.015625,
+      "peak_working_set_bytes": 9064448,
+      "input_bytes": 27858143,
+      "mib_per_second": 765.0326676940952,
+      "command": [
+        "$REPO\\.tools\\vcpkg\\downloads\\tools\\7zip-26.03-windows\\7z.exe",
+        "t",
+        "$BENCH_ROOT\\zip-deflate-5-1-2.archive"
+      ]
+    },
+    {
+      "label": "zip-deflate-5-1",
+      "operation": "extract",
+      "repetition": 2,
+      "seconds": 0.17960440000751987,
+      "cpu_seconds": 0.171875,
+      "peak_working_set_bytes": 9076736,
+      "input_bytes": 27858143,
+      "mib_per_second": 147.9228542327482,
+      "command": [
+        "$REPO\\.tools\\vcpkg\\downloads\\tools\\7zip-26.03-windows\\7z.exe",
+        "x",
+        "$BENCH_ROOT\\zip-deflate-5-1-2.archive",
+        "-o$BENCH_ROOT\\zip-deflate-5-1-2-out"
+      ]
+    },
+    {
+      "label": "7z-lzma2-5-1",
+      "operation": "pack",
+      "repetition": 2,
+      "seconds": 2.524880100012524,
+      "cpu_seconds": 2.484375,
+      "peak_working_set_bytes": 194236416,
+      "input_bytes": 27858143,
+      "mib_per_second": 10.522319646679767,
+      "command": [
+        "$REPO\\.tools\\vcpkg\\downloads\\tools\\7zip-26.03-windows\\7z.exe",
+        "a",
+        "-t7z",
+        "-m0=lzma2",
+        "-mx=5",
+        "-ms=off",
+        "-mmt=1",
+        "$BENCH_ROOT\\7z-lzma2-5-1-2.archive",
+        "mixed"
+      ],
+      "archive_bytes": 10320208
+    },
+    {
+      "label": "7z-lzma2-5-1",
+      "operation": "verify",
+      "repetition": 2,
+      "seconds": 0.04958350001834333,
+      "cpu_seconds": 0.046875,
+      "peak_working_set_bytes": 33234944,
+      "input_bytes": 27858143,
+      "mib_per_second": 535.8152504773549,
+      "command": [
+        "$REPO\\.tools\\vcpkg\\downloads\\tools\\7zip-26.03-windows\\7z.exe",
+        "t",
+        "$BENCH_ROOT\\7z-lzma2-5-1-2.archive"
+      ]
+    },
+    {
+      "label": "7z-lzma2-5-1",
+      "operation": "extract",
+      "repetition": 2,
+      "seconds": 0.1845698999823071,
+      "cpu_seconds": 0.140625,
+      "peak_working_set_bytes": 33267712,
+      "input_bytes": 27858143,
+      "mib_per_second": 143.94327289779824,
+      "command": [
+        "$REPO\\.tools\\vcpkg\\downloads\\tools\\7zip-26.03-windows\\7z.exe",
+        "x",
+        "$BENCH_ROOT\\7z-lzma2-5-1-2.archive",
+        "-o$BENCH_ROOT\\7z-lzma2-5-1-2-out"
+      ]
+    },
+    {
+      "label": "native-zstd-3-1",
+      "operation": "pack",
+      "repetition": 2,
+      "seconds": 0.1262982999905944,
+      "cpu_seconds": 0.078125,
+      "peak_working_set_bytes": 47697920,
+      "input_bytes": 27858143,
+      "mib_per_second": 210.3559231110085,
+      "command": [
+        "$REPO\\build\\zstd-cli\\programs\\zstd.exe",
+        "-3",
+        "-T1",
+        "$BENCH_ROOT\\mixed.tar",
+        "-o",
+        "$BENCH_ROOT\\native-zstd-2.zst"
+      ],
+      "archive_bytes": 10325701
+    },
+    {
+      "label": "native-zstd-3-1",
+      "operation": "verify",
+      "repetition": 2,
+      "seconds": 0.02377840000553988,
+      "cpu_seconds": 0.015625,
+      "peak_working_set_bytes": 9199616,
+      "input_bytes": 27858143,
+      "mib_per_second": 1117.2995439425215,
+      "command": [
+        "$REPO\\build\\zstd-cli\\programs\\zstd.exe",
+        "-t",
+        "$BENCH_ROOT\\native-zstd-2.zst"
+      ]
+    },
+    {
+      "label": "native-zstd-3-1",
+      "operation": "extract",
+      "repetition": 2,
+      "seconds": 0.03750489998492412,
+      "cpu_seconds": 0.015625,
+      "peak_working_set_bytes": 10735616,
+      "input_bytes": 27858143,
+      "mib_per_second": 708.3766519188681,
+      "command": [
+        "$REPO\\build\\zstd-cli\\programs\\zstd.exe",
+        "-d",
+        "$BENCH_ROOT\\native-zstd-2.zst",
+        "-o",
+        "$BENCH_ROOT\\native-zstd-2.tar"
+      ]
+    },
+    {
+      "label": "large-67108864-balanced-2",
+      "operation": "pack",
+      "repetition": 0,
+      "seconds": 0.19631219998700544,
+      "cpu_seconds": 0.234375,
+      "peak_working_set_bytes": 28188672,
+      "input_bytes": 67108864,
+      "mib_per_second": 326.0113228023341,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "pack",
+        "$BENCH_ROOT\\large-67108864.bin",
+        "-o",
+        "$BENCH_ROOT\\large-67108864-balanced-2-0.zyph",
+        "--threads",
+        "2"
+      ],
+      "archive_bytes": 1052413
+    },
+    {
+      "label": "large-67108864-balanced-2",
+      "operation": "extract",
+      "repetition": 0,
+      "seconds": 0.1431542000209447,
+      "cpu_seconds": 0.125,
+      "peak_working_set_bytes": 11415552,
+      "input_bytes": 67108864,
+      "mib_per_second": 447.0703618240767,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\large-67108864-balanced-2-0.zyph",
+        "-o",
+        "$BENCH_ROOT\\large-67108864-balanced-2-0-out"
+      ]
+    },
+    {
+      "label": "large-67108864-balanced-2",
+      "operation": "pack",
+      "repetition": 1,
+      "seconds": 0.19557279997388832,
+      "cpu_seconds": 0.234375,
+      "peak_working_set_bytes": 28180480,
+      "input_bytes": 67108864,
+      "mib_per_second": 327.24387035694576,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "pack",
+        "$BENCH_ROOT\\large-67108864.bin",
+        "-o",
+        "$BENCH_ROOT\\large-67108864-balanced-2-1.zyph",
+        "--threads",
+        "2"
+      ],
+      "archive_bytes": 1052413
+    },
+    {
+      "label": "large-67108864-balanced-2",
+      "operation": "extract",
+      "repetition": 1,
+      "seconds": 0.1418239999911748,
+      "cpu_seconds": 0.109375,
+      "peak_working_set_bytes": 11411456,
+      "input_bytes": 67108864,
+      "mib_per_second": 451.26353793421777,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\large-67108864-balanced-2-1.zyph",
+        "-o",
+        "$BENCH_ROOT\\large-67108864-balanced-2-1-out"
+      ]
+    },
+    {
+      "label": "large-67108864-balanced-2",
+      "operation": "pack",
+      "repetition": 2,
+      "seconds": 0.1941925999999512,
+      "cpu_seconds": 0.234375,
+      "peak_working_set_bytes": 28192768,
+      "input_bytes": 67108864,
+      "mib_per_second": 329.5697158388944,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "pack",
+        "$BENCH_ROOT\\large-67108864.bin",
+        "-o",
+        "$BENCH_ROOT\\large-67108864-balanced-2-2.zyph",
+        "--threads",
+        "2"
+      ],
+      "archive_bytes": 1052413
+    },
+    {
+      "label": "large-67108864-balanced-2",
+      "operation": "extract",
+      "repetition": 2,
+      "seconds": 0.1424803999834694,
+      "cpu_seconds": 0.125,
+      "peak_working_set_bytes": 11399168,
+      "input_bytes": 67108864,
+      "mib_per_second": 449.1845896518068,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\large-67108864-balanced-2-2.zyph",
+        "-o",
+        "$BENCH_ROOT\\large-67108864-balanced-2-2-out"
+      ]
+    },
+    {
+      "label": "large-4296015872-balanced-2",
+      "operation": "pack",
+      "repetition": 0,
+      "seconds": 10.910103499976685,
+      "cpu_seconds": 15.84375,
+      "peak_working_set_bytes": 33390592,
+      "input_bytes": 4296015872,
+      "mib_per_second": 375.5234769320708,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "pack",
+        "$BENCH_ROOT\\large-4296015872.bin",
+        "-o",
+        "$BENCH_ROOT\\large-4296015872-balanced-2-0.zyph",
+        "--threads",
+        "2"
+      ],
+      "archive_bytes": 1255789
+    },
+    {
+      "label": "large-4296015872-balanced-2",
+      "operation": "extract",
+      "repetition": 0,
+      "seconds": 7.531687799986685,
+      "cpu_seconds": 7.1875,
+      "peak_working_set_bytes": 10412032,
+      "input_bytes": 4296015872,
+      "mib_per_second": 543.9683785096938,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\large-4296015872-balanced-2-0.zyph",
+        "-o",
+        "$BENCH_ROOT\\large-4296015872-balanced-2-0-out"
+      ]
+    },
+    {
+      "label": "large-4296015872-balanced-2",
+      "operation": "pack",
+      "repetition": 1,
+      "seconds": 10.435846399981529,
+      "cpu_seconds": 14.78125,
+      "peak_working_set_bytes": 33431552,
+      "input_bytes": 4296015872,
+      "mib_per_second": 392.58914351281095,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "pack",
+        "$BENCH_ROOT\\large-4296015872.bin",
+        "-o",
+        "$BENCH_ROOT\\large-4296015872-balanced-2-1.zyph",
+        "--threads",
+        "2"
+      ],
+      "archive_bytes": 1255789
+    },
+    {
+      "label": "large-4296015872-balanced-2",
+      "operation": "extract",
+      "repetition": 1,
+      "seconds": 7.662424500013003,
+      "cpu_seconds": 7.203125,
+      "peak_working_set_bytes": 10416128,
+      "input_bytes": 4296015872,
+      "mib_per_second": 534.687160701296,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\large-4296015872-balanced-2-1.zyph",
+        "-o",
+        "$BENCH_ROOT\\large-4296015872-balanced-2-1-out"
+      ]
+    },
+    {
+      "label": "large-4296015872-balanced-2",
+      "operation": "pack",
+      "repetition": 2,
+      "seconds": 10.424942099984037,
+      "cpu_seconds": 14.984375,
+      "peak_working_set_bytes": 28319744,
+      "input_bytes": 4296015872,
+      "mib_per_second": 392.99978462290676,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "pack",
+        "$BENCH_ROOT\\large-4296015872.bin",
+        "-o",
+        "$BENCH_ROOT\\large-4296015872-balanced-2-2.zyph",
+        "--threads",
+        "2"
+      ],
+      "archive_bytes": 1255789
+    },
+    {
+      "label": "large-4296015872-balanced-2",
+      "operation": "extract",
+      "repetition": 2,
+      "seconds": 7.4846962000010535,
+      "cpu_seconds": 7.28125,
+      "peak_working_set_bytes": 10424320,
+      "input_bytes": 4296015872,
+      "mib_per_second": 547.3836065650097,
+      "command": [
+        "$REPO\\build\\release\\zyph.exe",
+        "extract",
+        "$BENCH_ROOT\\large-4296015872-balanced-2-2.zyph",
+        "-o",
+        "$BENCH_ROOT\\large-4296015872-balanced-2-2-out"
+      ]
+    }
+  ],
+  "source_revision": "c51687144b9ac5ac8086f15cf472f1e3b203a201",
+  "datasets": {
+    "mixed": {
+      "mixed/app.ts": {
+        "size": 75780,
+        "sha256": "539b0963b79bde76cb093439135661857ee07e251524ea1e2b06f25b0c929e4c"
+      },
+      "mixed/compressed.zlib": {
+        "size": 1048902,
+        "sha256": "aa9ead34ca52038256cb8790986655d97e2b59a466881c6d22436f1cb8495b41"
+      },
+      "mixed/cpp-source/apps/cli/main.cpp": {
+        "size": 10360,
+        "sha256": "ddbb440dcf38979aaeaeed01df0544cf26b5d16417b97d9e8a29fb1fbc77567b"
+      },
+      "mixed/cpp-source/CMakeLists.txt": {
+        "size": 4480,
+        "sha256": "a581d788e9297297c959a3280d298b83b36b8b91dff4aa138ac66d7f65af89eb"
+      },
+      "mixed/cpp-source/include/zyphie/archive.hpp": {
+        "size": 2949,
+        "sha256": "1c42c993476665f7aa84b7359c04d25aec64ae8e0be3e61de3aa598f3c948741"
+      },
+      "mixed/cpp-source/include/zyphie/binary.hpp": {
+        "size": 2757,
+        "sha256": "e8598aca7d4d595e515b62b8e975f058deebbeb0bdf40c14f56901198d9ba9c2"
+      },
+      "mixed/cpp-source/include/zyphie/digest.hpp": {
+        "size": 530,
+        "sha256": "8ab816078f8468179cfb975e89d680ac511e3e101b0a30bef11af2240f3c0d18"
+      },
+      "mixed/cpp-source/include/zyphie/error.hpp": {
+        "size": 625,
+        "sha256": "91799eecaae322aa0bc8bde9c4af83a1faf3025993da654b4d9483111bfe9855"
+      },
+      "mixed/cpp-source/include/zyphie/format.hpp": {
+        "size": 658,
+        "sha256": "0a9a17c1d0a7c1a6e95021e7db8531114b6419fde7803a3a363aca0a9546eb45"
+      },
+      "mixed/cpp-source/include/zyphie/time.hpp": {
+        "size": 927,
+        "sha256": "8057bc72860eae5158f405ee7e78e024e580e9e8b8cc846e818579ad07cc438a"
+      },
+      "mixed/cpp-source/include/zyphie/version.hpp": {
+        "size": 110,
+        "sha256": "7b5c3f5d0dd53af856243cadd46a827931b5e26304e8059c20568915dd10cd53"
+      },
+      "mixed/cpp-source/src/archive/archive.cpp": {
+        "size": 25908,
+        "sha256": "1f9cffeccf1e101c7cd31455e479f42fde94887715eda274319bc30d1b247032"
+      },
+      "mixed/cpp-source/src/compression/codec.cpp": {
+        "size": 2379,
+        "sha256": "977a550c22f31a309bceaa52e9b93af9717ee93ec7545c5835235d07d204acc0"
+      },
+      "mixed/cpp-source/src/compression/codec.hpp": {
+        "size": 302,
+        "sha256": "75623a5452bad9fc1be160bd03d91d9e75f7eb59433920c44631569355cccf7c"
+      },
+      "mixed/cpp-source/src/concurrency/pool.hpp": {
+        "size": 1843,
+        "sha256": "e5d06d58960488deb482098620ed85915fe2d3cfc3e9eacaf13560398454c7a4"
+      },
+      "mixed/cpp-source/src/core/digest.cpp": {
+        "size": 2676,
+        "sha256": "7801de6c38cf65f94671754d8eca07bd82a2b70d6b9527058e5720bc76f33d9c"
+      },
+      "mixed/cpp-source/src/core/version.cpp": {
+        "size": 112,
+        "sha256": "150edd83f18060f722bd10e0bbc1ee31789afc6a676074fc83d187c794f6a712"
+      },
+      "mixed/cpp-source/src/filesystem/io.cpp": {
+        "size": 19360,
+        "sha256": "b653164eb9ea639177b910d0b91b9f53fa6adb98660e7633e93cd2d4dd0b5747"
+      },
+      "mixed/cpp-source/src/filesystem/io.hpp": {
+        "size": 1657,
+        "sha256": "2d45fc15457717ecd3747c221f2fd1edc6ab191c1d911c0177416f7ddbbab2ed"
+      },
+      "mixed/cpp-source/src/format/format.cpp": {
+        "size": 4846,
+        "sha256": "e237b2d4eeb5739851db367b3ce9df794dbf889c7696e74376292ad1f7bfbc02"
+      },
+      "mixed/cpp-source/tests/format/format_tests.cpp": {
+        "size": 3846,
+        "sha256": "3b8529dbf0252264de124b1df5be51d780d55e448173ed35575b375fad0f59a1"
+      },
+      "mixed/cpp-source/tests/fuzz/archive_fuzz.cpp": {
+        "size": 1989,
+        "sha256": "a9ed168e68985f1409c40bf5e3b09709baec878006c47de0ce6c71c473fe747d"
+      },
+      "mixed/cpp-source/tests/fuzz/path_fuzz.cpp": {
+        "size": 250,
+        "sha256": "183b60274d2a70fc54fd63c0699561d05dc898e39a8c8deff7602e89e3c2f5b4"
+      },
+      "mixed/cpp-source/tests/roundtrip/archive_tests.cpp": {
+        "size": 28229,
+        "sha256": "899dba26a50902804245ce07e37094242e6966d48b6486d669cab55449ff08ea"
+      },
+      "mixed/cpp-source/tests/unit/foundation_tests.cpp": {
+        "size": 1712,
+        "sha256": "d3e7a00ef331ab3c6f9362de2420a450af68b8da5af54cc573c459af5009ec0d"
+      },
+      "mixed/data.json": {
+        "size": 265280,
+        "sha256": "6c4744550c3797c4af920df7397a852d577b6b9e220e4a0b2e939357a4d040ec"
+      },
+      "mixed/document.pdf": {
+        "size": 610,
+        "sha256": "dea46c4abcb83c2b8857072fb434a405b03f66ca3ea33af253713ab27618d644"
+      },
+      "mixed/empty": {
+        "size": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "mixed/image.png": {
+        "size": 787252,
+        "sha256": "3e1a94b12f489b2f5562df17aff5a92a6df350addf4a0853af60c46e7233825c"
+      },
+      "mixed/notes.md": {
+        "size": 72000,
+        "sha256": "cd38abd29429283cbdca453b24310ce97872dddb0850967dcf7dd48f3027c29a"
+      },
+      "mixed/random.bin": {
+        "size": 8388608,
+        "sha256": "2b4e61fe4bbf74ac630e129eb3ed1c6c3e9a2b60fb62fa1df4a8ecfc438f1f2a"
+      },
+      "mixed/repeated.txt": {
+        "size": 16777216,
+        "sha256": "481d01904152d3d9e954020ecac44056ea75d7c8810bf58efa63894e492e7084"
+      },
+      "mixed/table.csv": {
+        "size": 311264,
+        "sha256": "d16e0bcab6cfcef1605a350d7ea624ade1704196c38c3b8363747c087f3c9427"
+      },
+      "mixed/tiny-0000.cpp": {
+        "size": 45,
+        "sha256": "a3baa164f7564efbb2c6b1183851e1d88027f8fb7d4cbe6ff556b1ce5a08a170"
+      },
+      "mixed/tiny-0001.cpp": {
+        "size": 45,
+        "sha256": "c1bcaa762f174cbfee57c6aca292bdb2b2573b7db16dea7e935f3c3863fb6ed3"
+      },
+      "mixed/tiny-0002.cpp": {
+        "size": 45,
+        "sha256": "ac30aa8c4fa832fd78ceb5a39dac236abcf58f8e83cbb14dc0011a266a153694"
+      },
+      "mixed/tiny-0003.cpp": {
+        "size": 45,
+        "sha256": "57f94617de2a00270b063935e9d165432f70ff36da76130ae707c418ab7562d1"
+      },
+      "mixed/tiny-0004.cpp": {
+        "size": 45,
+        "sha256": "c2e5deffae53f9b364db34488b8a86937243e38077170dc5c145dafbe5a05c54"
+      },
+      "mixed/tiny-0005.cpp": {
+        "size": 45,
+        "sha256": "6b98587596bddb7f18244d35d8b0e6e0caff51f87e3b8f3a8200e566eb638ecc"
+      },
+      "mixed/tiny-0006.cpp": {
+        "size": 45,
+        "sha256": "5fcbb229655c6c756547bd8895027ce311ff32c50c9777d6772e6144c3f39288"
+      },
+      "mixed/tiny-0007.cpp": {
+        "size": 45,
+        "sha256": "0c1bf5ecd80d4ccd7c173fd081d3390807ec6587bf191f3bfadba6001189a723"
+      },
+      "mixed/tiny-0008.cpp": {
+        "size": 45,
+        "sha256": "a684c2a21647ec797a73f6cdf60079ba5037284c35214143060f1179ff6ecd93"
+      },
+      "mixed/tiny-0009.cpp": {
+        "size": 45,
+        "sha256": "7f1191e5cd5242b49e2d25107d9a60c83cd9ab48e58ac25725fb0cd4d77b6af3"
+      },
+      "mixed/tiny-0010.cpp": {
+        "size": 48,
+        "sha256": "5e82e8b80234de8c488653857bd1022e1eb443fa953bbc82db40a8d21b839df7"
+      },
+      "mixed/tiny-0011.cpp": {
+        "size": 48,
+        "sha256": "2169e4ac9cf3bd5dc2ed478fe66a3494934e1efa8dcfef31531f7a47923073b3"
+      },
+      "mixed/tiny-0012.cpp": {
+        "size": 48,
+        "sha256": "03f548f4bb628ac48713ab1606ef917010b1f3171bd2f3e7cf377c0b89ebb406"
+      },
+      "mixed/tiny-0013.cpp": {
+        "size": 48,
+        "sha256": "c9a62432241bebb05c6752e76a40d37974fa83397fd72bd94a72b181f3e61fc6"
+      },
+      "mixed/tiny-0014.cpp": {
+        "size": 48,
+        "sha256": "f451e0e167aced74c22552c330a2342143a27a6a58b027a8859baa5ac5b8c8fb"
+      },
+      "mixed/tiny-0015.cpp": {
+        "size": 48,
+        "sha256": "af52e3f8bdd54e7438bb974cae2ed6556c80ebc0798b81636b5dd86d8c249259"
+      },
+      "mixed/tiny-0016.cpp": {
+        "size": 48,
+        "sha256": "d6e545a12fdab67da9adfe7ec1a69b2295168b2fb81a56c55fb9a3524b2986bb"
+      },
+      "mixed/tiny-0017.cpp": {
+        "size": 48,
+        "sha256": "9e6c40f6863456c6aaf643d69dfe64116f0c1beee276b0f782bd736922250398"
+      },
+      "mixed/tiny-0018.cpp": {
+        "size": 48,
+        "sha256": "5681cbaf0e32578f55db2d662f8fdc7cb724dc764a63f6ce4207a6baa8d70b98"
+      },
+      "mixed/tiny-0019.cpp": {
+        "size": 48,
+        "sha256": "1ed57de37cb27186c0cae5ee5cce0dc22e3e78c132a29893e2e06abf9a407f43"
+      },
+      "mixed/tiny-0020.cpp": {
+        "size": 48,
+        "sha256": "58b4e86a6b3c65e2762287d69d96b0d1e46734eeb3012465d5cb6a97ce252676"
+      },
+      "mixed/tiny-0021.cpp": {
+        "size": 48,
+        "sha256": "7849eccdcf191357d2fc672c644dcbab88df1b7c621b5f3be2d6cba2c353c547"
+      },
+      "mixed/tiny-0022.cpp": {
+        "size": 48,
+        "sha256": "5482dddff724b0c49651f6a9dbadffe8faeb9f20d20b246d683c12919238bf81"
+      },
+      "mixed/tiny-0023.cpp": {
+        "size": 48,
+        "sha256": "c9527f5029e22cec98641a59cfd16669dd03a3f89a2fae44b5fa6fb85ef851ed"
+      },
+      "mixed/tiny-0024.cpp": {
+        "size": 48,
+        "sha256": "36e50e903252d2bb930f6dd0694f8114270032efc550ebee8f6662f8408b4eca"
+      },
+      "mixed/tiny-0025.cpp": {
+        "size": 48,
+        "sha256": "c9df14545ed8f2880a569ce3f59913ab497683e30f2c16e96bd13b3f7ffd9e65"
+      },
+      "mixed/tiny-0026.cpp": {
+        "size": 48,
+        "sha256": "c2ba9d1d26f51b0955118524e00f174d8ad1e3f7903917ff22ba898bb913db7a"
+      },
+      "mixed/tiny-0027.cpp": {
+        "size": 48,
+        "sha256": "8fe120201e093f97a0263b112af465f96eb6dc0eeb3f57d02529c2e43a677558"
+      },
+      "mixed/tiny-0028.cpp": {
+        "size": 48,
+        "sha256": "cf95b63e680c6528e3eb61ba23e898083e341e983ba8bd1c8980c9b3cb988c99"
+      },
+      "mixed/tiny-0029.cpp": {
+        "size": 48,
+        "sha256": "a92bbd238e522023c3d121c2903a33eb2869aca294af8f5e7a64ef65f6f15f73"
+      },
+      "mixed/tiny-0030.cpp": {
+        "size": 48,
+        "sha256": "1b320ed49953cd233203dfa946689e54f0263aaa85cf6a20240caab335f1c632"
+      },
+      "mixed/tiny-0031.cpp": {
+        "size": 48,
+        "sha256": "301b9493886cf227553ca2b764d43d8fdf7605ce7ffebf3cb29f874a1d97db92"
+      },
+      "mixed/tiny-0032.cpp": {
+        "size": 48,
+        "sha256": "962af0cc9447ea5754c019c08fc79bc6178e5b8b7dfe5580fd2a4103f0464a33"
+      },
+      "mixed/tiny-0033.cpp": {
+        "size": 48,
+        "sha256": "1fb119df675eeeb9f4e72bc41a5d7aa612ed46681114934f7848bb9f7f3bb100"
+      },
+      "mixed/tiny-0034.cpp": {
+        "size": 48,
+        "sha256": "9e24af4ad4264a71193dfc4ac9c9828cbcd3cec7db5c140f7065f98e1ffc58d5"
+      },
+      "mixed/tiny-0035.cpp": {
+        "size": 48,
+        "sha256": "dd19b135ae1a4f6939ac57726ff7e243458862d7f0d7987cb90bcc0b6cbe5948"
+      },
+      "mixed/tiny-0036.cpp": {
+        "size": 48,
+        "sha256": "f5573217bccb1d2e88bb7fafab6a92878ae3a4026431dd4522722010cf95847a"
+      },
+      "mixed/tiny-0037.cpp": {
+        "size": 48,
+        "sha256": "f9ee43c3463d671ece6757fe5051cdd63b5265f6f7c751e3141fd84f35107099"
+      },
+      "mixed/tiny-0038.cpp": {
+        "size": 48,
+        "sha256": "a6cc1bd3d021f5cf77efb50342b381e5f17fe6877d342ed2cdb1bfe408a250dc"
+      },
+      "mixed/tiny-0039.cpp": {
+        "size": 48,
+        "sha256": "8dbabfa906d110a2b16b73045a938da04d073aa54247280c6cf789b2bc8600d2"
+      },
+      "mixed/tiny-0040.cpp": {
+        "size": 48,
+        "sha256": "b00cef7e240a640e3270b3e2910e759148f5e49e77c75672965f0a2b9ee8f909"
+      },
+      "mixed/tiny-0041.cpp": {
+        "size": 48,
+        "sha256": "bea12786f7a8113e0e8142febcb1279f97fecc7d13f5f4b0fdc85d54842fdf98"
+      },
+      "mixed/tiny-0042.cpp": {
+        "size": 48,
+        "sha256": "1ebd25d8f5f3e5241345d67b009573b836fd6f09f7f2b415f3f29cbfe27b7ae0"
+      },
+      "mixed/tiny-0043.cpp": {
+        "size": 48,
+        "sha256": "18cc83ec44199f30a9126cd9cfeb3cfd66bd29df9eb82808dc91b3037404d41f"
+      },
+      "mixed/tiny-0044.cpp": {
+        "size": 48,
+        "sha256": "5f8afc010f85bdd9868a63b8e6058a0217c6a306c8d7bc696a8988e260331cc6"
+      },
+      "mixed/tiny-0045.cpp": {
+        "size": 48,
+        "sha256": "7226d94dd05650ddb8511db3007e636f430b8d973c3ad94e354e0eefb73675ea"
+      },
+      "mixed/tiny-0046.cpp": {
+        "size": 48,
+        "sha256": "768e40f91c2b43dcc463c6d2858cec1cdfe38238b067d761044759f9fb485bc8"
+      },
+      "mixed/tiny-0047.cpp": {
+        "size": 48,
+        "sha256": "976039375437ba89d0716159260d62fc61e1a0689670aeb393e496d8b58fc578"
+      },
+      "mixed/tiny-0048.cpp": {
+        "size": 48,
+        "sha256": "a1d8cba2f7f7948abc17d33e9eaae02ba6aef54d702cf49a8913565d4117d1c8"
+      },
+      "mixed/tiny-0049.cpp": {
+        "size": 48,
+        "sha256": "4ce2130f0f25b7bf71e51f11ccd624fb1d6e929f4503c2f238f8a1d63604c471"
+      },
+      "mixed/tiny-0050.cpp": {
+        "size": 48,
+        "sha256": "d35e60b4cccd7577d67e55fbbe0fe6997d717a5af68e68ab6db904f8a7e4278b"
+      },
+      "mixed/tiny-0051.cpp": {
+        "size": 48,
+        "sha256": "7264c6a93e5100a652ca4fa9c3c7fa34fdb3357c2f258646b2f64782b87525f5"
+      },
+      "mixed/tiny-0052.cpp": {
+        "size": 48,
+        "sha256": "3c6fbaf94c4ee3a9fb9fc478554899b8075a6185c8336e0fa089e261d0e87d73"
+      },
+      "mixed/tiny-0053.cpp": {
+        "size": 48,
+        "sha256": "365c433e0618784440a753c36b757d5b2c80e9e488093304512eb4b69fc77956"
+      },
+      "mixed/tiny-0054.cpp": {
+        "size": 48,
+        "sha256": "3055ed97fed8285ac79529116a8377751920ddf2d8511d0d05b10d4cfd326063"
+      },
+      "mixed/tiny-0055.cpp": {
+        "size": 48,
+        "sha256": "835700745ef5f14eae6a9f1e2c0a5e01edb06343d1ab35c49767cc9d979bd91a"
+      },
+      "mixed/tiny-0056.cpp": {
+        "size": 48,
+        "sha256": "545a014279797788b5d030a37c923fa1cb6ed42ab4d3be7ba9ab633620b9a484"
+      },
+      "mixed/tiny-0057.cpp": {
+        "size": 48,
+        "sha256": "a49e635fdd50f2b1282c2548c08205f170c6862b0c821edbea291acc6ed5dba9"
+      },
+      "mixed/tiny-0058.cpp": {
+        "size": 48,
+        "sha256": "2bd634c9597a6ba4426e537ba6029982db516d2c8f1bc17167f7e9f180d38bf5"
+      },
+      "mixed/tiny-0059.cpp": {
+        "size": 48,
+        "sha256": "51fa221fa882ddc04592665e84585bc4e6f10a9a336c4a7cb6d47b300a94b324"
+      },
+      "mixed/tiny-0060.cpp": {
+        "size": 48,
+        "sha256": "aeb92f2467997f811e831c65c2fb58902556e0763ec7b9cd0e35d4c164037140"
+      },
+      "mixed/tiny-0061.cpp": {
+        "size": 48,
+        "sha256": "dbb29baa0b8eb7d64f9ad4a0db5288b95d36d55583511b0d78e33224f85669ce"
+      },
+      "mixed/tiny-0062.cpp": {
+        "size": 48,
+        "sha256": "15475734c80f92f43a4369287c53cdd4a4a1a70faa5b426d7d7dda70a2d364c1"
+      },
+      "mixed/tiny-0063.cpp": {
+        "size": 48,
+        "sha256": "3781007bf1efeacd4ad427061a9a320327e42fd3cfc0bb269b84a35fce601586"
+      },
+      "mixed/tiny-0064.cpp": {
+        "size": 48,
+        "sha256": "4bb1d88385578ac1e787e749849e17418ba7c0a0f45e67685e4b426568303799"
+      },
+      "mixed/tiny-0065.cpp": {
+        "size": 48,
+        "sha256": "4d1c4b33663734044f42d10af40a12939a90fc6652c51c9d4a9e7a87c629667d"
+      },
+      "mixed/tiny-0066.cpp": {
+        "size": 48,
+        "sha256": "398d7e91ef3aee5f35e67fdc95919c8da79353694d848859fc00e065b4e419ae"
+      },
+      "mixed/tiny-0067.cpp": {
+        "size": 48,
+        "sha256": "8dd087fbb287c38b3e700ee73b4277cda16ff72f0779632c37cea006716d7295"
+      },
+      "mixed/tiny-0068.cpp": {
+        "size": 48,
+        "sha256": "e19871500617265ed01a3d483b7b3d92d8fbdea5bc5edafb1de4d7f371139006"
+      },
+      "mixed/tiny-0069.cpp": {
+        "size": 48,
+        "sha256": "f4b1d9c7782b54a56b4e3fbec3b17b899661705dee14156861a601d20b9afe18"
+      },
+      "mixed/tiny-0070.cpp": {
+        "size": 48,
+        "sha256": "a7092a14b1a6a473a91c1ec500358a9dd8932ebc1c7c82b39ada649451d95d53"
+      },
+      "mixed/tiny-0071.cpp": {
+        "size": 48,
+        "sha256": "482ca8a3d9fb9bf22fb4d114c1e262e40aa232b97b954cd32c908e396f7b3b09"
+      },
+      "mixed/tiny-0072.cpp": {
+        "size": 48,
+        "sha256": "d0d8e50c2fe6d33780b31786db8e73621dd456831b6eaec5f51f5ad49e96fca3"
+      },
+      "mixed/tiny-0073.cpp": {
+        "size": 48,
+        "sha256": "c29f665a3ee7c070f88131e6389e968086242c3dea0f19d55ce5a59bf25995ec"
+      },
+      "mixed/tiny-0074.cpp": {
+        "size": 48,
+        "sha256": "b727d4e5d7f725ddb690bc5abf75a1fecf7ce1b99b1b0c846e7e35e08aa7e07c"
+      },
+      "mixed/tiny-0075.cpp": {
+        "size": 48,
+        "sha256": "853a461249476fc39f7f9f6d783d10ed19b952afe770482456977de6283464f0"
+      },
+      "mixed/tiny-0076.cpp": {
+        "size": 48,
+        "sha256": "14cfd022ffac2a88712f4167076600a38d375d09c1269823e3e820647339d9d6"
+      },
+      "mixed/tiny-0077.cpp": {
+        "size": 48,
+        "sha256": "d60f079c8a88a3b9f57f2c79c8a4e778db08601a7febc08d32c8874d6b5d1f7c"
+      },
+      "mixed/tiny-0078.cpp": {
+        "size": 48,
+        "sha256": "91d91c423653b95ab1570ecdb79c0f30358042dd4caeb3c71196115e6ad5ffda"
+      },
+      "mixed/tiny-0079.cpp": {
+        "size": 48,
+        "sha256": "b9aba5bcd25914f90c6a111c69325f7e0cacd48e35482b87894e0abedd7ef54b"
+      },
+      "mixed/tiny-0080.cpp": {
+        "size": 48,
+        "sha256": "084b28d59cb05ae9aab7819d1ff0788561abb9eb10d1e5f7c3e251de59da2719"
+      },
+      "mixed/tiny-0081.cpp": {
+        "size": 48,
+        "sha256": "02a7f09ef84c41abc341713593d3f3c36c75e54160b06d2e03b798af80e429fb"
+      },
+      "mixed/tiny-0082.cpp": {
+        "size": 48,
+        "sha256": "4e73cf38efe4e2ef7c58f953a87690bf870218b5355dfdf61f4085e274db3590"
+      },
+      "mixed/tiny-0083.cpp": {
+        "size": 48,
+        "sha256": "46877f2c04e67f43a40f53a5fbd8b727d6e78783606cbeac2331835ba1cbf91d"
+      },
+      "mixed/tiny-0084.cpp": {
+        "size": 48,
+        "sha256": "9fef7ece149d51a2b1342de5a84cb2f81eb28ff1aff3974247a71436b3ee3bbb"
+      },
+      "mixed/tiny-0085.cpp": {
+        "size": 48,
+        "sha256": "4ecd6d80b03fdb2ee8efbead0dd64bc2d26318ee02d543e213998118f24d3f67"
+      },
+      "mixed/tiny-0086.cpp": {
+        "size": 48,
+        "sha256": "21b40513ae277b37fb17e17987d07b8f634208a59cf78af3f0728547765d99d9"
+      },
+      "mixed/tiny-0087.cpp": {
+        "size": 48,
+        "sha256": "b4cae793bcb0f9c3cd526995df4dafd325b61bcd684662fce7165a3556865701"
+      },
+      "mixed/tiny-0088.cpp": {
+        "size": 48,
+        "sha256": "c99da9d0906f41eab7102c31139faaaa4086fefaccbf85b5289aaa0faa3fba5f"
+      },
+      "mixed/tiny-0089.cpp": {
+        "size": 48,
+        "sha256": "ae3c739cf152f59399b4c8e424eeb8998877a245b715a3e7cdc62585be42c940"
+      },
+      "mixed/tiny-0090.cpp": {
+        "size": 48,
+        "sha256": "37bfc62355b8ee980b038ccb7bb42bb916cbfa5b32b11989bc380d7b879d1663"
+      },
+      "mixed/tiny-0091.cpp": {
+        "size": 48,
+        "sha256": "1f87246cbce4557e73c982c6bf8df34f2f763d9d2a1a0803875ff6e7c3aa1fbc"
+      },
+      "mixed/tiny-0092.cpp": {
+        "size": 48,
+        "sha256": "2db53567eeb2cf25a629a61dc16a9e88421b6ac8c928f87224924081484e1bef"
+      },
+      "mixed/tiny-0093.cpp": {
+        "size": 48,
+        "sha256": "d0422f0569f3a9b3cb3559bff07330de705107e958794edb55abf47de9afaec6"
+      },
+      "mixed/tiny-0094.cpp": {
+        "size": 48,
+        "sha256": "b9631168697fdbe9e87dff182bf5bf011933b741adc137b88cd7568e5cf1d97e"
+      },
+      "mixed/tiny-0095.cpp": {
+        "size": 48,
+        "sha256": "5c662a8c86a52f5323dbb297ed85d0abb6ed6ab9485f70dfc1db65978de73376"
+      },
+      "mixed/tiny-0096.cpp": {
+        "size": 48,
+        "sha256": "b317ffe0680ad0a516971e5f497cc2fb5d0f67fe1241e83d676c93fd3f37dbf8"
+      },
+      "mixed/tiny-0097.cpp": {
+        "size": 48,
+        "sha256": "b17c9014053cffdb0aa804ddaec3c1388017e69ac9643c6aa95abad3c35064f5"
+      },
+      "mixed/tiny-0098.cpp": {
+        "size": 48,
+        "sha256": "d0cd27413b699bfda7134b8e3905686364ccddabe4ace59e76ee39032dc449d8"
+      },
+      "mixed/tiny-0099.cpp": {
+        "size": 48,
+        "sha256": "e77565a9deee2a774b67ec6d3d056e6b2234a94fd7cdcc112daa0f9e7704659d"
+      },
+      "mixed/tiny-0100.cpp": {
+        "size": 51,
+        "sha256": "b9b42f0155316e451302022c3eeb6de16df81acdd9a3cb60ac7d4c08835d3928"
+      },
+      "mixed/tiny-0101.cpp": {
+        "size": 51,
+        "sha256": "598173a106d5893dba361d16b01cc8d842587b06befd8d3f8eea80feca32d40a"
+      },
+      "mixed/tiny-0102.cpp": {
+        "size": 51,
+        "sha256": "2b6bcd91d6c96fd08d6ce1521d67051c73648703d18bdfb797537eae6abf1250"
+      },
+      "mixed/tiny-0103.cpp": {
+        "size": 51,
+        "sha256": "ab3d08a3229838f3fc1d8eef60e73ac576cffcc67ac9a7876381400257b81454"
+      },
+      "mixed/tiny-0104.cpp": {
+        "size": 51,
+        "sha256": "47b53f5eff0b0e56d977ce211f90e15b0984cba7364855437cc84f1f3b60b98b"
+      },
+      "mixed/tiny-0105.cpp": {
+        "size": 51,
+        "sha256": "2e6139e1a339ec22faaf15e6e4c0a0aefdbb55e3a4db7fa14c650cf910ab01df"
+      },
+      "mixed/tiny-0106.cpp": {
+        "size": 51,
+        "sha256": "00804fadc381bb11f361635a29938d73b1c2cd6e159401e1d0e3a9040e52e93c"
+      },
+      "mixed/tiny-0107.cpp": {
+        "size": 51,
+        "sha256": "1c9e29a6b6d4dbf4e103548e4b9ea60a682e77c264a6abfc5e9ad7c7c375f080"
+      },
+      "mixed/tiny-0108.cpp": {
+        "size": 51,
+        "sha256": "2ec8730a010b7e1eae0b047e38bd8255d586df4d474f01424a9c66f66a5846ef"
+      },
+      "mixed/tiny-0109.cpp": {
+        "size": 51,
+        "sha256": "1a214448c882d50730c326ad91c1df71c9a42f27d0337b1be7ffc76c3a0d72d5"
+      },
+      "mixed/tiny-0110.cpp": {
+        "size": 51,
+        "sha256": "c0c18b4fab2981c1cd7bdbfffabf1630277245cb08005201956098eab0a4c892"
+      },
+      "mixed/tiny-0111.cpp": {
+        "size": 51,
+        "sha256": "a89afd984bbada8a4f281c71af99d641d32a0fad35d1f18bcb5496dfeaf1dcc7"
+      },
+      "mixed/tiny-0112.cpp": {
+        "size": 51,
+        "sha256": "f3104415d6c0d3ca752f1f8bebd3483995207562203a9142206af47ed40a37c1"
+      },
+      "mixed/tiny-0113.cpp": {
+        "size": 51,
+        "sha256": "9daa5359bb910d491cb8a6f27826f516304cbe578124b9924fec32ac6c17ebc7"
+      },
+      "mixed/tiny-0114.cpp": {
+        "size": 51,
+        "sha256": "686f7f99f392d9c526bcbe7196255de1b059fac6e00e8fc352d83a80fbdb050d"
+      },
+      "mixed/tiny-0115.cpp": {
+        "size": 51,
+        "sha256": "7bae6ba956fbf9f939b3339a8011a387570d3dabed49efd80c0ea9367d5b9e40"
+      },
+      "mixed/tiny-0116.cpp": {
+        "size": 51,
+        "sha256": "59199b60f8f9b669363dcbb36a6f5d021c3bd486e052777ed8026d8b1d130f74"
+      },
+      "mixed/tiny-0117.cpp": {
+        "size": 51,
+        "sha256": "42122065d59cc0f8d404d1a4bdfa3a69d225def7ad159378816487dd1fc59ac2"
+      },
+      "mixed/tiny-0118.cpp": {
+        "size": 51,
+        "sha256": "feba0fb6d5889da0915e1d50eeadf77ab7fe5a47de6de5cb80f4776754d9abc0"
+      },
+      "mixed/tiny-0119.cpp": {
+        "size": 51,
+        "sha256": "14ea1edafb0b2b4a0e962164d5f8e0f84dd754ad253220d870b01c730bf82fb5"
+      },
+      "mixed/tiny-0120.cpp": {
+        "size": 51,
+        "sha256": "962f99c32226e622cafcc8082a856be9a4da7414e49d9f854937ac442afeaa78"
+      },
+      "mixed/tiny-0121.cpp": {
+        "size": 51,
+        "sha256": "0790b260003ef405ab265c695c6a1b5465e88b8ad3e8f79584ecbb6b82690880"
+      },
+      "mixed/tiny-0122.cpp": {
+        "size": 51,
+        "sha256": "6bcd897b45b43a5cdc126f901046b698877ec2f99b31707a131f4734dd7b018b"
+      },
+      "mixed/tiny-0123.cpp": {
+        "size": 51,
+        "sha256": "c4ed83805310ce58eb73c3214aadb7280d6035a57af8ba6f17686374378579d1"
+      },
+      "mixed/tiny-0124.cpp": {
+        "size": 51,
+        "sha256": "744bdfa0b31651690e31c806893a6c4d80ac0d749e72b4350177e77a51da7c7f"
+      },
+      "mixed/tiny-0125.cpp": {
+        "size": 51,
+        "sha256": "1274dad75177800bc7825f19379918e3adc400ed1c246ec32628b8c707724a8a"
+      },
+      "mixed/tiny-0126.cpp": {
+        "size": 51,
+        "sha256": "562744d80c807ff091fff501c1c20c60ebf3c33439338757c9e5c4da48e9a6cb"
+      },
+      "mixed/tiny-0127.cpp": {
+        "size": 51,
+        "sha256": "574f63134a2c7e53e615b3a78283c4ef05115c29a9cc9d2cbf4e0b7da9be56c6"
+      },
+      "mixed/tiny-0128.cpp": {
+        "size": 51,
+        "sha256": "7683d6b1f5ef713eb448269674c441c06d4a0a0541eae10f3367960be2d47db2"
+      },
+      "mixed/tiny-0129.cpp": {
+        "size": 51,
+        "sha256": "4896812ff5e420fffa4ffc3c86bfd270fc996dba951230d0b15e34b42aece610"
+      },
+      "mixed/tiny-0130.cpp": {
+        "size": 51,
+        "sha256": "730517f87b01d380648b0a93c5cea8f5e51088fe51ef3b8dcdb7c1c5bc6d08f9"
+      },
+      "mixed/tiny-0131.cpp": {
+        "size": 51,
+        "sha256": "4a0f865bfa213fc407da5eaa1c239a350e81fefc1d0383a4de425eb9c75d2c3e"
+      },
+      "mixed/tiny-0132.cpp": {
+        "size": 51,
+        "sha256": "749f1403ff9b6a97c96cab9aeaf805fe3738e6c6cc749b6393730347f4264a2d"
+      },
+      "mixed/tiny-0133.cpp": {
+        "size": 51,
+        "sha256": "286f1591636a804e460dc6fcd137d68159a95d1d20511369c69104e976e29a1a"
+      },
+      "mixed/tiny-0134.cpp": {
+        "size": 51,
+        "sha256": "769ad31e8a31658c5965d87d274a10af479027e6ea8e1ce35c1b282279406332"
+      },
+      "mixed/tiny-0135.cpp": {
+        "size": 51,
+        "sha256": "5792622e08e5de2e98ffd58c470b2a68ef391509c349825261bfdf7635138b6b"
+      },
+      "mixed/tiny-0136.cpp": {
+        "size": 51,
+        "sha256": "71ff80c02ca99eb8c9a92e1d2a590844e483c3e6a3d9742ba3b6a5533b9084d9"
+      },
+      "mixed/tiny-0137.cpp": {
+        "size": 51,
+        "sha256": "462c04a591d760e6c6d2bc66708e5ee899b1056cc3553a183c91b8704f9d7d3e"
+      },
+      "mixed/tiny-0138.cpp": {
+        "size": 51,
+        "sha256": "c3f36ea4ebc214639b1515766584d19df2232a3c19025661780922bbd5e4bc26"
+      },
+      "mixed/tiny-0139.cpp": {
+        "size": 51,
+        "sha256": "1158a131ed7eb370fc879601548c463c4916f62624cd0e87da7a1ee35849e2c7"
+      },
+      "mixed/tiny-0140.cpp": {
+        "size": 51,
+        "sha256": "822b6bf21cd12851aba0d3c8754e020e263864eaaafc2ad09b1b8e10364255b7"
+      },
+      "mixed/tiny-0141.cpp": {
+        "size": 51,
+        "sha256": "ff4696a808af6eb499e7c59ecba4dd949bd1f0b9fe74f0fcd1e95e2e488e3854"
+      },
+      "mixed/tiny-0142.cpp": {
+        "size": 51,
+        "sha256": "bad61cac9e03bd752c49b25266cdef11c9adb800c31c67c10a38d6b641433d49"
+      },
+      "mixed/tiny-0143.cpp": {
+        "size": 51,
+        "sha256": "4629feb43634240ee2f673d2d608714b53888cf570fd2ad154f4f7eb6f9beabd"
+      },
+      "mixed/tiny-0144.cpp": {
+        "size": 51,
+        "sha256": "c88706148dd5d76b124c9ce6e16680c4f94e8db3bc8ab78dc31f12a582a8fd3d"
+      },
+      "mixed/tiny-0145.cpp": {
+        "size": 51,
+        "sha256": "ed718d4d10c17e1ae43a6f0744f21d6662d4a8cb00dd83dc87116b357cfbc72a"
+      },
+      "mixed/tiny-0146.cpp": {
+        "size": 51,
+        "sha256": "90a05ed7b77e01ebe390cbd8220381234b08bd468090a502f0fbebe2fb40c073"
+      },
+      "mixed/tiny-0147.cpp": {
+        "size": 51,
+        "sha256": "92edd4cce2b8039bc98f616afcf2b4ad8adcad08ec003258a5d1f45fbb64c4ae"
+      },
+      "mixed/tiny-0148.cpp": {
+        "size": 51,
+        "sha256": "2237718771c99474269c235a258393fb0c160e9ba440647a9bf0399723732869"
+      },
+      "mixed/tiny-0149.cpp": {
+        "size": 51,
+        "sha256": "5644d7ecd4698106e33c0556238732d89f91b0ada8d74579f9394873a82fd35d"
+      },
+      "mixed/tiny-0150.cpp": {
+        "size": 51,
+        "sha256": "247c5ebd9516a551ea49379247652bbd51cef83770a0bb25cc48b08148f76c01"
+      },
+      "mixed/tiny-0151.cpp": {
+        "size": 51,
+        "sha256": "6befdf7300207aa7d8fce26f19aa05ef75536c8180b7a4d5c0fb36c65eab96e0"
+      },
+      "mixed/tiny-0152.cpp": {
+        "size": 51,
+        "sha256": "d5fa46b089da7395f3546730d70513e1fa198f60023662b1dc87ea3e4d984703"
+      },
+      "mixed/tiny-0153.cpp": {
+        "size": 51,
+        "sha256": "6da333bb286277ca4c34b8d5ce65bf95d494160884dfcd198d25dc71159ff012"
+      },
+      "mixed/tiny-0154.cpp": {
+        "size": 51,
+        "sha256": "03d8a67d1ebbf78aa266ff4a9883efa5aa374f379fb2bea969d6a49e1489402a"
+      },
+      "mixed/tiny-0155.cpp": {
+        "size": 51,
+        "sha256": "28b543881c86e5711c0f8380bf462021e779b0e241f2bacb41c454563785dc6a"
+      },
+      "mixed/tiny-0156.cpp": {
+        "size": 51,
+        "sha256": "464df6477a17cb732e90265d0c7c0e32ff39f857a9431bb1074dbff82c3c42b1"
+      },
+      "mixed/tiny-0157.cpp": {
+        "size": 51,
+        "sha256": "15f046ad8b6f929ed114a7d98c9960e3317085826b8dc53235dc9b457bc0ffc7"
+      },
+      "mixed/tiny-0158.cpp": {
+        "size": 51,
+        "sha256": "8b1ce32547923f8213d92a3cf00dbe2e717b22f389a6d326f908ded2728dd926"
+      },
+      "mixed/tiny-0159.cpp": {
+        "size": 51,
+        "sha256": "3562ca6a0170be7aed588ec6cf760bdd366e3d7a7aa22c0ad611be8773e51c8a"
+      },
+      "mixed/tiny-0160.cpp": {
+        "size": 51,
+        "sha256": "c1ffc4ef0e231c0993bfdfaa596ddb762cc45f543511a71ef19940afcb734bef"
+      },
+      "mixed/tiny-0161.cpp": {
+        "size": 51,
+        "sha256": "9660bdc7d84d0c648a0a19a3d66bf2edeb1542279a9da19393af901f371ca2cf"
+      },
+      "mixed/tiny-0162.cpp": {
+        "size": 51,
+        "sha256": "27585c9f4cfdb05d84a3d3726eaa376397b0a77925155e57961e9153f5b661fa"
+      },
+      "mixed/tiny-0163.cpp": {
+        "size": 51,
+        "sha256": "9c6a24ad57d3c8dcfc4f419974a6132e0decfd455b2724c7d5f39c9688218d26"
+      },
+      "mixed/tiny-0164.cpp": {
+        "size": 51,
+        "sha256": "cc12011d2b974f330f251bae0288d4f0c9227a93f7873eec79dcb21c0afdfe7f"
+      },
+      "mixed/tiny-0165.cpp": {
+        "size": 51,
+        "sha256": "7e9858f25a02319b17e69116b186559b65767111bbf67ad1c1327f33652dfd90"
+      },
+      "mixed/tiny-0166.cpp": {
+        "size": 51,
+        "sha256": "c24165551c1c6442682b79d1b8cd015142b2d30a6b8489dabbf0f94ae7dce87b"
+      },
+      "mixed/tiny-0167.cpp": {
+        "size": 51,
+        "sha256": "fd9a834ea42d3649eba19de6846969e168d384cf5ff23590340c52c23220978d"
+      },
+      "mixed/tiny-0168.cpp": {
+        "size": 51,
+        "sha256": "d5191f45c099cb0ae7dffc22968e4a7ff9bca6e5eceea5d620e3b4878d560f60"
+      },
+      "mixed/tiny-0169.cpp": {
+        "size": 51,
+        "sha256": "a29f7eaeb30fa972f5b0cbcb10d4f6bbd293d8bbce375a3d481e83f61ce68cdc"
+      },
+      "mixed/tiny-0170.cpp": {
+        "size": 51,
+        "sha256": "10f47c88d63f7fcc17de3f25a0aa40590c03f691db24be8a5102f715d3f56951"
+      },
+      "mixed/tiny-0171.cpp": {
+        "size": 51,
+        "sha256": "7a5fa5ddc18f0bb3e3bde8508739f23373f2ec3a3de87e654b4afc1c96e5b3d7"
+      },
+      "mixed/tiny-0172.cpp": {
+        "size": 51,
+        "sha256": "7b6c9bc2895ee3cf7895d0a929820e65b166d866e02fdd1adc53d42097cc70b1"
+      },
+      "mixed/tiny-0173.cpp": {
+        "size": 51,
+        "sha256": "f8e41a055bc75735ccd9a6deecf2c988f826df5e24b0a6a0932b398f77fdaba6"
+      },
+      "mixed/tiny-0174.cpp": {
+        "size": 51,
+        "sha256": "2751158d05b95f5b1b014a1d7e5a755eae267836059734f4ab9c97fd75ab9716"
+      },
+      "mixed/tiny-0175.cpp": {
+        "size": 51,
+        "sha256": "932513af0ebaeee2932c502a9ad8f7f013c2a55af24a9fda28f3c8456b4c5143"
+      },
+      "mixed/tiny-0176.cpp": {
+        "size": 51,
+        "sha256": "5ad9f507da5d4ad6252f5399e3bc1537b79078e7f647603d559f597236443dd2"
+      },
+      "mixed/tiny-0177.cpp": {
+        "size": 51,
+        "sha256": "fe62e54eef5f5d88415909451e5f244744bea9f25e5b1c9d5532a85397b31425"
+      },
+      "mixed/tiny-0178.cpp": {
+        "size": 51,
+        "sha256": "71cb1d7f93b217c0598467e9bb2a5ac01637aa514d3673fdb555ac02ce509e9a"
+      },
+      "mixed/tiny-0179.cpp": {
+        "size": 51,
+        "sha256": "7246cb784c9589f385b92f13f7221343648083aa92bd82f74880b5cfdb59b530"
+      },
+      "mixed/tiny-0180.cpp": {
+        "size": 51,
+        "sha256": "d5d05f16fbde3fa1313eb569f1d1853eea43ccd456a098a069b815164906c387"
+      },
+      "mixed/tiny-0181.cpp": {
+        "size": 51,
+        "sha256": "28b627261e10b9cc5f40d544aed5413ff4c57551c4591ddca79345a3fd30e4f7"
+      },
+      "mixed/tiny-0182.cpp": {
+        "size": 51,
+        "sha256": "5778f722cd3b9369e203ded093beab5aa7fbda5bf49ea9069e101b16706d83dd"
+      },
+      "mixed/tiny-0183.cpp": {
+        "size": 51,
+        "sha256": "f38bee47ab84d35e94793c61ce0c13c2be1e1f76daa3796ca533850b4c3b1dca"
+      },
+      "mixed/tiny-0184.cpp": {
+        "size": 51,
+        "sha256": "d23050d292c6ccd0b033abbbb6c45a56b9073cff4892ab0ab21248522b08d1bd"
+      },
+      "mixed/tiny-0185.cpp": {
+        "size": 51,
+        "sha256": "388d1736d81ee06e4ac9dea316b9e65623c59a71dc24bec5ddce8d5aac1e8d09"
+      },
+      "mixed/tiny-0186.cpp": {
+        "size": 51,
+        "sha256": "954d7c3b938d79d81993ce046b037f9a897e84ce73c3c3097efc8e663917a5c6"
+      },
+      "mixed/tiny-0187.cpp": {
+        "size": 51,
+        "sha256": "f408ea242abf57512957441da588ffdb7eee674a1e36e2ab126dc59b6552b9fc"
+      },
+      "mixed/tiny-0188.cpp": {
+        "size": 51,
+        "sha256": "6b6127ed16b1ab9bcbfc7a467cd0a1fc8b3ac1dbadae1e1e7820e7ade35087ba"
+      },
+      "mixed/tiny-0189.cpp": {
+        "size": 51,
+        "sha256": "3d46119e66df65194bd8ee13daa80e78edd192aa4c84c84b898e3446725159c5"
+      },
+      "mixed/tiny-0190.cpp": {
+        "size": 51,
+        "sha256": "7dc4d37337ed21f575439b3733650634e484640d40921e8d84ab3a184113846a"
+      },
+      "mixed/tiny-0191.cpp": {
+        "size": 51,
+        "sha256": "5444432d5bee5450e28d4c4bbe848cbf938c2d9dde57c8910408c32fc3f7a79c"
+      },
+      "mixed/tiny-0192.cpp": {
+        "size": 51,
+        "sha256": "fb622bfac80e3d465a9207c8530dec34114ba93027f67b4acbcb46e65d177d71"
+      },
+      "mixed/tiny-0193.cpp": {
+        "size": 51,
+        "sha256": "f83613d7a30912f5fa3b8a3cf421f7a1d0bdfec16bec55e41a7f90a7ddf64ea0"
+      },
+      "mixed/tiny-0194.cpp": {
+        "size": 51,
+        "sha256": "2a9941752150b277fc4f08e24457274eebc783cc376e021c9bc1c1ef882ca3c7"
+      },
+      "mixed/tiny-0195.cpp": {
+        "size": 51,
+        "sha256": "80934d4cc316288d8b834051ad5a1b383fa533c6958a447500a5cb6cdc917e6d"
+      },
+      "mixed/tiny-0196.cpp": {
+        "size": 51,
+        "sha256": "a3749a6c7cf0aec3404f1d2900a54140751e1b72a43f172e078b032efecbcffd"
+      },
+      "mixed/tiny-0197.cpp": {
+        "size": 51,
+        "sha256": "984d8bb60002b8e071d1f4ab744224555a18f3c9153eca0b6f9065249c94fd12"
+      },
+      "mixed/tiny-0198.cpp": {
+        "size": 51,
+        "sha256": "38ebae32a6a83b0515109cac77840c38ff0849f844c357226cc1a28cc7105db4"
+      },
+      "mixed/tiny-0199.cpp": {
+        "size": 51,
+        "sha256": "b1d630d70005af118397f7e92b284b0eb316bf4ace7798735b363b3961b97653"
+      },
+      "mixed/tiny-0200.cpp": {
+        "size": 51,
+        "sha256": "00b2b52b8a3302b14a48f53496f55c6ad7244387b411eebad874ec7a63aab6ea"
+      },
+      "mixed/tiny-0201.cpp": {
+        "size": 51,
+        "sha256": "8e325143d2cded19d8a25964391c67a33390f9f89409961aa322e9864afa49d2"
+      },
+      "mixed/tiny-0202.cpp": {
+        "size": 51,
+        "sha256": "12cc795bb4ad5a4a43fb81f4673900c3a5a58b3bfaf47316bc171e15b72c9ceb"
+      },
+      "mixed/tiny-0203.cpp": {
+        "size": 51,
+        "sha256": "1b933d03cf85167721708ccc5dd162d381d531f673d35d884e5008d5aef0353f"
+      },
+      "mixed/tiny-0204.cpp": {
+        "size": 51,
+        "sha256": "1fbae5deb12d6bddba718a0f41a1117bdab53a9b52b3a380723cc50be425cc26"
+      },
+      "mixed/tiny-0205.cpp": {
+        "size": 51,
+        "sha256": "3a5a26f8d365a2754b87e431c70416afbda2428eb21e8252654d97f612e16383"
+      },
+      "mixed/tiny-0206.cpp": {
+        "size": 51,
+        "sha256": "a7415257349897df22fede89624ab78635523434f15383637b4986666959446f"
+      },
+      "mixed/tiny-0207.cpp": {
+        "size": 51,
+        "sha256": "8c4c6f882344d6a81fe01bb5ff01f516d3d1813f221533b5dcd98b585884203e"
+      },
+      "mixed/tiny-0208.cpp": {
+        "size": 51,
+        "sha256": "dab2483f0f8e7e1ca01f40a5e28b0f89af33baa9e30d5d54518227cc589e07d9"
+      },
+      "mixed/tiny-0209.cpp": {
+        "size": 51,
+        "sha256": "db93d03339f1afc230111962b150ea2208013a6692ba06b4b40816a1225c4c8e"
+      },
+      "mixed/tiny-0210.cpp": {
+        "size": 51,
+        "sha256": "8810be9877a5babcbac82b920a1d9f2e53895df705de068e000b9b411b36794d"
+      },
+      "mixed/tiny-0211.cpp": {
+        "size": 51,
+        "sha256": "11d3fa94a61c4370e52d998ca023237855e8b65be0b5ff80a91b5154bc00eb43"
+      },
+      "mixed/tiny-0212.cpp": {
+        "size": 51,
+        "sha256": "7ab085eb55e528d9c8a6199fdd1a2e82961abf757471006e24da746524897c7b"
+      },
+      "mixed/tiny-0213.cpp": {
+        "size": 51,
+        "sha256": "be6efab60d89986eb3f098dbd8f964c9341733d40587d8e03015bfd04aa0b451"
+      },
+      "mixed/tiny-0214.cpp": {
+        "size": 51,
+        "sha256": "6f4cfedd0db045ae177a43e125e5656fd6323de2e7eb277a8e01159accb79ffd"
+      },
+      "mixed/tiny-0215.cpp": {
+        "size": 51,
+        "sha256": "09ff084c4b0ccc6b308ce7b35e3752520fee68947b7d0186a7ff8863f321f3a2"
+      },
+      "mixed/tiny-0216.cpp": {
+        "size": 51,
+        "sha256": "38da2e3b1002e5afdf52a6106775037ef7675c04b25a40163184099fba1c5cbf"
+      },
+      "mixed/tiny-0217.cpp": {
+        "size": 51,
+        "sha256": "43c7f1d41163798030e9fb7e649d3c6e84ffa76efeed5fb632a3dab23b827016"
+      },
+      "mixed/tiny-0218.cpp": {
+        "size": 51,
+        "sha256": "31987a4b901565ffc22a3fb843df8832c3bbf83ab61f79d7f7e0f9377bd48b01"
+      },
+      "mixed/tiny-0219.cpp": {
+        "size": 51,
+        "sha256": "feffd8d2c59041677ce42ab41581f19f00777d1d3e9ad04f78868bf92cc8644c"
+      },
+      "mixed/tiny-0220.cpp": {
+        "size": 51,
+        "sha256": "6e5d1870d291ea0b2a9eff59d0d8a78f2fc261900d6c31df78732ac07e213d48"
+      },
+      "mixed/tiny-0221.cpp": {
+        "size": 51,
+        "sha256": "3b1cf8572c241cb76e443b1a8b3aff44a9e3accfdb140212677ae67d5a5983f1"
+      },
+      "mixed/tiny-0222.cpp": {
+        "size": 51,
+        "sha256": "bbc69acb6beaeac2ad8230fe159431e4f3da9d47fd4aff273f6eadea764fe659"
+      },
+      "mixed/tiny-0223.cpp": {
+        "size": 51,
+        "sha256": "91d7663a0ad6c4174130a524b5ffd911f61377c033b9486677d1d4681b007153"
+      },
+      "mixed/tiny-0224.cpp": {
+        "size": 51,
+        "sha256": "51c34ed6037f9ceade448a32ef6221bba502f50024f47d3d3cacec06dd66977c"
+      },
+      "mixed/tiny-0225.cpp": {
+        "size": 51,
+        "sha256": "c4b2148d83abe1a9a32a635b820ff2a23d2339c3ffff7d1f882edca31cf1f240"
+      },
+      "mixed/tiny-0226.cpp": {
+        "size": 51,
+        "sha256": "746bf6022c1ab0db9c6c06af2ff1a09faf91c551e2706e4366cb6abd086df538"
+      },
+      "mixed/tiny-0227.cpp": {
+        "size": 51,
+        "sha256": "186d27a5d5c18e19b91c3c038944f5c3c77eb1249664a6bd2fe3099dde04f685"
+      },
+      "mixed/tiny-0228.cpp": {
+        "size": 51,
+        "sha256": "48dd5b5f9295efc46d300fc6a15bb335e1f82b25ad72196bc1c12f0d5b7e7960"
+      },
+      "mixed/tiny-0229.cpp": {
+        "size": 51,
+        "sha256": "bd93d1b33e279a1dbcd81e2df9665cc8f4a1898837f70a5f6aa1b593516610df"
+      },
+      "mixed/tiny-0230.cpp": {
+        "size": 51,
+        "sha256": "2b3e515a465711b3156da83b6bb4e3c7ff2e277e2aad86f509881d2a8df29add"
+      },
+      "mixed/tiny-0231.cpp": {
+        "size": 51,
+        "sha256": "603c9a12fc8234b8dd55070510794c97a5a81bb264347ac18ecd6ffda62734b8"
+      },
+      "mixed/tiny-0232.cpp": {
+        "size": 51,
+        "sha256": "08bde9a97018911030d0f073febabfc1b7562d24297e872890b43801ccd7d9db"
+      },
+      "mixed/tiny-0233.cpp": {
+        "size": 51,
+        "sha256": "fa902e3ec4ed4de2d3adab88ea89d8816548fc8511188219bda674e7825a54d5"
+      },
+      "mixed/tiny-0234.cpp": {
+        "size": 51,
+        "sha256": "f5d65e0094ffc628c200c20c8d1b2f842defcbd841f3846ff8e3552527eec405"
+      },
+      "mixed/tiny-0235.cpp": {
+        "size": 51,
+        "sha256": "685cb8ea55957379d2c01e48c43c9d302098ab2840b75224333ca547ba13a2b0"
+      },
+      "mixed/tiny-0236.cpp": {
+        "size": 51,
+        "sha256": "a2f6a0fc323df1a16636fd6d7f3d77128012cb4cc86b04bab8b52ac97c281fba"
+      },
+      "mixed/tiny-0237.cpp": {
+        "size": 51,
+        "sha256": "e09d8309a0de28bc153c1c4e89f26d61d071e7453211ed464f721dbc04a1f2de"
+      },
+      "mixed/tiny-0238.cpp": {
+        "size": 51,
+        "sha256": "ca14e3e898aad2d5a3b7558252b3c889b01dbf018bc6f904ff53467b98371816"
+      },
+      "mixed/tiny-0239.cpp": {
+        "size": 51,
+        "sha256": "d94e93ae842f8d8bdd415d279e972ef7387d8120442254bc46e6dcb850d08ed0"
+      },
+      "mixed/tiny-0240.cpp": {
+        "size": 51,
+        "sha256": "08c407f9ac4f9e40c9ff4a55a401a0f1af9cbe6f8817c6e7586cbff7d3e8478b"
+      },
+      "mixed/tiny-0241.cpp": {
+        "size": 51,
+        "sha256": "07c986e35b32c82a4a5107d41303714da1bca64db86dd8969199bec0988b8783"
+      },
+      "mixed/tiny-0242.cpp": {
+        "size": 51,
+        "sha256": "9197e3268ff235596c332968b2dc20e6aa4018b27d38a0e9a230161dca819d48"
+      },
+      "mixed/tiny-0243.cpp": {
+        "size": 51,
+        "sha256": "dec76965cdb41aeda40104207659812002d6e628b638c9baf7ef1fae9969c8cd"
+      },
+      "mixed/tiny-0244.cpp": {
+        "size": 51,
+        "sha256": "0a18c7384c0c32ad3ef7eb9b0591dde236300454558e8b0cd3987126ad513cff"
+      },
+      "mixed/tiny-0245.cpp": {
+        "size": 51,
+        "sha256": "66f30fe937c8c1258f6530c6f9b14633b42d2d8f8f22f76a005599432998f894"
+      },
+      "mixed/tiny-0246.cpp": {
+        "size": 51,
+        "sha256": "86b61767f31e884d1460ed3230084b45ab79b3686fdbed350feb57a80883327e"
+      },
+      "mixed/tiny-0247.cpp": {
+        "size": 51,
+        "sha256": "df72a7b458e1694d9353e5f8915808a66787aeb85074ec8f9bb6abdf8f6adefc"
+      },
+      "mixed/tiny-0248.cpp": {
+        "size": 51,
+        "sha256": "24640318088b36183dd99ec8e65038a35aff06ac2ae7cebdef279f528221d544"
+      },
+      "mixed/tiny-0249.cpp": {
+        "size": 51,
+        "sha256": "98c625124318deb722d9ef6ba8d1c43b39d265f06eea0d116b50c061e1aa033e"
+      },
+      "mixed/tiny-0250.cpp": {
+        "size": 51,
+        "sha256": "e382c4af374dc7347759b33ed26cc2918c966d97091bc50617e10115be0d266d"
+      },
+      "mixed/tiny-0251.cpp": {
+        "size": 51,
+        "sha256": "2b213b866a77deca6dc2866f4c2c0fe288edf65d1eb020a0f79bbb7db19fa573"
+      },
+      "mixed/tiny-0252.cpp": {
+        "size": 51,
+        "sha256": "14a5e7e168813375bc0449e21b1b239ad9e91b862541ff8a23796242bce50f4c"
+      },
+      "mixed/tiny-0253.cpp": {
+        "size": 51,
+        "sha256": "4aaba21c445278189516d8c791d8788c68cef4111065f38d043543ff8ed4b938"
+      },
+      "mixed/tiny-0254.cpp": {
+        "size": 51,
+        "sha256": "f78142cdcebb56c4735bc776044220e090249c2cba02469608634958ac5e4e58"
+      },
+      "mixed/tiny-0255.cpp": {
+        "size": 51,
+        "sha256": "881d282d1f598753f9d310f487aaad66c661bdecb2214e424bd18ed9f65c157a"
+      }
+    },
+    "large-67108864.bin": {
+      "size": 67108864,
+      "sha256": "58bbecaf41e23dd6237db25ea9c1999d2165e7197d620f6b5da089cccaddf462"
+    },
+    "large-4296015872.bin": {
+      "size": 4296015872,
+      "sha256": "f6426a1ae4928e1ea714510400beca4d45999d9c1ba7dd0fde188ecd09bc9dd9"
+    }
+  },
+  "binaries": {
+    "zyph": {
+      "path": "$REPO\\build\\release\\zyph.exe",
+      "sha256": "9b3c32ccd09e25d610f95c37974d7f720961c7b496fdc99d9142120814bee864"
+    },
+    "sevenzip": {
+      "path": "$REPO\\.tools\\vcpkg\\downloads\\tools\\7zip-26.03-windows\\7z.exe",
+      "sha256": "6ee3c0ed0b27663c1b948ae85a7c0bb073aed1498983182f3f0df1f6a8c30b2f"
+    },
+    "zstd": {
+      "path": "$REPO\\build\\zstd-cli\\programs\\zstd.exe",
+      "sha256": "0d51a4fa5b563fd014f8968e860f34b99125ba870773c7a46fe2ea036779596e"
+    },
+    "baseline_zyph": {
+      "path": "$REPO\\build\\production\\zyph.exe",
+      "sha256": "34df38069532b74089d48025bf3810476b8160ee62fdbb1b892440a08fa1571e"
+    }
+  },
+  "all_roundtrips_verified": true
+}

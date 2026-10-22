@@ -3,7 +3,7 @@
 A native C++20 archive engine and CLI with its own documented `.zyph` container.
 Windows 10/11 x64 is the first product platform; the core also builds on Linux.
 
-**Status: Milestone 3 pre-release engine.** Packing, indexed listing, full SHA-256
+**Status: Milestones 0–4 complete.** Packing, indexed listing, full SHA-256
 verification and full extraction work for supported regular files/directories.
 The Qt desktop application and release packaging
 are not complete. See [project status](docs/PROJECT_STATUS.md) for exact evidence.
@@ -17,6 +17,8 @@ are not complete. See [project status](docs/PROJECT_STATUS.md) for exact evidenc
 ./build/release/zyph.exe info files.zyph
 ./build/release/zyph.exe verify files.zyph
 ./build/release/zyph.exe extract files.zyph -o restored
+./build/release/zyph.exe pack "C:/Data/My folder" -o parallel.zyph --threads 4 --progress
+./build/release/zyph.exe extract parallel.zyph -o selected --select "My folder/report.txt"
 ```
 
 Outputs must not already exist; their parent directory must exist. Packing keeps
@@ -25,7 +27,10 @@ inputs are never modified or deleted. Extraction publishes a new directory tree
 only after verification succeeds. Archives inside an input directory are rejected.
 Use destinations whose parent directories are controlled by you; native handle-relative operations reject links and prevent path-swap redirection.
 
-`--preset fast|balanced|maximum` selects Zstandard levels 1/3/19 with one worker.
+`--preset fast|balanced|maximum` selects Zstandard levels 1/3/19. `--threads 1..16`
+sets compression workers (default 1). At most twice that many blocks are in flight;
+output order is deterministic. `--memory-mib` sets the block/codec working-memory
+admission budget (default 512 MiB); metadata and process overhead are additional.
 `--store` disables compression. Independent blocks fall back to STORE if Zstandard
 would not shrink them. `--block-size` accepts 1..16777216 bytes (default 4194304).
 Packing fully verifies the temporary archive before publishing its final name.
@@ -36,8 +41,17 @@ is implied by preset names.
 Portable modification times are preserved to whole seconds within the V1 range.
 ACLs, permissions, ownership, alternate streams and subsecond timestamps are not
 represented. Symlinks, reparse points and special filesystem objects are rejected.
-No overwrite, selected extraction, worker pool, CLI cancellation/progress or GUI
-is provided yet. The C++ API has basic cooperative stop-token support.
+`--select` accepts exact case-sensitive archive paths and can be repeated. A directory
+selection includes its descendants; parent directories are retained. Missing paths
+fail before output. Only selected file payloads are decoded and verified; use
+`verify` to check unselected data too. An empty selection means full extraction.
+
+`--progress` reports phase-local bytes/entries on stderr; scan totals are unknown.
+Ctrl+C requests cooperative cancellation and returns exit 7 before publication.
+An active codec call finishes its current bounded block before stopping. Byte
+completion is not publication success; the final success message confirms that.
+Existing outputs and GUI remain unsupported. The C++ API exposes matching progress,
+selection and stop-token options without Qt dependencies.
 
 CLI exit codes: 0 success; 2 usage; 3 I/O; 4 corruption; 5 unsupported feature;
 6 resource/path/destination conflict; 7 cancellation; 8 changing source.

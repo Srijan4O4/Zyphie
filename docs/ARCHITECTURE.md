@@ -1,4 +1,4 @@
-# Architecture — milestone 2
+# Architecture — milestone 4
 
 `zyph_core` is a Qt-free C++20 static library. `zyph` is a thin CLI using that same
 engine. The future desktop application must use the public archive API without
@@ -28,8 +28,8 @@ not concurrently callable on the same instance. Reader copying is disabled.
 
 Scan regular files/directories without following links; reject unsupported entries
 and duplicate internal names. Bound entries, metadata and total sizes. Sort by
-UTF-8 byte order. Reject the destination inside any source directory. Stream one
-block at a time through STORE or Zstandard and compute block/whole-file SHA-256.
+UTF-8 byte order. Reject the destination inside any source directory. Stream bounded
+blocks through STORE or Zstandard and compute block/whole-file SHA-256.
 Write payloads to an exclusively created temporary file in the destination parent.
 Record manifest/index, protect header+metadata and footer, flush/close, reopen
 and fully verify, then publish with a no-replace rename on Windows/Linux.
@@ -64,17 +64,7 @@ No failed/skipped entry is reported as a successful pack or complete extraction.
 Content buffers are bounded by configured block size (hard maximum 16 MiB). Metadata
 is bounded by policy and scales with capped entry/block counts; encoded metadata,
 parsed vectors and scanner paths coexist, so the metadata byte cap is not a total
-process-memory cap. Default payload block size is 4 MiB. Compression is single
-threaded. Basic stop-token checks occur at file/block boundaries and before publish;
-worker pools, progress and comprehensive interruption tests belong to milestone 4.
-
-## Remaining security boundary
-
-Native no-follow/exclusive file opens and repeated path checks reject ordinary
-symlinks/reparse points and overwrite conflicts. They do not yet provide full
-handle-relative directory traversal or Windows staging ACL isolation. Destination
-parents must be trusted against concurrent hostile mutation. See SECURITY.md;
-passing milestone 2 does not imply milestone 3 or release readiness.
+process-memory cap. Default payload block size is 4 MiB. Compression uses 1–16 configurable workers with bounded admission (see below). Stop tokens and progress callbacks cover file/block boundaries and publication.
 
 ## Milestone 3 native filesystem boundary
 
@@ -84,3 +74,24 @@ with no-replace native renames. Windows uses ntdll directory-relative APIs and
 handle-relative cleanup; Linux uses the *at family and descriptor-relative cleanup.
 The wire format and public archive API remain unchanged. See SECURITY.md for the
 object-confinement boundary, failure semantics and remaining release assurance.
+
+## Milestone 4 pipeline
+
+A fixed jthread pool compresses independent owned blocks. The caller thread scans,
+reads, maintains whole-file hashes and writes completed results in archive order.
+At most 2*threads futures (one in serial mode) retain raw/encoded buffers; admission
+uses a codec-context estimate and conservative buffer allowance. Backpressure is
+applied before another block is read. Worker exceptions are transported through
+futures; stopping joins active work and discards queued work. Codec calls are not
+preempted. Metadata remains bounded by its separate configured limits.
+
+Progress callbacks execute on the caller thread and use independent scan, pack,
+verify and extract counters. Callback exceptions abort before publication. CLI
+Ctrl+C handling sets an atomic flag; a stop-aware monitor requests cancellation.
+Windows publication retries only bounded sharing/access failures, retaining native
+parent handles and no-replace semantics through every attempt.
+
+Selected extraction validates the full manifest/index, binary-searches exact path
+selections, adds directory descendants and necessary ancestors, then decodes only
+selected file blocks. Unselected payload integrity is deliberately not asserted.
+The format, metadata order and golden archive compatibility are unchanged.

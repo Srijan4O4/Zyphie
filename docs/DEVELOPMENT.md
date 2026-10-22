@@ -109,3 +109,12 @@ See `tests/fuzz/README.md` for the two Linux Clang fuzz targets and exact CI bud
 Use `-DBUILD_TESTING=OFF` for a production build without the internal fault callback.
 No Qt installation is required. Windows links the OS BCrypt, Advapi32 and ntdll
 import libraries; no new third-party runtime dependency was introduced.
+
+## Streaming and benchmark validation
+
+Run `python tests/integration/cancel.py <path-to-zyph>` for a real CLI Ctrl+C/SIGINT
+check (the helper uses an isolated hidden Windows console). It asserts exit 7,
+unchanged source and absence of both published and staged outputs. Hosted CI runs
+this after CTest on Windows and Linux. Python is also used by the benchmark runner;
+it is not a product runtime dependency. See BENCHMARKS.md for exact reproduction,
+baseline versions, raw results and the limitations of timing comparisons.
