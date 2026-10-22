@@ -131,3 +131,21 @@ benchmark follows the rejected partial run. Measurements show no BALANCED benefi
 from four workers on this mixed corpus, so the default remains one. MAXIMUM gains
 wall time with four workers at substantially higher CPU/memory cost; expose the
 choice rather than select workers implicitly. See BENCHMARKS.md for evidence.
+
+## ADR-012 — Qt desktop ownership and release license
+
+M5 uses only Qt Core/Gui/Widgets (Test is build-only), dynamically linked. The
+core remains Qt-free. A single std::jthread owns each operation; widgets are
+accessed only on the GUI thread. A 50 ms timer consumes one mutex-protected latest
+progress value, preventing unbounded queued signals. Closing during work requests
+cancellation and leaves the window alive until safe completion. Selected paths
+are copied before launching the worker. Changing the archive clears old selections.
+
+The desktop refuses existing destinations with an actionable dialog. It does not
+add an overwrite algorithm that bypasses the engine's tested no-replace contract.
+Phase estimates are displayed only after measurable progress, never as whole-job
+promises. Archive opening validates metadata; full verification is explicit.
+
+The owner selected MIT for Zyphie on 2026-10-22. Qt remains under its own LGPLv3
+terms; binary packaging must include notices, matching source and replacement
+instructions. Zstandard uses its BSD alternative. No GPL-only Qt modules are used.

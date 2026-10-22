@@ -40,3 +40,10 @@
 - Fix transient Windows publication open/rename contention with bounded cancellation-aware retries and native handle regression coverage.
 - Validate 46/46 Windows and 43/43 Linux sanitizer tests, real CLI signals and 20,000/100,000 archive/path fuzz iterations (run 39787815489).
 - Record 156 benchmark operations with verified round trips, baseline comparisons and 4 GiB + 1 MiB memory profiling (31.88 MiB peak pack working set).
+
+## Milestone 5 — desktop checkpoint
+
+- Add Qt Widgets archive creation/browser/verify/extract workflows, drop support,
+  light/dark themes, bounded progress updates and cooperative cancellation.
+- Add automated widget flows, native screenshots and bidirectional CLI compatibility.
+- Adopt MIT for project source as explicitly selected by the owner.

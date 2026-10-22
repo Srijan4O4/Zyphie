@@ -118,3 +118,16 @@ unchanged source and absence of both published and staged outputs. Hosted CI run
 this after CTest on Windows and Linux. Python is also used by the benchmark runner;
 it is not a product runtime dependency. See BENCHMARKS.md for exact reproduction,
 baseline versions, raw results and the limitations of timing comparisons.
+
+## Desktop builds
+
+Install aqtinstall 3.3.0 into project-local Python tooling, then obtain the official
+SDK with `python -m aqt install-qt windows desktop 6.8.3 win64_llvm_mingw -O .tools/Qt --archives qtbase`.
+With the portable LLVM-MinGW toolchain described above, run
+`./scripts/desktop-build.ps1` (Release) or `-Configuration Debug -BuildDir build/desktop-debug`.
+It configures ZYPH_BUILD_DESKTOP=ON, builds the shared Qt client, runs CTest and
+native Windows widget tests. Generated PNGs/test logs stay under the build tree.
+For MSVC, use win64_msvc2022_64, the debug/release presets and
+`-DZYPH_BUILD_DESKTOP=ON -DCMAKE_PREFIX_PATH=<Qt SDK directory>`. Keep that SDK's
+bin directory on PATH while testing. Qt Test is needed only with BUILD_TESTING=ON.
+Headless CI uses the offscreen platform; native Windows rendering is checked locally.

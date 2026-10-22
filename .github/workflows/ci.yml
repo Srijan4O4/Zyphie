@@ -42,13 +42,22 @@ jobs:
           ./.tools/vcpkg/bootstrap-vcpkg.sh -disableMetrics
           echo "VCPKG_ROOT=$GITHUB_WORKSPACE/.tools/vcpkg" >> "$GITHUB_ENV"
           echo "VCPKG_DISABLE_METRICS=1" >> "$GITHUB_ENV"
+      - name: Install pinned Qt Widgets SDK (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          python -m pip install aqtinstall==3.3.0
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -m aqt install-qt windows desktop 6.8.3 win64_msvc2022_64 -O .tools/Qt --archives qtbase
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          "$((Resolve-Path .tools/Qt/6.8.3/msvc2022_64/bin).Path)" >> $env:GITHUB_PATH
       - name: Configure, build and test (Windows x64)
         if: runner.os == 'Windows'
         shell: cmd
         run: |
           call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
           if errorlevel 1 exit /b %errorlevel%
-          cmake --preset ${{ matrix.preset }}
+          cmake --preset ${{ matrix.preset }} -DZYPH_BUILD_DESKTOP=ON -DCMAKE_PREFIX_PATH="%CD%/.tools/Qt/6.8.3/msvc2022_64"
           if errorlevel 1 exit /b %errorlevel%
           cmake --build --preset ${{ matrix.preset }}
           if errorlevel 1 exit /b %errorlevel%

@@ -78,3 +78,14 @@ corpora and wider hardware/filesystems remain unmeasured. No universal speed cla
 
 Validated checkpoints are promoted to main without rewriting history. No release
 tag until milestone 6 acceptance passes.
+
+## Desktop checkpoint — Milestone 5
+
+Qt 6.8.3 Widgets target implemented separately from the core. Creation, hierarchical
+inspection, full/selected extraction, verification, drag/drop, themes, status,
+phase estimates and cancellation run through the same engine. Local Release:
+47/47 CTest cases passed; desktop test includes creation, selected extraction,
+GUI-to-CLI and CLI-to-GUI verification, conflicts, corruption, signals and a
+heartbeat during active work. Native Windows platform also passed and screenshots
+were inspected. Qt's offscreen backend lacks fonts here; use the native screenshots
+for visual evidence. Hosted MSVC validation is pending; do not mark release complete.
