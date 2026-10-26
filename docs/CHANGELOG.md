@@ -10,6 +10,10 @@
   multi-entry subsets, empty entries, empty-selection dispatch and stale selection
   clearing. Existing no-overwrite and cancellation behavior remains unchanged.
 - Validation evidence is recorded in PROJECT_STATUS.md.
+- Validated implementation `52c40aa`: 47/47 local Windows Release CTest entries,
+  four native GUI workflows, a fresh 181-file/39-directory extraction matching
+  original paths and SHA-256 digests, and the relocated portable-package smoke test.
+  This is a local correction build; no new hosted CI run or release tag is claimed.
 
 ## 0.1.0-dev — unreleased — 2026-10-22
 

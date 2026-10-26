@@ -10,6 +10,7 @@ by the owner. Dependencies retain their own notices and licenses.
 ## Post-V1 correction — explicit extraction scope
 
 Branch: `fix/explicit-extraction-scope`, based on validated V1 commit `0cd44ec`.
+Validated implementation checkpoint: `52c40aa`.
 The desktop now has separate Extract all and Extract selected buttons. Extract all
 ignores highlighted rows; selected extraction requires a nonempty selection and
 shows its row count. Core, CLI, archive format and no-overwrite rules are unchanged.
@@ -40,8 +41,16 @@ the same production extraction succeeded outside it. The headless Qt run emitted
 offscreen font/size-hint warnings; the native GUI run had no warnings or failures.
 The optional Vulkan headers were absent; this Widgets app does not use Vulkan.
 Debug, hosted MSVC/Linux sanitizer and fuzz runs were not repeated for this UI-only
-change. No new benchmark or release tag is claimed. Portable package validation
-is pending for this checkpoint.
+change. No new benchmark or release tag is claimed.
+
+Portable correction build (V1 version metadata retained, no new published release):
+`build/packages/Zyphie-1.0.0-extraction-fix-windows-x64.zip`, manifest revision
+`52c40aa`. SHA-256:
+`0f67a49e80cb570a8afbec14a4f1f904cc6cd7df1ca983fede710c362d23a017`.
+`python scripts/package-smoke.py build/packages/Zyphie-1.0.0-extraction-fix-windows-x64.zip`
+passed: 64 manifest file hashes, relocated clean-PATH execution, all golden
+archives, byte-equal round trip, responsive native GUI and normal exit. Report:
+`build/package-smoke/installed-0lu6r491/report.json`.
 
 ## Validated checkpoints
 
