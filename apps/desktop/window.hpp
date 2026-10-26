@@ -17,8 +17,9 @@ protected:
     void dragEnterEvent(QDragEnterEvent*) override;
     void dropEvent(QDropEvent*) override;
 private:
-    enum class Job { open, pack, extract, verify };
+    enum class Job { open, pack, extract, extractSelected, verify };
     void start(Job);
+    void updateExtractionSelection();
     void poll();
     void theme(bool dark);
     QLineEdit *archive_, *destination_;
@@ -28,7 +29,7 @@ private:
     QSpinBox* threads_;
     QProgressBar* progress_;
     QLabel *status_, *details_;
-    QPushButton* cancel_;
+    QPushButton *cancel_, *extractSelected_;
     QList<QWidget*> controls_;
     QTimer* timer_;
     QElapsedTimer elapsed_;
