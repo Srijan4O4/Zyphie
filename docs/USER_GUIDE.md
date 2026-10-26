@@ -26,10 +26,17 @@ Progress reaching 100% alone does not mean publication succeeded.
 Choose Browse next to Archive file, then Open archive. Expand folders in the
 browser. Listing validates metadata but does not verify payloads. Verify archive
 checks all file/block hashes. To restore, enter a NEW destination folder beneath
-an existing parent (Choose parent proposes a name). Select entries for a subset,
-or clear the selection for everything, then Extract selected / all. Directory
-selections include descendants. Unselected file payloads are not checked; run
-Verify archive when you need complete integrity verification.
+an existing parent (Choose parent proposes a name). Choose **Extract all** to
+restore the entire archive, even if a file or folder is highlighted in the browser.
+To restore a subset, select entries and choose **Extract selected**; its count is
+the number of selected rows, and each selected folder includes all descendants.
+Extract selected is disabled with no selection and never falls back to extracting
+everything. Unselected file payloads are not checked during selective extraction;
+run Verify archive when you need complete integrity verification.
+
+If a previous extraction contains only one folder, it may have been a selective
+restore in the original V1 desktop. Open the archive and use Extract all with a
+new destination to restore everything; the earlier output does not need deleting.
 
 An existing destination is refused. Choose another name; Zyphie never merges or
 replaces existing data. Errors are shown in the window/dialog and no success is

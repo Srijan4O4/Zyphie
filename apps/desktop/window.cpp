@@ -75,9 +75,14 @@ Window::Window() {
     tree_->setSelectionMode(QAbstractItemView::ExtendedSelection); right->addWidget(tree_,1); controls_ << tree_;
     button("&Open archive","open",right,[this]{start(Job::open);});
     auto* restore=new QHBoxLayout;
-    button("&Extract selected / all","extract",restore,[this]{start(Job::extract);});
+    auto* extractAll=button("&Extract all","extract",restore,[this]{start(Job::extract);});
+    extractAll->setToolTip("Restore every file and folder, regardless of the highlighted entries.");
+    extractSelected_=button("Extract &selected","extractSelected",restore,[this]{start(Job::extractSelected);});
+    extractSelected_->setToolTip("Restore only the selected entries. Folders include all their contents.");
+    connect(tree_,&QTreeWidget::itemSelectionChanged,this,[this]{updateExtractionSelection();});
+    updateExtractionSelection();
     button("&Verify archive","verify",restore,[this]{start(Job::verify);}); right->addLayout(restore);
-    auto* hint=new QLabel("Select entries to restore a subset. With no selection, all entries are restored."); hint->setWordWrap(true); right->addWidget(hint); split->addWidget(browse);
+    auto* hint=new QLabel("Extract all restores the entire archive, even with highlighted entries. Extract selected restores only your selection, including folder contents."); hint->setWordWrap(true); right->addWidget(hint); split->addWidget(browse);
     auto* paths=new QFormLayout;
     auto* archiveRow=new QHBoxLayout; archive_=new QLineEdit; archive_->setObjectName("archive"); archive_->setPlaceholderText("Choose a .zyph file to create or open"); archiveRow->addWidget(archive_);
     button("Browse…","archivePicker",archiveRow,[this]{auto p=QFileDialog::getOpenFileName(this,"Open archive",{},"Zyphie archives (*.zyph)");if(!p.isEmpty())archive_->setText(p);});
@@ -110,22 +115,32 @@ void Window::dropEvent(QDropEvent* e) {
 void Window::closeEvent(QCloseEvent* e) {
     if(busy_){worker_.request_stop();status_->setText("Cancelling safely. Close the window again when the operation finishes.");e->ignore();}else e->accept();
 }
+void Window::updateExtractionSelection() {
+    const auto count=tree_->selectedItems().size();
+    extractSelected_->setEnabled(!busy_ && count>0);
+    extractSelected_->setText(count?QString("Extract &selected (%1)").arg(count):"Extract &selected");
+}
 void Window::start(Job job) {
     if(busy_)return;
+    const bool extracting=job==Job::extract || job==Job::extractSelected;
+    std::vector<std::string> selected;
+    if(job==Job::extractSelected) {
+        for(auto* item:tree_->selectedItems())selected.push_back(item->data(0,Qt::UserRole).toString().toUtf8().toStdString());
+        // Empty paths mean all in the core API: never fall back implicitly.
+        if(selected.empty()){status_->setText("Select files or folders to restore, or choose Extract all.");return;}
+    }
     const auto archive=native(archive_->text()), destination=native(destination_->text());
     std::vector<std::filesystem::path> sources;
     for(int i=0;i<sources_->count();++i)sources.push_back(native(sources_->item(i)->text()));
-    if(archive.empty()||(job==Job::pack&&sources.empty())||(job==Job::extract&&destination.empty())) {
+    if(archive.empty()||(job==Job::pack&&sources.empty())||(extracting&&destination.empty())) {
         status_->setText("Choose an archive path and the required source files or restore destination.");return;
     }
     // Refuse conflicts before launch, and again atomically inside the core.
     std::error_code ec; const auto output=job==Job::pack?archive:destination;
-    if((job==Job::pack||job==Job::extract)&&std::filesystem::exists(output,ec)) {
+    if((job==Job::pack||extracting)&&std::filesystem::exists(output,ec)) {
         status_->setText("Destination already exists. Choose a new name; existing files have not been changed.");
         QMessageBox::warning(this,"Choose a new destination",status_->text());return;
     }
-    std::vector<std::string> selected;
-    if(job==Job::extract)for(auto* item:tree_->selectedItems())selected.push_back(item->data(0,Qt::UserRole).toString().toUtf8().toStdString());
     zyphie::PackOptions options;options.threads=static_cast<unsigned>(threads_->value());
     options.store=preset_->currentIndex()==3;options.compression_level=preset_->currentIndex()==0?1:preset_->currentIndex()==2?19:3;
     {std::lock_guard lock(mutex_);done_=false;success_=false;latest_={};entries_.clear();result_.clear();}
@@ -168,6 +183,7 @@ void Window::poll() {
     }
     if(!done)return;
     worker_.join();timer_->stop();busy_=false;for(auto* c:controls_)c->setEnabled(true);cancel_->setEnabled(false);
+    updateExtractionSelection();
     progress_->setRange(0,1000);progress_->setValue(success?1000:0);status_->setText(result);
     if(!success && !result.startsWith("Cancelled")) {
         auto* message=new QMessageBox(QMessageBox::Warning,"Operation failed",result,QMessageBox::Ok,this);

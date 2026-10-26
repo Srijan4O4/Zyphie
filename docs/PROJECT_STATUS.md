@@ -1,4 +1,4 @@
-# Project status — 2026-10-22
+# Project status — 2026-10-26
 
 ## Current milestone
 
@@ -6,6 +6,42 @@ Milestones 0–6 validated for Zyphie V1. The product includes a native C++20 en
 CLI, Qt 6 Widgets desktop and portable Windows x64 package. V2–V4 are future
 roadmap work, not part of the completed V1 scope. Source license: MIT, selected
 by the owner. Dependencies retain their own notices and licenses.
+
+## Post-V1 correction — explicit extraction scope
+
+Branch: `fix/explicit-extraction-scope`, based on validated V1 commit `0cd44ec`.
+The desktop now has separate Extract all and Extract selected buttons. Extract all
+ignores highlighted rows; selected extraction requires a nonempty selection and
+shows its row count. Core, CLI, archive format and no-overwrite rules are unchanged.
+
+Evidence on Windows 11, 2026-10-26:
+
+- Before the fix, the new GUI regression failed on the missing selected-action
+  control; the other 46 CTest entries passed.
+- `./scripts/desktop-build.ps1`: Release build, 47/47 CTest entries passed,
+  including the expanded GUI regression. Native widget run: four workflows plus
+  init/cleanup passed (6 QtTest results). Light/dark screenshots generated; light
+  layout inspected. Logs: `build/desktop/Testing/Temporary/LastTest.log` and
+  `build/desktop/apps/desktop/native-tests.txt`.
+- Regression covers full extraction despite a selected subtree, subtree and
+  multiple selections, empty files/directories, no-selection rejection (including
+  direct dispatch), re-enabling controls and clearing selection on archive change.
+- `./scripts/desktop-build.ps1 -NoTests -BuildDir build/desktop-production` passed.
+- Production CLI verified the user's original archive, then freshly extracted all
+  181 files and 39 directories. All paths and file SHA-256 digests matched the
+  current originals, which remained unchanged. Local report:
+  `build/extraction-check-20261026-em15hn09/report.json`.
+- Existing partial output contained 48 matching files in one subtree; the existing
+  complete output contained all 181 matching files. No user output was overwritten.
+
+Build and native filesystem checks ran outside the restricted execution sandbox:
+the sandbox prevented tool discovery and output publication (Windows error 6);
+the same production extraction succeeded outside it. The headless Qt run emitted
+offscreen font/size-hint warnings; the native GUI run had no warnings or failures.
+The optional Vulkan headers were absent; this Widgets app does not use Vulkan.
+Debug, hosted MSVC/Linux sanitizer and fuzz runs were not repeated for this UI-only
+change. No new benchmark or release tag is claimed. Portable package validation
+is pending for this checkpoint.
 
 ## Validated checkpoints
 

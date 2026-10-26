@@ -107,3 +107,10 @@ the window alive; destruction joins the worker before destroying its shared stat
 Errors are displayed as plain text. Archive-path changes clear stale selections.
 Presets and exact selections map directly onto the existing API. A successful
 browse is explicitly distinguished from full payload verification.
+
+Full and selective restoration are separate desktop actions. Extract all passes
+an empty path filter regardless of tree selection; Extract selected copies the
+selected paths and refuses an empty selection before launching the worker. Its
+button is disabled during work or when no entries are selected, and recomputed
+after completion and selection changes. This prevents incidental browsing from
+silently reducing a full restore to one subtree. Core/CLI semantics are unchanged.

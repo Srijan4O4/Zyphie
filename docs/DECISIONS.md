@@ -163,3 +163,19 @@ objects. Windows 10 and broader hardware remain untested, not inferred from
 Windows 11/Server results. No MSI, signing identity or performance advantage is
 claimed. The initial silent hosted GUI failure prompted explicit logs and ten
 repetitions of the widget suite, with a less timing-sensitive cancellation corpus.
+
+## ADR-014 — Explicit desktop extraction scope
+
+The combined Extract selected / all action changed its behavior based on browser
+selection. A reported incomplete restore contained only one selected subtree,
+while the existing full restore matched all 181 original files by SHA-256 and the
+archive passed full verification. Treat this as a usability defect: a highlighted
+folder must not implicitly change a user's whole-archive restore into a subset.
+
+Expose separate Extract all and Extract selected actions. The former ignores
+selection; the latter requires at least one selected row, displays the selected
+row count, and includes folder descendants under the existing core contract.
+No-selection dispatch is rejected even if invoked programmatically. Keep current
+no-overwrite, cancellation, and integrity reporting behavior. No wire-format,
+codec, core API, or CLI change is needed. Regression coverage uses a synthetic
+tree with sibling folders, a root file, an empty file and an empty directory.
